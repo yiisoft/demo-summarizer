@@ -74,6 +74,10 @@ document.querySelectorAll('[data-upload-form]').forEach((form) => {
     ['dragenter', 'dragover'].forEach((eventName) => {
         dropzone.addEventListener(eventName, (event) => {
             event.preventDefault();
+            event.stopPropagation();
+            if (event.dataTransfer) {
+                event.dataTransfer.dropEffect = 'copy';
+            }
             dropzone.classList.add('is-drag-over');
         });
     });
@@ -81,19 +85,23 @@ document.querySelectorAll('[data-upload-form]').forEach((form) => {
     ['dragleave', 'drop'].forEach((eventName) => {
         dropzone.addEventListener(eventName, (event) => {
             event.preventDefault();
+            event.stopPropagation();
             dropzone.classList.remove('is-drag-over');
         });
     });
 
     dropzone.addEventListener('drop', (event) => {
-        const files = event.dataTransfer?.files;
+        const droppedFiles = Array.from(event.dataTransfer?.files || []);
 
-        if (!files || files.length === 0) {
+        if (droppedFiles.length === 0) {
             return;
         }
 
-        input.files = files;
-        updateFileList();
+        const transfer = new DataTransfer();
+
+        droppedFiles.forEach((file) => transfer.items.add(file));
+        input.files = transfer.files;
+        input.dispatchEvent(new Event('change', {bubbles: true}));
     });
 });
 
