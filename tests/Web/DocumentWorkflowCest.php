@@ -62,6 +62,15 @@ final class DocumentWorkflowCest
         $I->dontSee($name);
     }
 
+    public function emptyUploadShowsBatchValidationMessage(WebTester $I): void
+    {
+        $I->amOnPage('/');
+        $I->click('Upload');
+
+        $I->see('Choose at least one document.');
+        $I->dontSee('document #1 could not be uploaded.');
+    }
+
     public function failedDocumentCanBeRetried(WebTester $I): void
     {
         $name = 'broken-' . uniqid() . '.docx';

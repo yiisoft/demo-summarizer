@@ -23,6 +23,7 @@ use function trim;
 use function uniqid;
 
 use const PATHINFO_EXTENSION;
+use const UPLOAD_ERR_NO_FILE;
 use const UPLOAD_ERR_OK;
 
 /**
@@ -50,6 +51,7 @@ final readonly class DocumentUploadService
      */
     public function upload(array $files): array
     {
+        $files = $this->submittedFiles($files);
         $validation = $this->validate($files);
         if (!$validation->isValid()) {
             return ['documents' => [], 'errors' => $validation->errors];
@@ -82,6 +84,7 @@ final readonly class DocumentUploadService
      */
     public function validate(array $files): UploadValidationResult
     {
+        $files = $this->submittedFiles($files);
         if ($files === []) {
             return new UploadValidationResult(['Choose at least one document.']);
         }
@@ -125,6 +128,19 @@ final readonly class DocumentUploadService
         }
 
         return new UploadValidationResult($errors);
+    }
+
+    /**
+     * @param list<UploadedFileInterface> $files
+     *
+     * @return list<UploadedFileInterface>
+     */
+    private function submittedFiles(array $files): array
+    {
+        return array_values(array_filter(
+            $files,
+            static fn (UploadedFileInterface $file): bool => $file->getError() !== UPLOAD_ERR_NO_FILE,
+        ));
     }
 
     private function signatureLooksValid(UploadedFileInterface $file, string $extension): bool
