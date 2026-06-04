@@ -1,38 +1,58 @@
 # Yii3 Document Summarizer
 
-A Yii3 demo for uploading documents, extracting readable markdown, summarizing the content with a configurable LLM adapter, and tracking processing progress through queues.
+A runnable Yii3 demo for uploading documents, extracting readable markdown, summarizing content, and tracking processing progress.
 
-This repository contains a runnable Yii3 document summarizer demo. The detailed implementation checklist is in [plan.md](plan.md).
+## What It Does
 
-## Features
+- Upload one or more Markdown, text, HTML, PDF, or DOCX files.
+- Validate uploads before processing.
+- Store original files and extracted markdown in S3-compatible storage.
+- Process documents through `yiisoft/queue`.
+- Show status, progress, summaries, extracted markdown, original downloads, retries, deletion, and a full clear action.
+- Use a deterministic mock summarizer by default, or connect to Ollama running on the host.
 
-- Batch upload for text, markdown, HTML, PDF, and DOCX documents.
-- Server-side upload validation with size, extension, MIME, and signature checks.
-- S3-compatible object storage by default, with Garage wired for local development.
-- Queue-oriented processing through `yiisoft/queue`, with sync mode by default.
-- AMQP and Valkey queue modes use `yiisoft/queue` adapters through local Composer path repositories while upstream compatibility fixes are prepared.
-- Preferred extraction through the Docker-installed Kreuzberg CLI, with a native fallback for text, Markdown, and HTML.
-- Mock and host Ollama summarizer adapters.
-- Web UI for document status, progress, summaries, downloads, deletion, and retry.
+## Requirements
 
-## Local Development
+- Docker with Docker Compose.
+- `make`.
+- Optional: Ollama on the host if you want real LLM summaries instead of mock summaries.
 
-Run project commands through `make` so they execute in the configured Docker environment. Do not call `./yii` or `composer` directly from the host.
+## Quick Start
 
-Build and start the Docker development environment:
+Build and start the demo:
 
 ```bash
 make build
 make up
 ```
 
-Garage is the local S3-compatible storage service for the demo; MinIO is not required. The `documents` bucket is created automatically.
+Create the database tables:
 
-The Docker image installs a pinned Kreuzberg CLI runtime for PDF, DOCX, HTML, and other supported document extraction. Rebuild the image after Dockerfile or extractor runtime changes.
+```bash
+make -- yii migrate:up -y
+```
 
-Ollama is expected to run on the host, not as a Docker Compose service. Docker containers reach it through `http://host.docker.internal:11434`. On Linux, make sure host Ollama listens on an address containers can reach, for example by starting/restarting it with `OLLAMA_HOST=0.0.0.0:11434`.
+Open the app:
 
-Run Composer commands inside Docker:
+```text
+http://127.0.0.1/
+```
+
+Upload supported documents from the upload box. The app shows progress and results in the document table. Use **Retry** for failed documents, **Delete** for one document, or **Clear all** to remove all documents, stored files, database records, and pending queue jobs.
+
+Stop the demo:
+
+```bash
+make down
+```
+
+## Running Commands
+
+Run project commands through `make` so they execute in the configured Docker environment.
+
+Do not call `./yii` or `composer` directly from the host.
+
+Run Composer commands:
 
 ```bash
 make composer install
@@ -44,29 +64,10 @@ Run Yii console commands:
 make yii <command>
 ```
 
-Create the SQLite tables:
+When passing command options that start with `-`, use `make --`:
 
 ```bash
 make -- yii migrate:up -y
-```
-
-Process queued messages with the native Yii queue worker:
-
-```bash
-make yii queue:run
-make yii queue:listen
-```
-
-Do not use a demo-specific worker command; document processing is wired through `yiisoft/queue`.
-
-Run non-sync queue modes by selecting the queue driver and using the same native worker commands:
-
-```bash
-QUEUE_DRIVER=amqp make up
-QUEUE_DRIVER=amqp make -- yii queue:run
-
-QUEUE_DRIVER=redis make up
-QUEUE_DRIVER=redis make -- yii queue:run
 ```
 
 Open a shell in the app container:
@@ -75,11 +76,76 @@ Open a shell in the app container:
 make shell
 ```
 
-Stop the environment:
+## Queue Modes
+
+The default queue mode is `sync`, so uploaded documents are processed immediately.
+
+To process jobs with the native Yii queue worker:
 
 ```bash
-make down
+make yii queue:run
+make yii queue:listen
 ```
+
+To run AMQP mode:
+
+```bash
+QUEUE_DRIVER=amqp make up
+QUEUE_DRIVER=amqp make -- yii queue:run
+```
+
+To run Valkey/Redis mode:
+
+```bash
+QUEUE_DRIVER=redis make up
+QUEUE_DRIVER=redis make -- yii queue:run
+```
+
+Document processing is wired through `yiisoft/queue`; there is no demo-specific worker command.
+
+## Storage
+
+Garage is included as the local S3-compatible storage service. The `documents` bucket is created automatically.
+
+Local filesystem storage is available for testing with:
+
+```bash
+DOCUMENT_STORAGE_DRIVER=local
+```
+
+## Ollama
+
+The mock summarizer is used by default.
+
+To use Ollama, run Ollama on the host and configure:
+
+```bash
+LLM_ADAPTER=ollama
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+OLLAMA_MODEL=llama3.2
+```
+
+On Linux, host Ollama must listen on an address Docker containers can reach. For example:
+
+```bash
+OLLAMA_HOST=0.0.0.0:11434 ollama serve
+```
+
+## Configuration
+
+Common environment variables:
+
+- `QUEUE_DRIVER=sync|amqp|redis`
+- `QUEUE_NAME`
+- `AMQP_HOST`, `AMQP_PORT`, `AMQP_USER`, `AMQP_PASSWORD`, `AMQP_VHOST`
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_TIMEOUT`
+- `DATABASE_DSN=sqlite:/app/runtime/documents.sqlite`
+- `DOCUMENT_STORAGE_DRIVER=s3|local`
+- `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_PATH_STYLE`
+- `EXTRACTOR_ADAPTER=kreuzberg|native`
+- `LLM_ADAPTER=mock|ollama`
+- `OLLAMA_BASE_URL`
+- `OLLAMA_MODEL`
 
 ## Quality Checks
 
@@ -96,26 +162,6 @@ make psalm
 make composer-dependency-analyser
 ```
 
-## Implementation Plan
+## Maintainer Notes
 
-See [plan.md](plan.md) for planned architecture, dependencies, queue work, extractor strategy, test coverage, and assumptions.
-
-The demo should use Yii3 packages and native Yii commands where they exist. App-specific code is reserved for demo domain behavior, adapter selection, and documented package compatibility gaps.
-
-## Configuration
-
-Common environment variables:
-
-- `QUEUE_DRIVER=sync|amqp|redis`
-- `QUEUE_NAME`
-- `AMQP_HOST`, `AMQP_PORT`, `AMQP_USER`, `AMQP_PASSWORD`, `AMQP_VHOST`
-- `REDIS_HOST`, `REDIS_PORT`, `REDIS_TIMEOUT`
-- `DATABASE_DSN=sqlite:/app/runtime/documents.sqlite`
-- `DOCUMENT_STORAGE_DRIVER=s3|local`
-- `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_PATH_STYLE`
-- `EXTRACTOR_ADAPTER=kreuzberg|native`
-- `LLM_ADAPTER=mock|ollama`
-- `OLLAMA_BASE_URL` defaults to `http://host.docker.internal:11434`
-- `OLLAMA_MODEL`
-
-The demo currently points Composer at sibling `yiisoft/queue`, `yiisoft/queue-amqp`, and `yiisoft/queue-redis` repositories so AMQP and Valkey can run against the current Yii queue core while upstream fixes are prepared.
+The implementation checklist and architecture notes are in [plan.md](plan.md). The demo should use Yii3 packages and native Yii commands where they exist.
