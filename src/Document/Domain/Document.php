@@ -18,8 +18,8 @@ final readonly class Document
      * @param int $byteSize Uploaded file size in bytes.
      * @param string $status Current processing status.
      * @param int $progress Current processing progress percentage.
-     * @param string|null $leaseUntil Active processing lease timestamp.
-     * @param string|null $markdownKey Storage key for extracted markdown.
+     * @param string|null $leaseUntil Timestamp until which a worker owns processing for this document; other workers skip it while the lease is active.
+     * @param string|null $markdownKey Storage object key for markdown extracted from the original document; null until extraction succeeds.
      * @param string|null $summary Generated summary text.
      * @param string|null $error User-facing processing error.
      * @param string|null $errorDetail Internal processing error detail.
