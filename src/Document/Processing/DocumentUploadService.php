@@ -9,11 +9,12 @@ use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Yiisoft\Queue\QueueInterface;
+use Yiisoft\Validator\Rule\Count as CountRule;
+use Yiisoft\Validator\Rule\Each;
 use Yiisoft\Validator\Rule\File;
 use Yiisoft\Validator\ValidatorInterface;
 
 use function array_key_exists;
-use function count;
 use function explode;
 use function in_array;
 use function intdiv;
@@ -101,30 +102,34 @@ final readonly class DocumentUploadService
             return new UploadValidationResult(['Choose at least one document.']);
         }
 
-        $errors = [];
-        if (count($files) > $this->maxFiles) {
-            $errors[] = 'Upload no more than ' . $this->maxFiles . ' documents at once.';
+        $result = $this->validator->validate($files, [
+            new CountRule(
+                max: $this->maxFiles,
+                greaterThanMaxMessage: 'Upload no more than {max} documents at once.',
+            ),
+            new Each([
+                new File(
+                    extensions: $this->allowedExtensions,
+                    maxSize: $this->maxFileBytes,
+                    message: '{file} is not a valid document.',
+                    uploadFailedMessage: '{file} is larger than ' . $this->megabytes($this->maxFileBytes) . ' MB.',
+                    wrongExtensionMessage: '{file} is not an allowed document.',
+                    tooBigMessage: '{file} is larger than ' . $this->megabytes($this->maxFileBytes) . ' MB.',
+                    unableToDetermineSizeMessage: 'The size of {file} cannot be determined.',
+                ),
+            ], skipOnError: true),
+        ]);
+        $errors = $result->getErrorMessages();
+        $validationErrorsByPath = $result->getErrorMessagesIndexedByPath(escape: null);
+        if (isset($validationErrorsByPath[''])) {
+            return new UploadValidationResult($errors);
         }
 
         $batchBytes = 0;
         foreach ($files as $index => $file) {
             $name = $file->getClientFilename() ?: 'document #' . ($index + 1);
-            $result = $this->validator->validate($file, [
-                new File(
-                    extensions: $this->allowedExtensions,
-                    maxSize: $this->maxFileBytes,
-                    message: "$name is not a valid document.",
-                    uploadFailedMessage: "$name is larger than " . $this->megabytes($this->maxFileBytes) . ' MB.',
-                    wrongExtensionMessage: "$name is not an allowed document.",
-                    tooBigMessage: "$name is larger than " . $this->megabytes($this->maxFileBytes) . ' MB.',
-                    unableToDetermineSizeMessage: "The size of $name cannot be determined.",
-                ),
-            ]);
 
-            if (!$result->isValid()) {
-                foreach ($result->getErrorMessages() as $error) {
-                    $errors[] = $error;
-                }
+            if (isset($validationErrorsByPath[(string) $index])) {
                 continue;
             }
 
