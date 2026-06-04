@@ -101,6 +101,13 @@ QUEUE_DRIVER=redis make up
 
 Any explicit non-`sync` queue driver starts the native Yii queue worker in the background.
 
+Run multiple background workers by setting `WORKERS`:
+
+```bash
+QUEUE_DRIVER=amqp WORKERS=3 make up
+QUEUE_DRIVER=redis WORKERS=3 make up
+```
+
 Document processing is wired through `yiisoft/queue`; there is no demo-specific worker command.
 
 ## Storage

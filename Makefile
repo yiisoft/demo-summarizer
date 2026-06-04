@@ -8,6 +8,7 @@ endif
 
 include docker/.env
 export QUEUE_DRIVER
+WORKERS ?= 1
 
 # Current user ID and group ID except MacOS where it conflicts with Docker abilities
 ifeq ($(shell uname), Darwin)
@@ -20,12 +21,15 @@ endif
 
 export COMPOSE_PROJECT_NAME=${STACK_NAME}
 DOCKER_COMPOSE_DEV := docker compose -f docker/compose.yml -f docker/dev/compose.yml
+DOCKER_COMPOSE_DEV_ALL := $(DOCKER_COMPOSE_DEV) --profile worker
 DOCKER_COMPOSE_TEST := docker compose -f docker/compose.yml -f docker/test/compose.yml
 
 DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV)
+DOCKER_COMPOSE_DEV_UP_OPTIONS := up -d --remove-orphans
 ifneq ($(QUEUE_DRIVER),)
 ifneq ($(QUEUE_DRIVER),sync)
     DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV) --profile worker
+    DOCKER_COMPOSE_DEV_UP_OPTIONS := up -d --remove-orphans --scale worker=$(WORKERS)
 endif
 endif
 
@@ -40,22 +44,22 @@ endif
 
 ifeq ($(PRIMARY_GOAL),up)
 up: ## Up the dev environment.
-	$(DOCKER_COMPOSE_DEV_UP) up -d --remove-orphans
+	$(DOCKER_COMPOSE_DEV_UP) $(DOCKER_COMPOSE_DEV_UP_OPTIONS)
 endif
 
 ifeq ($(PRIMARY_GOAL),down)
 down: ## Down the dev environment.
-	$(DOCKER_COMPOSE_DEV) down --remove-orphans
+	$(DOCKER_COMPOSE_DEV_ALL) down --remove-orphans
 endif
 
 ifeq ($(PRIMARY_GOAL),stop)
 stop: ## Stop the dev environment.
-	$(DOCKER_COMPOSE_DEV) stop
+	$(DOCKER_COMPOSE_DEV_ALL) stop
 endif
 
 ifeq ($(PRIMARY_GOAL),clear)
 clear: ## Remove development docker containers and volumes.
-	$(DOCKER_COMPOSE_DEV) down --volumes --remove-orphans
+	$(DOCKER_COMPOSE_DEV_ALL) down --volumes --remove-orphans
 endif
 
 ifeq ($(PRIMARY_GOAL),shell)
