@@ -95,7 +95,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [x] Assess adapter issues in yiisoft/queue-amqp and yiisoft/queue-redis: RabbitMQ compatibility, Valkey compatibility through Redis protocol, connection/config ergonomics, failure handling, queue depth/status access, tests, and documentation.
 - [x] Record bugs, missing features, and adapter limitations encountered during demo implementation.
 - [x] Commit focused local upstream changes:
-    - [x] yiisoft/queue-amqp `de0064d` on `current-core-compat`
+    - [x] yiisoft/queue-amqp `de0064d` and `277b975` on `current-core-compat`
     - [x] yiisoft/queue-redis `8218187`, `954f917`, `7b8f947`, and `0b7acff` on `current-core-compat`
 - [x] Create focused upstream PRs only for generic queue/adaptor usage, config, command, docs, or test issues.
 - [x] Each upstream change should include a reproduction test, minimal fix, and directly related docs/config updates.
