@@ -96,7 +96,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [x] Record bugs, missing features, and adapter limitations encountered during demo implementation.
 - [x] Commit focused local upstream changes:
     - [x] yiisoft/queue-amqp `de0064d` on `current-core-compat`
-    - [x] yiisoft/queue-redis `8218187` and `954f917` on `current-core-compat`
+    - [x] yiisoft/queue-redis `8218187`, `954f917`, and `7b8f947` on `current-core-compat`
 - [x] Create focused upstream PRs only for generic queue/adaptor usage, config, command, docs, or test issues.
 - [x] Each upstream change should include a reproduction test, minimal fix, and directly related docs/config updates.
 - [ ] Release affected queue packages only after focused PRs are merged and package tests pass.

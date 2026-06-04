@@ -34,7 +34,7 @@ Local sibling repositories were cloned under `/home/samdark/src` and the demo us
 ## Local commits
 
 - `/home/samdark/src/queue-amqp`: `de0064d` (`current-core-compat`)
-- `/home/samdark/src/queue-redis`: `8218187`, `954f917` (`current-core-compat`)
+- `/home/samdark/src/queue-redis`: `8218187`, `954f917`, `7b8f947` (`current-core-compat`)
 
 ## Upstream PRs
 
