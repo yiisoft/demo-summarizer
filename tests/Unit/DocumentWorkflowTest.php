@@ -8,6 +8,7 @@ use App\Document\Domain\DocumentStatus;
 use App\Document\Extraction\ExtractionException;
 use App\Document\Extraction\ExtractorInterface;
 use App\Document\Infrastructure\DocumentRepository;
+use App\Document\Infrastructure\FlysystemDocumentStorage;
 use App\Document\Infrastructure\DocumentStorageFactory;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Migration\M250604000000CreateDocumentTables;
@@ -15,7 +16,13 @@ use App\Document\Processing\ConfiguredDocumentQueue;
 use App\Document\Processing\DocumentMessage;
 use App\Document\Processing\DocumentProcessor;
 use App\Document\Summarization\SummarizerInterface;
+use Aws\MockHandler;
+use Aws\Result;
+use Aws\S3\S3Client;
 use Codeception\Test\Unit;
+use GuzzleHttp\Psr7\Utils;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
+use League\Flysystem\Filesystem;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -104,6 +111,33 @@ final class DocumentWorkflowTest extends Unit
         $storage->delete('documents/test/original.txt');
 
         assertFalse(is_file($this->storageRoot . '/documents/test/original.txt'));
+    }
+
+    public function testS3StorageUsesFlysystemS3Adapter(): void
+    {
+        $mock = new MockHandler();
+        $mock->append(new Result([]));
+        $mock->append(new Result(['Body' => Utils::streamFor('s3 content')]));
+        $mock->append(new Result([]));
+
+        $client = new S3Client([
+            'version' => 'latest',
+            'region' => 'garage',
+            'endpoint' => 'http://garage:3900',
+            'use_path_style_endpoint' => true,
+            'credentials' => [
+                'key' => 'garage',
+                'secret' => 'garage-secret',
+            ],
+            'handler' => $mock,
+        ]);
+        $storage = new FlysystemDocumentStorage(
+            new Filesystem(new AwsS3V3Adapter($client, 'documents')),
+        );
+
+        $storage->put('documents/test/original.txt', 'content');
+        assertSame('s3 content', $storage->read('documents/test/original.txt'));
+        $storage->delete('documents/test/original.txt');
     }
 
     public function testProcessorCompletesDocument(): void
