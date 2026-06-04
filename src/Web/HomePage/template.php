@@ -74,13 +74,12 @@ foreach ($documents as $document) {
                 <th>Document</th>
                 <th>Status</th>
                 <th>Progress</th>
-                <th>Updated</th>
             </tr>
             </thead>
             <tbody>
             <?php if ($documents === []): ?>
                 <tr>
-                    <td colspan="4" class="empty">No documents uploaded yet.</td>
+                    <td colspan="3" class="empty">No documents uploaded yet.</td>
                 </tr>
             <?php endif ?>
             <?php foreach ($documents as $document): ?>
@@ -98,7 +97,6 @@ foreach ($documents as $document) {
                         <div class="progress"><span data-progress-bar="<?= $document->id ?>" style="width: <?= $document->progress ?>%"></span></div>
                         <small data-progress="<?= $document->id ?>"><?= $document->progress ?>%</small>
                     </td>
-                    <td><?= Html::encode($document->updatedAt) ?></td>
                 </tr>
             <?php endforeach ?>
             </tbody>
