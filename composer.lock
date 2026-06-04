@@ -5140,7 +5140,7 @@
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": "Queue Extension which supported DB, Redis, RabbitMQ, Beanstalk, SQS and Gearman",
+            "description": "Framework-agnostic PHP queue library for asynchronous tasks, best used with Yii 3",
             "keywords": [
                 "async",
                 "beanstalk",

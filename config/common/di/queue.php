@@ -74,9 +74,14 @@ return [
 
         return new Queue($worker, $loop, $logger, $middlewareConfig, $adapter, $queueName);
     },
-    QueueProviderInterface::class => static fn (QueueInterface $queue): QueueProviderInterface => new PredefinedQueueProvider([
-        QueueProviderInterface::DEFAULT_QUEUE => $queue,
-    ]),
+    QueueProviderInterface::class => static function (QueueInterface $queue) use ($params): QueueProviderInterface {
+        $queueName = $params['documentDemo']['queueName'];
+
+        return new PredefinedQueueProvider([
+            QueueProviderInterface::DEFAULT_QUEUE => $queue,
+            $queueName => $queue,
+        ]);
+    },
     AmqpDocumentQueuePurger::class => [
         '__construct()' => [
             'queueName' => $params['documentDemo']['queueName'],
