@@ -6,6 +6,9 @@ namespace App\Document\Processing;
 
 use Yiisoft\Queue\Message\MessageInterface;
 
+/**
+ * Queue message that identifies the document to process.
+ */
 final readonly class DocumentMessage implements MessageInterface
 {
     /**

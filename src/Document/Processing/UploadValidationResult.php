@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Document\Processing;
 
+/**
+ * Carries validation errors for a document upload batch.
+ */
 final readonly class UploadValidationResult
 {
     /**

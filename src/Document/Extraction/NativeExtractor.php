@@ -9,6 +9,9 @@ use function preg_replace;
 use function strip_tags;
 use function trim;
 
+/**
+ * Extracts text from formats that can be handled without an external runtime.
+ */
 final class NativeExtractor implements ExtractorInterface
 {
     public function extract(string $contents, string $extension, string $originalName): string

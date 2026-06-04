@@ -8,6 +8,9 @@ use function mb_substr;
 use function preg_replace;
 use function trim;
 
+/**
+ * Produces deterministic summaries for tests and local mock mode.
+ */
 final class MockSummarizer implements SummarizerInterface
 {
     public function summarize(string $markdown, string $documentName): string

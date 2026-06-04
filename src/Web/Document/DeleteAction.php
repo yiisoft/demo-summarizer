@@ -10,6 +10,9 @@ use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Router\CurrentRoute;
 
+/**
+ * Deletes a document record and its stored blobs.
+ */
 final readonly class DeleteAction
 {
     public function __construct(

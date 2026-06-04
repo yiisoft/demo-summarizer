@@ -9,6 +9,9 @@ use RuntimeException;
 use function in_array;
 use function sprintf;
 
+/**
+ * Reads and normalizes process environment flags used during application bootstrap.
+ */
 final class Environment
 {
     public const DEV = 'dev';

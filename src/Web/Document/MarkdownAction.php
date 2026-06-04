@@ -11,6 +11,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Yiisoft\Router\CurrentRoute;
 
+/**
+ * Streams extracted markdown for a processed document.
+ */
 final readonly class MarkdownAction
 {
     public function __construct(

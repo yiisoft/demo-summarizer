@@ -6,6 +6,9 @@ namespace App\Document\Infrastructure;
 
 use RuntimeException;
 
+/**
+ * Signals that a requested document record does not exist.
+ */
 final class DocumentNotFoundException extends RuntimeException
 {
     public function __construct(int $id)

@@ -13,6 +13,9 @@ use function mb_substr;
 use function stream_context_create;
 use function trim;
 
+/**
+ * Requests document summaries from a configured host Ollama service.
+ */
 final readonly class OllamaSummarizer implements SummarizerInterface
 {
     public function __construct(

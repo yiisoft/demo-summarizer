@@ -12,6 +12,9 @@ use Yiisoft\Router\CurrentRoute;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 
+/**
+ * Renders the demo 404 page for unmatched routes.
+ */
 final readonly class NotFoundHandler implements RequestHandlerInterface
 {
     public function __construct(

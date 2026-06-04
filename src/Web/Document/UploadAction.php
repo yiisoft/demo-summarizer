@@ -12,6 +12,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 
+/**
+ * Handles upload form submissions and redirects or re-renders validation errors.
+ */
 final readonly class UploadAction
 {
     public function __construct(

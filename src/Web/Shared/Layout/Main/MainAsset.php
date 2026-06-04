@@ -6,6 +6,9 @@ namespace App\Web\Shared\Layout\Main;
 
 use Yiisoft\Assets\AssetBundle;
 
+/**
+ * Registers the main stylesheet assets for the web layout.
+ */
 final class MainAsset extends AssetBundle
 {
     public ?string $basePath = '@assets/main';

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared;
 
+/**
+ * Carries application metadata that is shared with layouts and view templates.
+ */
 final readonly class ApplicationParams
 {
     public function __construct(

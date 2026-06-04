@@ -17,6 +17,9 @@ use function stream_get_contents;
 use function trim;
 use function unlink;
 
+/**
+ * Extracts markdown through the Kreuzberg CLI with a native fallback when the binary is unavailable.
+ */
 final readonly class KreuzbergExtractor implements ExtractorInterface
 {
     public function __construct(

@@ -10,6 +10,9 @@ use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Router\CurrentRoute;
 
+/**
+ * Resets a failed document and enqueues it for another processing attempt.
+ */
 final readonly class RetryAction
 {
     public function __construct(

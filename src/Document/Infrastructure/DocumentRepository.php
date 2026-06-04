@@ -12,6 +12,9 @@ use DateTimeImmutable;
 use UnexpectedValueException;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
+/**
+ * Persists document records, status transitions, and processing timeline events.
+ */
 final readonly class DocumentRepository
 {
     public function __construct(

@@ -7,6 +7,9 @@ namespace App\Document\Infrastructure;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\UnableToDeleteFile;
 
+/**
+ * Implements document blob storage through a Flysystem filesystem.
+ */
 final readonly class FlysystemDocumentStorage implements DocumentStorageInterface
 {
     public function __construct(

@@ -12,6 +12,9 @@ use Yiisoft\Router\CurrentRoute;
 
 use function json_encode;
 
+/**
+ * Returns the current document processing status as JSON.
+ */
 final readonly class StatusAction
 {
     public function __construct(

@@ -11,6 +11,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Yiisoft\Router\CurrentRoute;
 
+/**
+ * Streams an original uploaded document for download.
+ */
 final readonly class DownloadAction
 {
     public function __construct(

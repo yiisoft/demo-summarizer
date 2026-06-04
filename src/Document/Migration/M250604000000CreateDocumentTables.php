@@ -8,6 +8,9 @@ use App\Document\Infrastructure\DocumentSchemaSql;
 use Yiisoft\Db\Migration\MigrationBuilder;
 use Yiisoft\Db\Migration\RevertibleMigrationInterface;
 
+/**
+ * Creates and reverts the document workflow database tables.
+ */
 final class M250604000000CreateDocumentTables implements RevertibleMigrationInterface
 {
     public function up(MigrationBuilder $b): void

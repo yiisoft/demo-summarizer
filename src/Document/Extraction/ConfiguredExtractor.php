@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Document\Extraction;
 
+/**
+ * Selects the configured extraction adapter for uploaded document contents.
+ */
 final readonly class ConfiguredExtractor implements ExtractorInterface
 {
     public function __construct(

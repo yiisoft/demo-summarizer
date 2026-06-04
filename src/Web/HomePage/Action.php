@@ -8,6 +8,9 @@ use App\Document\Infrastructure\DocumentRepository;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 
+/**
+ * Renders the document upload and status dashboard.
+ */
 final readonly class Action
 {
     public function __construct(

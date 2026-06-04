@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Document\Domain;
 
+/**
+ * Represents a document row and its processing state.
+ */
 final readonly class Document
 {
     public function __construct(

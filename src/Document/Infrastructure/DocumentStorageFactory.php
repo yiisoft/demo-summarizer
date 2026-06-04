@@ -10,6 +10,9 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use RuntimeException;
 
+/**
+ * Creates the configured document blob storage adapter.
+ */
 final readonly class DocumentStorageFactory
 {
     public function __construct(

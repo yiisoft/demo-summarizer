@@ -10,6 +10,9 @@ use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Summarization\SummarizerInterface;
 use Throwable;
 
+/**
+ * Runs the document processing workflow from extraction through summary completion.
+ */
 final readonly class DocumentProcessor
 {
     public function __construct(

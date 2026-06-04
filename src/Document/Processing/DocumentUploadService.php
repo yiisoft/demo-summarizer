@@ -25,6 +25,9 @@ use function uniqid;
 use const PATHINFO_EXTENSION;
 use const UPLOAD_ERR_OK;
 
+/**
+ * Validates uploaded files, stores originals, creates records, and enqueues processing.
+ */
 final readonly class DocumentUploadService
 {
     /**

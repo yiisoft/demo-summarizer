@@ -9,6 +9,9 @@ use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Router\CurrentRoute;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 
+/**
+ * Renders the document detail page and processing timeline.
+ */
 final readonly class DetailAction
 {
     public function __construct(

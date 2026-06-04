@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Document\Domain;
 
+/**
+ * Represents a single progress timeline entry for a document.
+ */
 final readonly class DocumentEvent
 {
     public function __construct(
