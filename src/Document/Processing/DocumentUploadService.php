@@ -60,9 +60,9 @@ final readonly class DocumentUploadService
     public function upload(array $files): array
     {
         $files = $this->submittedFiles($files);
-        $validation = $this->validate($files);
-        if (!$validation->isValid()) {
-            return ['documents' => [], 'errors' => $validation->errors];
+        $errors = $this->validate($files);
+        if ($errors !== []) {
+            return ['documents' => [], 'errors' => $errors];
         }
 
         $documents = [];
@@ -92,12 +92,14 @@ final readonly class DocumentUploadService
      * Validates an upload batch.
      *
      * @param list<UploadedFileInterface> $files Uploaded document files.
+     *
+     * @return list<string> Validation error messages.
      */
-    public function validate(array $files): UploadValidationResult
+    public function validate(array $files): array
     {
         $files = $this->submittedFiles($files);
         if ($files === []) {
-            return new UploadValidationResult(['Choose at least one document.']);
+            return ['Choose at least one document.'];
         }
 
         $result = $this->validator->validate($files, [
@@ -122,7 +124,7 @@ final readonly class DocumentUploadService
         $errors = $result->getErrorMessages();
         $validationErrorsByPath = $result->getErrorMessagesIndexedByPath(escape: null);
         if (isset($validationErrorsByPath[''])) {
-            return new UploadValidationResult($errors);
+            return $errors;
         }
 
         $batchBytes = 0;
@@ -138,7 +140,7 @@ final readonly class DocumentUploadService
             $errors[] = 'The upload batch is larger than ' . $this->megabytes($this->maxBatchBytes) . ' MB.';
         }
 
-        return new UploadValidationResult($errors);
+        return $errors;
     }
 
     /**

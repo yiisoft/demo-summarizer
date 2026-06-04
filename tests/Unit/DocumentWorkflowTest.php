@@ -375,9 +375,9 @@ final class DocumentWorkflowTest extends Unit
             $files[] = $this->uploadedTextFile($i);
         }
 
-        $result = $service->validate($files);
+        $errors = $service->validate($files);
 
-        assertSame(['Upload no more than 20 documents at once.'], $result->errors);
+        assertSame(['Upload no more than 20 documents at once.'], $errors);
     }
 
     public function testUploadValidationReportsPhpSizeError(): void
@@ -394,9 +394,9 @@ final class DocumentWorkflowTest extends Unit
             allowedMimeTypes: $this->allowedMimeTypes(),
         );
 
-        $result = $service->validate([$this->uploadedTextFile(1, UPLOAD_ERR_INI_SIZE)]);
+        $errors = $service->validate([$this->uploadedTextFile(1, UPLOAD_ERR_INI_SIZE)]);
 
-        assertSame(['notes-1.txt is larger than 50 MB.'], $result->errors);
+        assertSame(['notes-1.txt is larger than 50 MB.'], $errors);
     }
 
     public function testUploadValidationReportsMimeMismatch(): void
@@ -413,11 +413,11 @@ final class DocumentWorkflowTest extends Unit
             allowedMimeTypes: $this->allowedMimeTypes(),
         );
 
-        $result = $service->validate([
+        $errors = $service->validate([
             $this->uploadedFileFromDisk('notes-1.pdf', "GIF89a\nnot a pdf", 'image/gif'),
         ]);
 
-        assertSame(['notes-1.pdf is not a recognized document type.'], $result->errors);
+        assertSame(['notes-1.pdf is not a recognized document type.'], $errors);
     }
 
     private function repository(): DocumentRepository
