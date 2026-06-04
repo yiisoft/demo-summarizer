@@ -9,7 +9,7 @@ A runnable Yii3 demo for uploading documents, extracting readable markdown, summ
 - Store original files and extracted markdown in S3-compatible storage.
 - Process documents through `yiisoft/queue`.
 - Show status, progress, summaries, extracted markdown, original downloads, retries, deletion, and a full clear action.
-- Use deterministic mock summaries by default, with optional local summaries through the included `llama.cpp` Docker service.
+- Run local summaries through the included `llama.cpp` Docker service, with deterministic mock summaries used for tests or explicit fallback.
 
 ## Requirements
 
@@ -25,7 +25,7 @@ make build
 make up
 ```
 
-By default, development uses AMQP queue mode, two background workers, Kreuzberg extraction, and mock summaries. Copy `.env.example` to `.env` to adjust these settings.
+By default, development uses AMQP queue mode, two background workers, Kreuzberg extraction, and local summaries through `llama.cpp`. Copy `.env.example` to `.env` to adjust these settings.
 
 Create the database tables:
 
@@ -147,9 +147,7 @@ DOCUMENT_STORAGE_DRIVER=local
 
 ## Local LLM Summaries
 
-Mock summaries are enabled by default so the heavy local LLM container is not started unless you ask for it.
-
-To use local LLM summaries through the OpenAI-compatible `llama.cpp` adapter, set this in `.env`:
+Local LLM summaries are enabled by default through the OpenAI-compatible `llama.cpp` adapter:
 
 ```bash
 LLM_ADAPTER=llamacpp
@@ -170,7 +168,7 @@ make up
 The default `llama.cpp` model is `ggml-org/gemma-3-1b-it-GGUF:Q4_K_M`. It is the smallest Gemma default that gives usable summaries for this demo while still running on CPU-only hardware.
 The default server uses one request slot and a 4096-token context so document summaries do not fail from the tiny model's context being split across parallel slots.
 
-For deterministic mock summaries without the `llama.cpp` service, set this in `.env`:
+Tests force mock summaries through the test Docker compose file. For deterministic mock summaries in development without the `llama.cpp` service, set this in `.env`:
 
 ```dotenv
 LLM_ADAPTER=mock

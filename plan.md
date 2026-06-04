@@ -86,7 +86,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] non-sync queue modes start a background queue worker through `QUEUE_DRIVER=<driver> make up`
     - [x] non-sync queue modes can scale background workers through `WORKERS=<count> make up`
     - [x] default development mode uses AMQP, two workers, and Kreuzberg extraction
-    - [x] default development mode uses mock summaries and does not start the heavy Docker `llama.cpp` service
+    - [x] default development mode uses the Docker `llama.cpp` service for real local summaries
     - [x] app and worker startup waits for the Docker `llama.cpp` health endpoint in local LLM mode
     - [x] RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter path-repository compatibility work
     - [x] first-run and smoke-test flow
