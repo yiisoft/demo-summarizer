@@ -1,0 +1,10 @@
+services:
+  app:
+    depends_on:
+      llama:
+        condition: service_healthy
+
+  worker:
+    depends_on:
+      llama:
+        condition: service_healthy

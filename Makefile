@@ -62,7 +62,7 @@ DOCKER_COMPOSE_TEST := docker compose -f docker/compose.yml -f docker/test/compo
 DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV)
 DOCKER_COMPOSE_DEV_UP_OPTIONS := up -d --remove-orphans
 ifeq ($(LLM_ADAPTER),llamacpp)
-    DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV_UP) --profile llm
+    DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV_UP) -f docker/dev/llm.compose.yml --profile llm
 endif
 ifneq ($(QUEUE_DRIVER),)
 ifneq ($(QUEUE_DRIVER),sync)

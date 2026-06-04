@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Document\Processing\ConfiguredDocumentQueuePurger;
+use App\Document\Processing\AmqpDocumentQueuePurger;
 use App\Document\Processing\DocumentQueuePurgerInterface;
+use App\Document\Processing\NullDocumentQueuePurger;
+use App\Document\Processing\RedisDocumentQueuePurger;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Queue\AMQP\Adapter as AmqpAdapter;
@@ -75,19 +77,34 @@ return [
     QueueProviderInterface::class => static fn (QueueInterface $queue): QueueProviderInterface => new PredefinedQueueProvider([
         QueueProviderInterface::DEFAULT_QUEUE => $queue,
     ]),
-    DocumentQueuePurgerInterface::class => [
-        'class' => ConfiguredDocumentQueuePurger::class,
+    AmqpDocumentQueuePurger::class => [
         '__construct()' => [
-            'queueDriver' => $params['documentDemo']['queueDriver'],
             'queueName' => $params['documentDemo']['queueName'],
             'amqpHost' => $params['documentDemo']['amqpHost'],
             'amqpPort' => $params['documentDemo']['amqpPort'],
             'amqpUser' => $params['documentDemo']['amqpUser'],
             'amqpPassword' => $params['documentDemo']['amqpPassword'],
             'amqpVhost' => $params['documentDemo']['amqpVhost'],
+        ],
+    ],
+    RedisDocumentQueuePurger::class => [
+        '__construct()' => [
+            'queueName' => $params['documentDemo']['queueName'],
             'redisHost' => $params['documentDemo']['redisHost'],
             'redisPort' => $params['documentDemo']['redisPort'],
             'redisTimeout' => $params['documentDemo']['redisTimeout'],
         ],
     ],
+    DocumentQueuePurgerInterface::class => static function (
+        AmqpDocumentQueuePurger $amqpPurger,
+        NullDocumentQueuePurger $nullPurger,
+        RedisDocumentQueuePurger $redisPurger,
+    ) use ($params): DocumentQueuePurgerInterface {
+        return match ($params['documentDemo']['queueDriver']) {
+            'sync' => $nullPurger,
+            'amqp' => $amqpPurger,
+            'redis' => $redisPurger,
+            default => throw new \RuntimeException('QUEUE_DRIVER must be sync, amqp, or redis.'),
+        };
+    },
 ];

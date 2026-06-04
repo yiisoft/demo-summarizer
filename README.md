@@ -162,7 +162,7 @@ Then start the demo:
 LLM_ADAPTER=llamacpp make up
 ```
 
-`make up` starts the `llama.cpp` server profile when `LLM_ADAPTER=llamacpp`. The service uses the official `ghcr.io/ggml-org/llama.cpp:server` image and is available to the app inside Docker at `http://llama:8080/v1`.
+`make up` starts the `llama.cpp` server profile when `LLM_ADAPTER=llamacpp`. The service uses the official `ghcr.io/ggml-org/llama.cpp:server` image and is available to the app inside Docker at `http://llama:8080/v1`. The app and queue workers wait for the `llama.cpp` health endpoint before starting, so uploads do not race the model server on first boot.
 
 The default `llama.cpp` model is `ggml-org/gemma-3-1b-it-GGUF:Q4_K_M`. It is the smallest Gemma default that gives usable summaries for this demo while still running on CPU-only hardware.
 The default server uses one request slot and a 4096-token context so document summaries do not fail from the tiny model's context being split across parallel slots.

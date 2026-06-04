@@ -120,6 +120,12 @@ services:
       LLAMA_ARG_HF_REPO: "${LLAMA_CPP_HF_REPO-ggml-org/gemma-3-1b-it-GGUF:Q4_K_M}"
       LLAMA_ARG_MODEL: "${LLAMA_CPP_MODEL:-}"
       LLAMA_ARG_MODEL_URL: "${LLAMA_CPP_MODEL_URL:-}"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
     volumes:
       - llama_cache:/root/.cache/llama.cpp
       - ../models:/models

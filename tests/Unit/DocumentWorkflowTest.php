@@ -268,6 +268,29 @@ final class DocumentWorkflowTest extends Unit
         assertSame(DocumentStatus::QUEUED, $repository->get($other->id)->status);
     }
 
+    public function testProcessorFailsEmptyExtractedMarkdown(): void
+    {
+        $repository = $this->repository();
+        $storage = new ArrayDocumentStorage();
+        $document = $repository->create('empty.txt', 'documents/1/original.txt', 'text/plain', 'txt', 0);
+        $repository->markQueued($document->id);
+        $storage->put($document->storageKey, '');
+
+        $processor = new DocumentProcessor(
+            900,
+            $repository,
+            $storage,
+            new StaticExtractor(" \n "),
+            new StaticSummarizer('unused'),
+        );
+
+        $processor->process($document->id);
+
+        $failed = $repository->get($document->id);
+        assertSame(DocumentStatus::FAILED, $failed->status);
+        assertSame('No readable text was extracted from the document.', $failed->error);
+    }
+
     public function testProcessorCleansPreviousMarkdownBeforeRetry(): void
     {
         $repository = $this->repository();

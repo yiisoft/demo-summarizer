@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Document\Processing;
 
+use App\Document\Extraction\ExtractionException;
 use App\Document\Extraction\ExtractorInterface;
 use App\Document\Infrastructure\DocumentNotFoundException;
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Summarization\SummarizerInterface;
 use Throwable;
+
+use function trim;
 
 /**
  * Runs the document processing workflow from extraction through summary completion.
@@ -50,7 +53,11 @@ final readonly class DocumentProcessor
 
         try {
             $original = $this->storage->read($document->storageKey);
-            $markdown = $this->extractor->extract($original, $document->extension, $document->originalName);
+            $markdown = trim($this->extractor->extract($original, $document->extension, $document->originalName));
+            if ($markdown === '') {
+                throw new ExtractionException('No readable text was extracted from the document.');
+            }
+
             $markdownKey = 'documents/' . $document->id . '/extracted.md';
             if ($document->markdownKey !== null && $document->markdownKey !== $markdownKey) {
                 $this->storage->delete($document->markdownKey);
