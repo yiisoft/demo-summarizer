@@ -63,15 +63,6 @@ services:
       - garage_meta:/var/lib/garage/meta
       - garage_data:/var/lib/garage/data
 
-  ollama:
-    image: ollama/ollama
-    profiles: ["ollama"]
-    ports:
-      - "${OLLAMA_PORT:-11434}:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-
 volumes:
   garage_meta:
   garage_data:
-  ollama_data:

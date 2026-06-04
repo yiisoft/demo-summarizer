@@ -16,7 +16,7 @@ services:
       DOCUMENT_PROCESSING_LEASE_SECONDS: "${DOCUMENT_PROCESSING_LEASE_SECONDS:-900}"
       EXTRACTOR_ADAPTER: "${EXTRACTOR_ADAPTER:-kreuzberg}"
       LLM_ADAPTER: "${LLM_ADAPTER:-mock}"
-      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://ollama:11434}"
+      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
 
 volumes:

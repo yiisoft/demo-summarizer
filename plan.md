@@ -80,7 +80,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] native `yiisoft/queue` worker startup with `queue:run` and `queue:listen`
     - [x] RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter path-repository compatibility work
     - [x] first-run and smoke-test flow
-    - [x] S3/Garage, RabbitMQ, Valkey, Kreuzberg/native extractor, and Ollama setup
+    - [x] S3/Garage, RabbitMQ, Valkey, Kreuzberg/native extractor, and host Ollama setup
     - [x] document that project commands must run through `make`, not direct host `./yii` or `composer`
 
 ## Upstream Queue Work
@@ -96,8 +96,8 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [x] Record bugs, missing features, and adapter limitations encountered during demo implementation.
 - [x] Commit focused local upstream changes:
     - [x] yiisoft/queue-amqp `de0064d` on `current-core-compat`
-    - [x] yiisoft/queue-redis `8218187` on `current-core-compat`
-- [ ] Create focused upstream PRs only for generic queue/adaptor usage, config, command, docs, or test issues.
+    - [x] yiisoft/queue-redis `8218187` and `954f917` on `current-core-compat`
+- [x] Create focused upstream PRs only for generic queue/adaptor usage, config, command, docs, or test issues.
 - [x] Each upstream change should include a reproduction test, minimal fix, and directly related docs/config updates.
 - [ ] Release affected queue packages only after focused PRs are merged and package tests pass.
 
@@ -117,9 +117,9 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] S3-compatible storage via Garage
     - [x] Kreuzberg CLI extraction adapter
     - [x] native fallback extractor only if fallback support is implemented
-    - [ ] Ollama adapter against a local Ollama service when available
+    - [ ] Ollama adapter against a host Ollama service when host Ollama is reachable from Docker
 
-- [ ] Acceptance smoke path:
+- [x] Acceptance smoke path:
     - [x] install dependencies
     - [x] run migrations
     - [x] upload mixed supported files including PDF and DOCX

@@ -12,7 +12,7 @@ This repository contains a runnable Yii3 document summarizer demo. The detailed 
 - Queue-oriented processing through `yiisoft/queue`, with sync mode by default.
 - AMQP and Valkey queue modes use `yiisoft/queue` adapters through local Composer path repositories while upstream compatibility fixes are prepared.
 - Preferred extraction through the Docker-installed Kreuzberg CLI, with a native fallback for text, Markdown, and HTML.
-- Mock and Ollama summarizer adapters.
+- Mock and host Ollama summarizer adapters.
 - Web UI for document status, progress, summaries, downloads, deletion, and retry.
 
 ## Local Development
@@ -29,6 +29,8 @@ make up
 Garage is the local S3-compatible storage service for the demo; MinIO is not required. The `documents` bucket is created automatically.
 
 The Docker image installs a pinned Kreuzberg CLI runtime for PDF, DOCX, HTML, and other supported document extraction. Rebuild the image after Dockerfile or extractor runtime changes.
+
+Ollama is expected to run on the host, not as a Docker Compose service. Docker containers reach it through `http://host.docker.internal:11434`. On Linux, make sure host Ollama listens on an address containers can reach, for example by starting/restarting it with `OLLAMA_HOST=0.0.0.0:11434`.
 
 Run Composer commands inside Docker:
 
@@ -113,6 +115,7 @@ Common environment variables:
 - `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_PATH_STYLE`
 - `EXTRACTOR_ADAPTER=kreuzberg|native`
 - `LLM_ADAPTER=mock|ollama`
-- `OLLAMA_BASE_URL`, `OLLAMA_MODEL`
+- `OLLAMA_BASE_URL` defaults to `http://host.docker.internal:11434`
+- `OLLAMA_MODEL`
 
 The demo currently points Composer at sibling `yiisoft/queue`, `yiisoft/queue-amqp`, and `yiisoft/queue-redis` repositories so AMQP and Valkey can run against the current Yii queue core while upstream fixes are prepared.

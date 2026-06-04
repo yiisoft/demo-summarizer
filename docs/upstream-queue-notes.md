@@ -34,6 +34,11 @@ Local sibling repositories were cloned under `/home/samdark/src` and the demo us
 ## Local commits
 
 - `/home/samdark/src/queue-amqp`: `de0064d` (`current-core-compat`)
-- `/home/samdark/src/queue-redis`: `8218187` (`current-core-compat`)
+- `/home/samdark/src/queue-redis`: `8218187`, `954f917` (`current-core-compat`)
 
-PR creation was attempted, but the HTTPS remote could not prompt for GitHub credentials, `gh auth status` reported an invalid token, and SSH could not resolve `github.com` from this environment. Publishing PRs and releasing packages remain external follow-up steps after authentication/network access is restored.
+## Upstream PRs
+
+- `yiisoft/queue-amqp`: https://github.com/yiisoft/queue-amqp/pull/127
+- `yiisoft/queue-redis`: https://github.com/yiisoft/queue-redis/pull/12
+
+Package releases remain pending until the focused PRs are merged and package checks pass.
