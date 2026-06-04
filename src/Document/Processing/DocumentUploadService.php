@@ -17,6 +17,7 @@ use function array_key_exists;
 use function count;
 use function explode;
 use function in_array;
+use function intdiv;
 use function pathinfo;
 use function strtolower;
 use function trim;
@@ -36,6 +37,7 @@ final readonly class DocumentUploadService
      * @param DocumentStorageInterface $storage Document blob storage.
      * @param QueueInterface $queue Yii queue used for processing messages.
      * @param ValidatorInterface $validator Yii validator.
+     * @param int $maxFiles Maximum number of files in one upload batch.
      * @param int $maxFileBytes Maximum file size in bytes.
      * @param int $maxBatchBytes Maximum batch size in bytes.
      * @param list<string> $allowedExtensions Allowed lowercase file extensions.
@@ -45,6 +47,7 @@ final readonly class DocumentUploadService
         private DocumentStorageInterface $storage,
         private QueueInterface $queue,
         private ValidatorInterface $validator,
+        private int $maxFiles,
         private int $maxFileBytes,
         private int $maxBatchBytes,
         private array $allowedExtensions,
@@ -101,6 +104,10 @@ final readonly class DocumentUploadService
         }
 
         $errors = [];
+        if (count($files) > $this->maxFiles) {
+            $errors[] = 'Upload no more than ' . $this->maxFiles . ' documents at once.';
+        }
+
         $batchBytes = 0;
         foreach ($files as $index => $file) {
             $name = $file->getClientFilename() ?: 'document #' . ($index + 1);
@@ -125,7 +132,7 @@ final readonly class DocumentUploadService
             );
 
             if (!$result->isValid()) {
-                $errors[] = "$name is not an allowed document or is larger than 20 MB.";
+                $errors[] = "$name is not an allowed document or is larger than " . $this->megabytes($this->maxFileBytes) . ' MB.';
                 continue;
             }
 
@@ -135,7 +142,7 @@ final readonly class DocumentUploadService
         }
 
         if ($batchBytes > $this->maxBatchBytes) {
-            $errors[] = 'The upload batch is larger than 100 MB.';
+            $errors[] = 'The upload batch is larger than ' . $this->megabytes($this->maxBatchBytes) . ' MB.';
         }
 
         return new UploadValidationResult($errors);
@@ -154,6 +161,16 @@ final readonly class DocumentUploadService
             $files,
             static fn (UploadedFileInterface $file): bool => $file->getError() !== UPLOAD_ERR_NO_FILE,
         ));
+    }
+
+    /**
+     * Converts bytes to rounded-up megabytes for validation messages.
+     *
+     * @param int $bytes Byte count.
+     */
+    private function megabytes(int $bytes): int
+    {
+        return intdiv($bytes + 1024 * 1024 - 1, 1024 * 1024);
     }
 
     /**

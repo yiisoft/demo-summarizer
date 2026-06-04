@@ -15,6 +15,7 @@ return [
     ],
     DocumentUploadService::class => [
         '__construct()' => [
+            'maxFiles' => $params['documentDemo']['maxFiles'],
             'maxFileBytes' => $params['documentDemo']['maxFileBytes'],
             'maxBatchBytes' => $params['documentDemo']['maxBatchBytes'],
             'allowedExtensions' => $params['documentDemo']['allowedExtensions'],

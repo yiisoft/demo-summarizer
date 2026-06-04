@@ -29,6 +29,8 @@ RUN KREUZBERG_VERSION=${KREUZBERG_VERSION} KREUZBERG_INSTALL=/usr/local/bin \
 
 ENV LC_ALL=C.UTF-8
 
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 #
 # Development
 #

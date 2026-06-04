@@ -76,7 +76,7 @@ foreach ($documents as $document) {
             <label class="upload-dropzone" data-upload-dropzone>
                 <input type="file" name="documents[]" multiple accept=".md,.txt,.html,.pdf,.docx" data-upload-input>
                 <span class="upload-dropzone-title">Drop files here or browse</span>
-                <span class="upload-dropzone-text">PDF, DOCX, Markdown, text, and HTML files are supported.</span>
+                <span class="upload-dropzone-text">PDF, DOCX, Markdown, text, and HTML files are supported. Up to 20 files, 50 MB each.</span>
                 <span class="upload-file-list" data-upload-file-list>No files selected.</span>
             </label>
             <button type="submit">Upload</button>

@@ -39,7 +39,7 @@ Open the app:
 http://127.0.0.1/
 ```
 
-Upload supported documents from the upload box. The app shows progress and results in the document table. Use **Retry** for failed documents, **Delete** for one document, or **Clear all** to remove all documents, stored files, database records, and pending queue jobs.
+Upload up to 20 supported documents at once from the upload box. Each file can be up to 50 MB. The Docker image sets matching PHP upload limits, including a 1024 MB POST body limit. The app shows progress and results in the document table. Use **Retry** for failed documents, **Delete** for one document, or **Clear all** to remove all documents, stored files, database records, and pending queue jobs.
 
 Stop the demo:
 

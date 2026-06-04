@@ -15,10 +15,13 @@ body {
 }
 
 .header {
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     gap: 16px;
-    margin: 24px;
+    width: 90%;
+    max-width: 1180px;
+    margin: 24px auto;
     padding: 14px 18px;
     border-radius: 12px;
     background: #fff;
@@ -123,7 +126,7 @@ body {
 }
 
 .demo-header {
-    justify-content: flex-end;
+    width: 100%;
 }
 
 .demo-header h1,
@@ -140,26 +143,29 @@ body {
 
 .demo-runtime {
     display: grid;
-    grid-template-columns: repeat(3, minmax(104px, 1fr));
+    grid-template-columns: minmax(82px, 0.7fr) minmax(64px, 0.55fr) minmax(96px, 0.85fr) minmax(96px, 0.85fr) minmax(180px, 1.7fr) minmax(136px, 1.2fr);
     gap: 8px;
-    min-width: 520px;
+    width: 100%;
 }
 
 .demo-runtime-item {
-    padding: 10px 12px;
-    border: 1px solid #d9e1e8;
+    padding: 8px 10px;
+    border: 1px solid #e4eaf0;
     border-radius: 8px;
-    background: #fff;
-    text-align: right;
+    background: #f8fafb;
+    color: #42505d;
+    text-align: left;
 }
 
 .demo-runtime-item-wide {
-    grid-column: span 2;
+    grid-column: auto;
 }
 
 .demo-runtime span {
     display: block;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
     overflow-wrap: anywhere;
 }
 
@@ -168,6 +174,7 @@ body {
 .timeline small {
     display: block;
     color: #6b7582;
+    font-size: 13px;
 }
 
 .upload-panel {
@@ -406,7 +413,7 @@ button.button-danger:hover {
 @media (max-width: 780px) {
     .header {
         align-items: flex-start;
-        margin: 16px;
+        margin: 16px auto;
     }
 
     .header-logo img {

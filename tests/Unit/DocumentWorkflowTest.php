@@ -13,6 +13,7 @@ use App\Document\Infrastructure\DocumentStorageFactory;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Migration\M250604000000CreateDocumentTables;
 use App\Document\Processing\DocumentProcessor;
+use App\Document\Processing\DocumentUploadService;
 use App\Document\Processing\SummarizeDocumentMessage;
 use App\Document\Processing\SummarizeDocumentMessageHandler;
 use App\Document\Summarization\SummarizerInterface;
@@ -23,6 +24,7 @@ use Codeception\Test\Unit;
 use GuzzleHttp\Psr7\Utils;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Filesystem;
+use Psr\Http\Message\UploadedFileInterface;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -34,6 +36,7 @@ use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\QueueInterface;
+use Yiisoft\Validator\Validator;
 
 use function is_file;
 use function PHPUnit\Framework\assertCount;
@@ -42,6 +45,8 @@ use function PHPUnit\Framework\assertSame;
 use function sys_get_temp_dir;
 use function uniqid;
 use function unlink;
+
+use const UPLOAD_ERR_OK;
 
 final class DocumentWorkflowTest extends Unit
 {
@@ -337,6 +342,29 @@ final class DocumentWorkflowTest extends Unit
         assertSame($message, $queue->messages[0]);
     }
 
+    public function testUploadValidationLimitsFileCount(): void
+    {
+        $service = new DocumentUploadService(
+            $this->repository(),
+            new ArrayDocumentStorage(),
+            new CapturingQueue(),
+            new Validator(),
+            maxFiles: 20,
+            maxFileBytes: 50 * 1024 * 1024,
+            maxBatchBytes: 20 * 50 * 1024 * 1024,
+            allowedExtensions: ['md', 'txt', 'html', 'pdf', 'docx'],
+        );
+
+        $files = [];
+        for ($i = 1; $i <= 21; $i++) {
+            $files[] = $this->uploadedTextFile($i);
+        }
+
+        $result = $service->validate($files);
+
+        assertSame(['Upload no more than 20 documents at once.'], $result->errors);
+    }
+
     private function repository(): DocumentRepository
     {
         $db = $this->database();
@@ -392,6 +420,18 @@ final class DocumentWorkflowTest extends Unit
         }
 
         rmdir($path);
+    }
+
+    private function uploadedTextFile(int $index): UploadedFileInterface
+    {
+        $file = $this->createStub(UploadedFileInterface::class);
+        $file->method('getError')->willReturn(UPLOAD_ERR_OK);
+        $file->method('getClientFilename')->willReturn('notes-' . $index . '.txt');
+        $file->method('getClientMediaType')->willReturn('text/plain');
+        $file->method('getSize')->willReturn(12);
+        $file->method('getStream')->willReturnCallback(static fn () => Utils::streamFor('Test content.'));
+
+        return $file;
     }
 }
 

@@ -4,6 +4,8 @@
 # except:
 
 !/docker/**/Caddyfile
+!/docker/php
+!/docker/php/**
 !/config
 !/public
 !/src
