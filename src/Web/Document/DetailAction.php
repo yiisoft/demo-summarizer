@@ -9,6 +9,8 @@ use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Router\CurrentRoute;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 
+use function array_reverse;
+
 /**
  * Renders the document detail page and processing timeline.
  */
@@ -36,7 +38,7 @@ final readonly class DetailAction
             __DIR__ . '/detail',
             [
                 'document' => $this->repository->get($id),
-                'events' => $this->repository->events($id),
+                'events' => array_reverse($this->repository->events($id)),
             ],
         );
     }

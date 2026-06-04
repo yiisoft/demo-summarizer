@@ -9,6 +9,8 @@ use App\Tests\Support\WebTester;
 use function file_put_contents;
 use function is_file;
 use function preg_match;
+use function PHPUnit\Framework\assertLessThan;
+use function PHPUnit\Framework\assertNotFalse;
 use function uniqid;
 use function unlink;
 
@@ -47,6 +49,12 @@ final class DocumentWorkflowCest
         $I->see('Events');
         $I->see('uploaded');
         $I->see('completed');
+        $source = $I->grabPageSource();
+        $completedPosition = strpos($source, '<strong>completed</strong>');
+        $uploadedPosition = strpos($source, '<strong>uploaded</strong>');
+        assertNotFalse($completedPosition);
+        assertNotFalse($uploadedPosition);
+        assertLessThan($uploadedPosition, $completedPosition);
 
         $I->click('Retry');
         $I->seeInCurrentUrl('/documents/' . $id);

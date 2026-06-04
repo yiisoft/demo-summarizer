@@ -44,7 +44,7 @@ $this->beginPage()
 <?php $this->beginBody() ?>
 
 <div class="header">
-    <a class="header-logo" href="https://www.yiiframework.com/" target="_blank" rel="noopener">
+    <a class="header-logo" href="/">
         <img src="<?= Html::encode($assetManager->getUrl(MainAsset::class, 'yii3_sign.svg')) ?>" alt="Yii">
     </a>
     <div class="header-copy">
