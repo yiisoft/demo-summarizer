@@ -25,7 +25,7 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
     /**
      * Character budget sent to the local model before tokenization.
      */
-    private const MAX_MARKDOWN_CHARS = 3500;
+    private const MAX_MARKDOWN_CHARS = 2500;
 
     /**
      * @param string $baseUrl Base URL of the OpenAI-compatible API, including the API version prefix.
@@ -50,17 +50,23 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
             'model' => $this->model,
             'messages' => [
                 [
-                    'role' => 'system',
-                    'content' => 'Summarize documents for a Yii3 demo. Return concise, useful bullet points.',
-                ],
-                [
                     'role' => 'user',
-                    'content' => "Document: {$documentName}\n\n" . mb_substr($markdown, 0, self::MAX_MARKDOWN_CHARS),
+                    'content' => "Summarize the source text.\n"
+                        . "Do not quote the source.\n\n"
+                        . "Output without an introduction.\n\n"
+                        . "Document: {$documentName}\n\n"
+                        . "Source text:\n"
+                        . mb_substr($markdown, 0, self::MAX_MARKDOWN_CHARS)
+                        . "\n\nSummary:\n- ",
                 ],
             ],
             'stream' => false,
-            'temperature' => 0.2,
-            'max_tokens' => 512,
+            'temperature' => 0.01,
+            'top_p' => 0.7,
+            'repeat_penalty' => 1.25,
+            'frequency_penalty' => 0.8,
+            'presence_penalty' => 0.3,
+            'max_tokens' => 80,
         ]);
 
         if ($payload === false) {

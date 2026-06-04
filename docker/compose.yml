@@ -24,7 +24,7 @@ services:
       LLM_ADAPTER: "${LLM_ADAPTER:-llamacpp}"
       LLM_BASE_URL: "${LLM_BASE_URL:-http://llama:8080/v1}"
       LLM_API_KEY: "${LLM_API_KEY:-}"
-      LLM_MODEL: "${LLM_MODEL:-SmolLM2-135M-Instruct-Q4_K_M}"
+      LLM_MODEL: "${LLM_MODEL:-gemma-3-1b-it-Q4_K_M}"
 
 volumes:
   caddy_data:

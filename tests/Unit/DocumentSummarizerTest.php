@@ -58,7 +58,7 @@ final class DocumentSummarizerTest extends Unit
 
         $summary = (new OpenAiCompatibleSummarizer(
             'openai-compatible-test://localhost/v1',
-            'SmolLM2-135M-Instruct-Q4_K_M',
+            'gemma-3-1b-it-Q4_K_M',
             'test-token',
         ))->summarize('Important markdown.', 'notes.md');
 
@@ -73,13 +73,23 @@ final class DocumentSummarizerTest extends Unit
             OpenAiCompatibleTestStream::$requests[0]['header'],
         );
 
-        /** @var array{model: string, stream: bool, messages: list<array{role: string, content: string}>} $payload */
+        /** @var array{model: string, stream: bool, temperature: float, top_p: float, repeat_penalty: float, frequency_penalty: float, presence_penalty: float, max_tokens: int, messages: list<array{role: string, content: string}>} $payload */
         $payload = json_decode(OpenAiCompatibleTestStream::$requests[0]['content'], true);
-        assertSame('SmolLM2-135M-Instruct-Q4_K_M', $payload['model']);
+        assertSame('gemma-3-1b-it-Q4_K_M', $payload['model']);
         assertSame(false, $payload['stream']);
-        assertSame('system', $payload['messages'][0]['role']);
-        assertStringContainsString('Document: notes.md', $payload['messages'][1]['content']);
-        assertStringContainsString('Important markdown.', $payload['messages'][1]['content']);
+        assertSame(0.01, $payload['temperature']);
+        assertSame(0.7, $payload['top_p']);
+        assertSame(1.25, $payload['repeat_penalty']);
+        assertSame(0.8, $payload['frequency_penalty']);
+        assertSame(0.3, $payload['presence_penalty']);
+        assertSame(80, $payload['max_tokens']);
+        assertSame('user', $payload['messages'][0]['role']);
+        assertStringContainsString('Summarize the source text.', $payload['messages'][0]['content']);
+        assertStringContainsString('Do not quote the source.', $payload['messages'][0]['content']);
+        assertStringContainsString('Output without an introduction.', $payload['messages'][0]['content']);
+        assertStringContainsString('Document: notes.md', $payload['messages'][0]['content']);
+        assertStringContainsString('Important markdown.', $payload['messages'][0]['content']);
+        assertStringContainsString('Summary:', $payload['messages'][0]['content']);
     }
 
     /**
@@ -92,7 +102,7 @@ final class DocumentSummarizerTest extends Unit
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('OpenAI-compatible API returned an unexpected response.');
 
-        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'SmolLM2-135M-Instruct-Q4_K_M'))
+        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'gemma-3-1b-it-Q4_K_M'))
             ->summarize('Important markdown.', 'notes.md');
     }
 
@@ -108,7 +118,7 @@ final class DocumentSummarizerTest extends Unit
             'OpenAI-compatible API request failed: request exceeds the available context size',
         );
 
-        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'SmolLM2-135M-Instruct-Q4_K_M'))
+        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'gemma-3-1b-it-Q4_K_M'))
             ->summarize('Important markdown.', 'notes.md');
     }
 
@@ -124,7 +134,7 @@ final class DocumentSummarizerTest extends Unit
             'OpenAI-compatible summary request to openai-compatible-test://localhost/v1/chat/completions failed',
         );
 
-        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'SmolLM2-135M-Instruct-Q4_K_M'))
+        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'gemma-3-1b-it-Q4_K_M'))
             ->summarize('Important markdown.', 'notes.md');
     }
 }

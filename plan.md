@@ -27,8 +27,9 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] LLM_BASE_URL, LLM_API_KEY, LLM_MODEL
     - [x] LLAMA_CPP_HF_REPO, LLAMA_CPP_MODEL, LLAMA_CPP_MODEL_URL
     - [x] LLAMA_CPP_CTX_SIZE, LLAMA_CPP_PARALLEL, LLAMA_CPP_N_PREDICT
-    - [x] default `llama.cpp` model is `bartowski/SmolLM2-135M-Instruct-GGUF:Q4_K_M` for CPU-only demo hardware
+    - [x] default `llama.cpp` model is `ggml-org/gemma-3-1b-it-GGUF:Q4_K_M`, the smallest Gemma default that gives usable demo summaries on CPU-only hardware
     - [x] default `llama.cpp` context is one 4096-token slot so regular demo documents fit
+    - [x] Gemma 3 local summaries run with the `llama.cpp` Jinja chat-template mode enabled
 
 - [x] Add Yii migrations for:
     - [x] documents: file metadata, generated object key, status, progress, processing lease, markdown object key, summary, short error, detailed error, retry metadata, timestamps
