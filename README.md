@@ -9,13 +9,12 @@ A runnable Yii3 demo for uploading documents, extracting readable markdown, summ
 - Store original files and extracted markdown in S3-compatible storage.
 - Process documents through `yiisoft/queue`.
 - Show status, progress, summaries, extracted markdown, original downloads, retries, deletion, and a full clear action.
-- Use a deterministic mock summarizer by default, or connect to Ollama running on the host.
+- Run local summaries through the included `llama.cpp` Docker service, with deterministic mock summaries available for tests or quick fallback.
 
 ## Requirements
 
 - Docker with Docker Compose.
 - `make`.
-- Optional: Ollama on the host if you want real LLM summaries instead of mock summaries.
 
 ## Quick Start
 
@@ -26,7 +25,7 @@ make build
 make up
 ```
 
-By default, development uses AMQP queue mode, two background workers, and Kreuzberg extraction. Copy `.env.example` to `.env` to adjust these settings.
+By default, development uses AMQP queue mode, two background workers, Kreuzberg extraction, and a tiny CPU-friendly `llama.cpp` model. Copy `.env.example` to `.env` to adjust these settings.
 
 Create the database tables:
 
@@ -146,23 +145,42 @@ Local filesystem storage is available for testing with:
 DOCUMENT_STORAGE_DRIVER=local
 ```
 
-## Ollama
+## Local LLM Summaries
 
-The mock summarizer is used by default.
-
-To use Ollama, run Ollama on the host and configure:
+Local LLM summaries are enabled by default through the OpenAI-compatible `llama.cpp` adapter:
 
 ```bash
-LLM_ADAPTER=ollama
-OLLAMA_BASE_URL=http://host.docker.internal:11434
-OLLAMA_MODEL=llama3.2
+LLM_ADAPTER=llamacpp
+LLM_BASE_URL=http://llama:8080/v1
+LLM_MODEL=SmolLM2-135M-Instruct-Q4_K_M
+LLAMA_CPP_HF_REPO=bartowski/SmolLM2-135M-Instruct-GGUF:Q4_K_M
 ```
 
-On Linux, host Ollama must listen on an address Docker containers can reach. For example:
+Then start the demo:
 
 ```bash
-OLLAMA_HOST=0.0.0.0:11434 ollama serve
+LLM_ADAPTER=llamacpp make up
 ```
+
+`make up` starts the `llama.cpp` server profile when `LLM_ADAPTER=llamacpp`. The service uses the official `ghcr.io/ggml-org/llama.cpp:server` image and is available to the app inside Docker at `http://llama:8080/v1`.
+
+The default `llama.cpp` model is `bartowski/SmolLM2-135M-Instruct-GGUF:Q4_K_M`. It is a small instruct GGUF that is suitable for a demo on CPU-only hardware.
+
+For deterministic mock summaries without the `llama.cpp` service:
+
+```bash
+LLM_ADAPTER=mock make up
+```
+
+By default, `llama.cpp` downloads the configured Hugging Face GGUF repository into a Docker volume. You can also mount a local model by placing a GGUF file under `models/` and setting:
+
+```bash
+LLM_ADAPTER=llamacpp
+LLAMA_CPP_HF_REPO=
+LLAMA_CPP_MODEL=/models/model.gguf
+```
+
+The application talks to any OpenAI-compatible chat completions endpoint through `LLM_BASE_URL`, `LLM_MODEL`, and optional `LLM_API_KEY`.
 
 ## Configuration
 
@@ -177,9 +195,10 @@ Common environment variables:
 - `DOCUMENT_STORAGE_DRIVER=s3|local`
 - `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_PATH_STYLE`
 - `EXTRACTOR_ADAPTER=kreuzberg|native`
-- `LLM_ADAPTER=mock|ollama`
-- `OLLAMA_BASE_URL`
-- `OLLAMA_MODEL`
+- `LLM_ADAPTER=mock|llamacpp`
+- `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`
+- `LLAMA_CPP_HF_REPO`, `LLAMA_CPP_MODEL`, `LLAMA_CPP_MODEL_URL`
+- `LLAMA_CPP_CTX_SIZE`, `LLAMA_CPP_PARALLEL`, `LLAMA_CPP_N_PREDICT`
 
 ## Quality Checks
 

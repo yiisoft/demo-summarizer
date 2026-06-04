@@ -5,33 +5,42 @@ declare(strict_types=1);
 namespace App\Tests\Unit;
 
 use App\Document\Summarization\MockSummarizer;
-use App\Document\Summarization\OllamaSummarizer;
+use App\Document\Summarization\OpenAiCompatibleSummarizer;
 use Codeception\Test\Unit;
 use RuntimeException;
 
 use function json_decode;
-use function PHPUnit\Framework\assertStringContainsString;
 use function PHPUnit\Framework\assertSame;
+use function PHPUnit\Framework\assertStringContainsString;
 use function stream_context_get_options;
 use function stream_wrapper_register;
 use function stream_wrapper_unregister;
 
 final class DocumentSummarizerTest extends Unit
 {
+    /**
+     * Registers the fake OpenAI-compatible transport.
+     */
     protected function _before(): void
     {
-        OllamaTestStream::reset();
+        OpenAiCompatibleTestStream::reset();
 
-        if (!stream_wrapper_register('ollama-test', OllamaTestStream::class)) {
-            throw new RuntimeException('Unable to register Ollama test stream wrapper.');
+        if (!stream_wrapper_register('openai-compatible-test', OpenAiCompatibleTestStream::class)) {
+            throw new RuntimeException('Unable to register OpenAI-compatible test stream wrapper.');
         }
     }
 
+    /**
+     * Unregisters the fake OpenAI-compatible transport.
+     */
     protected function _after(): void
     {
-        stream_wrapper_unregister('ollama-test');
+        stream_wrapper_unregister('openai-compatible-test');
     }
 
+    /**
+     * Verifies the mock summarizer uses stable local output.
+     */
     public function testMockSummarizerIsDeterministic(): void
     {
         $summary = (new MockSummarizer())->summarize("# Heading\n\nImportant body.", 'notes.md');
@@ -40,44 +49,78 @@ final class DocumentSummarizerTest extends Unit
         assertStringContainsString('Important body.', $summary);
     }
 
-    public function testOllamaSummarizerPostsGenerateRequestAndReturnsResponse(): void
+    /**
+     * Verifies OpenAI-compatible chat completions request handling.
+     */
+    public function testOpenAiCompatibleSummarizerPostsChatRequestAndReturnsResponse(): void
     {
-        OllamaTestStream::$response = '{"response":"Five concise bullets."}';
+        OpenAiCompatibleTestStream::$response = '{"choices":[{"message":{"content":"Five concise bullets."}}]}';
 
-        $summary = (new OllamaSummarizer('ollama-test://localhost', 'llama3.2'))
-            ->summarize('Important markdown.', 'notes.md');
+        $summary = (new OpenAiCompatibleSummarizer(
+            'openai-compatible-test://localhost/v1',
+            'SmolLM2-135M-Instruct-Q4_K_M',
+            'test-token',
+        ))->summarize('Important markdown.', 'notes.md');
 
         assertSame('Five concise bullets.', $summary);
-        assertSame('ollama-test://localhost/api/generate', OllamaTestStream::$requests[0]['path']);
-        assertSame('POST', OllamaTestStream::$requests[0]['method']);
-        assertSame("Content-Type: application/json\n", OllamaTestStream::$requests[0]['header']);
+        assertSame(
+            'openai-compatible-test://localhost/v1/chat/completions',
+            OpenAiCompatibleTestStream::$requests[0]['path'],
+        );
+        assertSame('POST', OpenAiCompatibleTestStream::$requests[0]['method']);
+        assertSame(
+            "Content-Type: application/json\nAuthorization: Bearer test-token\n",
+            OpenAiCompatibleTestStream::$requests[0]['header'],
+        );
 
-        /** @var array{model: string, stream: bool, prompt: string} $payload */
-        $payload = json_decode(OllamaTestStream::$requests[0]['content'], true);
-        assertSame('llama3.2', $payload['model']);
+        /** @var array{model: string, stream: bool, messages: list<array{role: string, content: string}>} $payload */
+        $payload = json_decode(OpenAiCompatibleTestStream::$requests[0]['content'], true);
+        assertSame('SmolLM2-135M-Instruct-Q4_K_M', $payload['model']);
         assertSame(false, $payload['stream']);
-        assertStringContainsString('Document: notes.md', $payload['prompt']);
-        assertStringContainsString('Important markdown.', $payload['prompt']);
+        assertSame('system', $payload['messages'][0]['role']);
+        assertStringContainsString('Document: notes.md', $payload['messages'][1]['content']);
+        assertStringContainsString('Important markdown.', $payload['messages'][1]['content']);
     }
 
-    public function testOllamaSummarizerRejectsUnexpectedResponse(): void
+    /**
+     * Verifies unexpected OpenAI-compatible responses fail clearly.
+     */
+    public function testOpenAiCompatibleSummarizerRejectsUnexpectedResponse(): void
     {
-        OllamaTestStream::$response = '{"unexpected":"shape"}';
+        OpenAiCompatibleTestStream::$response = '{"unexpected":"shape"}';
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Ollama returned an unexpected response.');
+        $this->expectExceptionMessage('OpenAI-compatible API returned an unexpected response.');
 
-        (new OllamaSummarizer('ollama-test://localhost', 'llama3.2'))
+        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'SmolLM2-135M-Instruct-Q4_K_M'))
+            ->summarize('Important markdown.', 'notes.md');
+    }
+
+    /**
+     * Verifies transport failures include the target endpoint.
+     */
+    public function testOpenAiCompatibleSummarizerReportsTransportFailure(): void
+    {
+        OpenAiCompatibleTestStream::$open = false;
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(
+            'OpenAI-compatible summary request to openai-compatible-test://localhost/v1/chat/completions failed',
+        );
+
+        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'SmolLM2-135M-Instruct-Q4_K_M'))
             ->summarize('Important markdown.', 'notes.md');
     }
 }
 
-final class OllamaTestStream
+final class OpenAiCompatibleTestStream
 {
     /** @var resource|null */
     public $context;
 
-    public static string $response = '{"response":""}';
+    public static string $response = '{"choices":[{"message":{"content":""}}]}';
+
+    public static bool $open = true;
 
     /** @var list<array{path: string, method: string|null, header: string|null, content: string}> */
     public static array $requests = [];
@@ -85,14 +128,30 @@ final class OllamaTestStream
     private string $body = '';
     private int $position = 0;
 
+    /**
+     * Resets fake transport state before each test.
+     */
     public static function reset(): void
     {
-        self::$response = '{"response":""}';
+        self::$response = '{"choices":[{"message":{"content":""}}]}';
+        self::$open = true;
         self::$requests = [];
     }
 
+    /**
+     * Opens a fake response stream and captures the HTTP context.
+     *
+     * @param string $path Requested URL.
+     * @param string $mode Stream open mode.
+     * @param int $options Stream open options.
+     * @param string|null $openedPath Opened path passed by reference.
+     */
     public function stream_open(string $path, string $mode, int $options, ?string &$openedPath): bool
     {
+        if (!self::$open) {
+            return false;
+        }
+
         $context = $this->context === null ? [] : stream_context_get_options($this->context);
         /** @var array{method?: string, header?: string, content?: string} $http */
         $http = $context['http'] ?? [];
@@ -110,6 +169,11 @@ final class OllamaTestStream
         return true;
     }
 
+    /**
+     * Reads from the fake response stream.
+     *
+     * @param int $count Maximum bytes to read.
+     */
     public function stream_read(int $count): string
     {
         $chunk = substr($this->body, $this->position, $count);
@@ -118,12 +182,17 @@ final class OllamaTestStream
         return $chunk;
     }
 
+    /**
+     * Reports whether the fake response stream is exhausted.
+     */
     public function stream_eof(): bool
     {
         return $this->position >= strlen($this->body);
     }
 
     /**
+     * Returns fake stream metadata.
+     *
      * @return array<string, int>
      */
     public function stream_stat(): array

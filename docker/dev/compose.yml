@@ -54,14 +54,10 @@ services:
       REDIS_PORT: "${REDIS_PORT:-6379}"
       REDIS_TIMEOUT: "${REDIS_TIMEOUT:-3}"
       EXTRACTOR_ADAPTER: "${EXTRACTOR_ADAPTER:-kreuzberg}"
-      LLM_ADAPTER: "${LLM_ADAPTER:-mock}"
-      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://host.docker.internal:11434}"
-      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
-      LLM_PROVIDER: "${LLM_PROVIDER:-}"
+      LLM_ADAPTER: "${LLM_ADAPTER:-llamacpp}"
+      LLM_BASE_URL: "${LLM_BASE_URL:-http://llama:8080/v1}"
       LLM_API_KEY: "${LLM_API_KEY:-}"
-      LLM_MODEL: "${LLM_MODEL:-}"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      LLM_MODEL: "${LLM_MODEL:-SmolLM2-135M-Instruct-Q4_K_M}"
     healthcheck:
       disable: true
     ports: []
@@ -111,6 +107,24 @@ services:
       - garage_meta:/var/lib/garage/meta
       - garage_data:/var/lib/garage/data
 
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    environment:
+      LLAMA_ARG_HOST: 0.0.0.0
+      LLAMA_ARG_PORT: 8080
+      LLAMA_ARG_ALIAS: "${LLM_MODEL:-SmolLM2-135M-Instruct-Q4_K_M}"
+      LLAMA_ARG_CTX_SIZE: "${LLAMA_CPP_CTX_SIZE:-2048}"
+      LLAMA_ARG_N_PARALLEL: "${LLAMA_CPP_PARALLEL:-2}"
+      LLAMA_ARG_N_PREDICT: "${LLAMA_CPP_N_PREDICT:-512}"
+      LLAMA_ARG_HF_REPO: "${LLAMA_CPP_HF_REPO-bartowski/SmolLM2-135M-Instruct-GGUF:Q4_K_M}"
+      LLAMA_ARG_MODEL: "${LLAMA_CPP_MODEL:-}"
+      LLAMA_ARG_MODEL_URL: "${LLAMA_CPP_MODEL_URL:-}"
+    volumes:
+      - llama_cache:/root/.cache/llama.cpp
+      - ../models:/models
+    profiles: ["llm"]
+
 volumes:
   garage_meta:
   garage_data:
+  llama_cache:

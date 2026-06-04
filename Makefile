@@ -13,6 +13,7 @@ endif
 QUEUE_DRIVER ?= amqp
 EXTRACTOR_ADAPTER ?= kreuzberg
 WORKERS ?= 2
+LLM_ADAPTER ?= llamacpp
 export QUEUE_DRIVER
 export EXTRACTOR_ADAPTER
 export DATABASE_DSN
@@ -34,11 +35,15 @@ export REDIS_HOST
 export REDIS_PORT
 export REDIS_TIMEOUT
 export LLM_ADAPTER
-export OLLAMA_BASE_URL
-export OLLAMA_MODEL
-export LLM_PROVIDER
+export LLM_BASE_URL
 export LLM_API_KEY
 export LLM_MODEL
+export LLAMA_CPP_HF_REPO
+export LLAMA_CPP_MODEL
+export LLAMA_CPP_MODEL_URL
+export LLAMA_CPP_CTX_SIZE
+export LLAMA_CPP_PARALLEL
+export LLAMA_CPP_N_PREDICT
 
 # Current user ID and group ID except MacOS where it conflicts with Docker abilities
 ifeq ($(shell uname), Darwin)
@@ -51,14 +56,17 @@ endif
 
 export COMPOSE_PROJECT_NAME=${STACK_NAME}
 DOCKER_COMPOSE_DEV := docker compose -f docker/compose.yml -f docker/dev/compose.yml
-DOCKER_COMPOSE_DEV_ALL := $(DOCKER_COMPOSE_DEV) --profile worker
+DOCKER_COMPOSE_DEV_ALL := $(DOCKER_COMPOSE_DEV) --profile worker --profile llm
 DOCKER_COMPOSE_TEST := docker compose -f docker/compose.yml -f docker/test/compose.yml
 
 DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV)
 DOCKER_COMPOSE_DEV_UP_OPTIONS := up -d --remove-orphans
+ifeq ($(LLM_ADAPTER),llamacpp)
+    DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV_UP) --profile llm
+endif
 ifneq ($(QUEUE_DRIVER),)
 ifneq ($(QUEUE_DRIVER),sync)
-    DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV) --profile worker
+    DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV_UP) --profile worker
     DOCKER_COMPOSE_DEV_UP_OPTIONS := up -d --remove-orphans --scale worker=$(WORKERS)
 endif
 endif

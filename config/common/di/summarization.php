@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Document\Summarization\ConfiguredSummarizer;
-use App\Document\Summarization\OllamaSummarizer;
+use App\Document\Summarization\OpenAiCompatibleSummarizer;
 use App\Document\Summarization\SummarizerInterface;
 
 /** @var array $params */
@@ -14,10 +14,11 @@ return [
             'llmAdapter' => $params['documentDemo']['llmAdapter'],
         ],
     ],
-    OllamaSummarizer::class => [
+    OpenAiCompatibleSummarizer::class => [
         '__construct()' => [
-            'baseUrl' => $params['documentDemo']['ollamaBaseUrl'],
-            'model' => $params['documentDemo']['ollamaModel'],
+            'baseUrl' => $params['documentDemo']['llmBaseUrl'],
+            'model' => $params['documentDemo']['llmModel'],
+            'apiKey' => $params['documentDemo']['llmApiKey'],
         ],
     ],
     SummarizerInterface::class => ConfiguredSummarizer::class,

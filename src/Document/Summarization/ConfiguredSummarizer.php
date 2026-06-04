@@ -12,12 +12,12 @@ final readonly class ConfiguredSummarizer implements SummarizerInterface
     /**
      * @param string $llmAdapter Configured summarizer adapter name.
      * @param MockSummarizer $mockSummarizer Deterministic local summarizer.
-     * @param OllamaSummarizer $ollamaSummarizer Host Ollama summarizer.
+     * @param OpenAiCompatibleSummarizer $openAiCompatibleSummarizer OpenAI-compatible summarizer.
      */
     public function __construct(
         private string $llmAdapter,
         private MockSummarizer $mockSummarizer,
-        private OllamaSummarizer $ollamaSummarizer,
+        private OpenAiCompatibleSummarizer $openAiCompatibleSummarizer,
     ) {}
 
     /**
@@ -28,8 +28,8 @@ final readonly class ConfiguredSummarizer implements SummarizerInterface
      */
     public function summarize(string $markdown, string $documentName): string
     {
-        return $this->llmAdapter === 'ollama'
-            ? $this->ollamaSummarizer->summarize($markdown, $documentName)
+        return $this->llmAdapter === 'llamacpp'
+            ? $this->openAiCompatibleSummarizer->summarize($markdown, $documentName)
             : $this->mockSummarizer->summarize($markdown, $documentName);
     }
 }

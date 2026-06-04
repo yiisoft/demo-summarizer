@@ -16,16 +16,18 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] S3-compatible storage client or Flysystem S3 adapter
     - [x] pinned Kreuzberg CLI runtime in Docker for the preferred universal document extraction adapter
 
-- [x] Update Docker with pdo_sqlite, Redis extension, RabbitMQ, Valkey, S3-compatible storage through Garage, pinned Kreuzberg CLI support, and optional worker services.
+- [x] Update Docker with pdo_sqlite, Redis extension, RabbitMQ, Valkey, S3-compatible storage through Garage, pinned Kreuzberg CLI support, optional worker services, and an optional `llama.cpp` local LLM service.
 - [x] Add config:
     - [x] QUEUE_DRIVER=sync|amqp|redis
     - [x] DATABASE_DSN=sqlite:@runtime/documents.sqlite
     - [x] S3_ENDPOINT, S3_REGION, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY, S3_PATH_STYLE
     - [x] DOCUMENT_PROCESSING_LEASE_SECONDS=900
     - [x] EXTRACTOR_ADAPTER=kreuzberg|native
-    - [x] LLM_ADAPTER=mock|ollama
-    - [x] OLLAMA_BASE_URL, OLLAMA_MODEL
-    - [x] reserved future vars: LLM_PROVIDER, LLM_API_KEY, LLM_MODEL
+    - [x] LLM_ADAPTER=llamacpp|mock
+    - [x] LLM_BASE_URL, LLM_API_KEY, LLM_MODEL
+    - [x] LLAMA_CPP_HF_REPO, LLAMA_CPP_MODEL, LLAMA_CPP_MODEL_URL
+    - [x] LLAMA_CPP_CTX_SIZE, LLAMA_CPP_PARALLEL, LLAMA_CPP_N_PREDICT
+    - [x] default `llama.cpp` model is `bartowski/SmolLM2-135M-Instruct-GGUF:Q4_K_M` for CPU-only demo hardware
 
 - [x] Add Yii migrations for:
     - [x] documents: file metadata, generated object key, status, progress, processing lease, markdown object key, summary, short error, detailed error, retry metadata, timestamps
@@ -64,7 +66,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [x] Add LLM abstraction:
     - [x] chunk-ready SummarizerInterface
     - [x] deterministic MockSummarizer that summarizes a configured first slice
-    - [x] OllamaSummarizer adapter with configurable base URL and model
+    - [x] OpenAI-compatible adapter with configurable base URL, model, and API key
     - [x] DI binding ready for additional adapters later
 
 - [x] Add observability:
@@ -81,9 +83,10 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] non-sync queue modes start a background queue worker through `QUEUE_DRIVER=<driver> make up`
     - [x] non-sync queue modes can scale background workers through `WORKERS=<count> make up`
     - [x] default development mode uses AMQP, two workers, and Kreuzberg extraction
+    - [x] default development mode uses the Docker `llama.cpp` service for real local summaries
     - [x] RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter path-repository compatibility work
     - [x] first-run and smoke-test flow
-    - [x] S3/Garage, RabbitMQ, Valkey, Kreuzberg/native extractor, and host Ollama setup
+    - [x] S3/Garage, RabbitMQ, Valkey, Kreuzberg/native extractor, and local `llama.cpp` setup
     - [x] document that project commands must run through `make`, not direct host `./yii` or `composer`
 
 ## Upstream Queue Work
@@ -111,7 +114,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] unit workflow tests for schema creation, repository transitions, local storage, processor success, and processor failure
     - [x] unit queue tests for sync `yiisoft/queue` push and Yii queue envelope handling
     - [x] unit tests for repositories, migrations, status transitions, processing leases, event recording, extraction, mock summarization, and handler success/failure
-    - [x] unit tests for Ollama adapter request handling and S3 storage
+    - [x] unit tests for OpenAI-compatible adapter request handling and S3 storage
     - [x] sync-mode queue processing tests
 
 - [ ] Opt-in/local integration tests:
@@ -120,7 +123,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] S3-compatible storage via Garage
     - [x] Kreuzberg CLI extraction adapter
     - [x] native fallback extractor only if fallback support is implemented
-    - [ ] Ollama adapter against a host Ollama service when host Ollama is reachable from Docker
+    - [ ] `llama.cpp` adapter against the Docker `llama.cpp` service when model downloads are available
 
 - [x] Acceptance smoke path:
     - [x] install dependencies
@@ -144,7 +147,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [x] SQLite is the selected persistence layer.
 - [x] Prefer Yii3 packages, commands, interfaces, and adapters over demo-specific implementations when Yii3 provides the required behavior.
 - [x] S3-compatible object storage is the selected document storage layer; local filesystem storage is not used for durable document blobs.
-- [x] The first LLM implementations are mock and Ollama.
+- [x] The first LLM implementations are mock and OpenAI-compatible local LLM summaries through `llama.cpp`.
 - [x] Kreuzberg through the Docker-installed CLI is the preferred universal extractor because Docker owns the extraction runtime dependency.
 - [x] Valkey is the Docker key-value store; yiisoft/queue-redis may still be used through the Redis protocol if compatible.
 - [x] Uploaded files use generated storage names; original names are display-only.
