@@ -9,8 +9,7 @@ use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Yiisoft\Queue\QueueInterface;
-use Yiisoft\Validator\Rule\In;
-use Yiisoft\Validator\Rule\Number;
+use Yiisoft\Validator\Rule\File;
 use Yiisoft\Validator\ValidatorInterface;
 
 use function array_key_exists;
@@ -25,7 +24,6 @@ use function uniqid;
 
 use const PATHINFO_EXTENSION;
 use const UPLOAD_ERR_NO_FILE;
-use const UPLOAD_ERR_OK;
 
 /**
  * Validates uploaded files, stores originals, creates records, and enqueues processing.
@@ -111,30 +109,28 @@ final readonly class DocumentUploadService
         $batchBytes = 0;
         foreach ($files as $index => $file) {
             $name = $file->getClientFilename() ?: 'document #' . ($index + 1);
-            if ($file->getError() !== UPLOAD_ERR_OK) {
-                $errors[] = "$name could not be uploaded.";
+            $result = $this->validator->validate($file, [
+                new File(
+                    extensions: $this->allowedExtensions,
+                    maxSize: $this->maxFileBytes,
+                    message: "$name is not a valid document.",
+                    uploadFailedMessage: "$name is larger than " . $this->megabytes($this->maxFileBytes) . ' MB.',
+                    wrongExtensionMessage: "$name is not an allowed document.",
+                    tooBigMessage: "$name is larger than " . $this->megabytes($this->maxFileBytes) . ' MB.',
+                    unableToDetermineSizeMessage: "The size of $name cannot be determined.",
+                ),
+            ]);
+
+            if (!$result->isValid()) {
+                foreach ($result->getErrorMessages() as $error) {
+                    $errors[] = $error;
+                }
                 continue;
             }
 
             $size = $file->getSize() ?? 0;
             $batchBytes += $size;
             $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-
-            $result = $this->validator->validate(
-                [
-                    'extension' => $extension,
-                    'size' => $size,
-                ],
-                [
-                    'extension' => [new In($this->allowedExtensions)],
-                    'size' => [new Number(max: $this->maxFileBytes)],
-                ],
-            );
-
-            if (!$result->isValid()) {
-                $errors[] = "$name is not an allowed document or is larger than " . $this->megabytes($this->maxFileBytes) . ' MB.';
-                continue;
-            }
 
             if (!$this->signatureLooksValid($file, $extension)) {
                 $errors[] = "$name does not match the expected file signature.";

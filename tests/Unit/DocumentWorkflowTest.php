@@ -47,6 +47,7 @@ use function uniqid;
 use function unlink;
 
 use const UPLOAD_ERR_OK;
+use const UPLOAD_ERR_INI_SIZE;
 
 final class DocumentWorkflowTest extends Unit
 {
@@ -365,6 +366,24 @@ final class DocumentWorkflowTest extends Unit
         assertSame(['Upload no more than 20 documents at once.'], $result->errors);
     }
 
+    public function testUploadValidationReportsPhpSizeError(): void
+    {
+        $service = new DocumentUploadService(
+            $this->repository(),
+            new ArrayDocumentStorage(),
+            new CapturingQueue(),
+            new Validator(),
+            maxFiles: 20,
+            maxFileBytes: 50 * 1024 * 1024,
+            maxBatchBytes: 20 * 50 * 1024 * 1024,
+            allowedExtensions: ['md', 'txt', 'html', 'pdf', 'docx'],
+        );
+
+        $result = $service->validate([$this->uploadedTextFile(1, UPLOAD_ERR_INI_SIZE)]);
+
+        assertSame(['notes-1.txt is larger than 50 MB.'], $result->errors);
+    }
+
     private function repository(): DocumentRepository
     {
         $db = $this->database();
@@ -422,10 +441,10 @@ final class DocumentWorkflowTest extends Unit
         rmdir($path);
     }
 
-    private function uploadedTextFile(int $index): UploadedFileInterface
+    private function uploadedTextFile(int $index, int $error = UPLOAD_ERR_OK): UploadedFileInterface
     {
         $file = $this->createStub(UploadedFileInterface::class);
-        $file->method('getError')->willReturn(UPLOAD_ERR_OK);
+        $file->method('getError')->willReturn($error);
         $file->method('getClientFilename')->willReturn('notes-' . $index . '.txt');
         $file->method('getClientMediaType')->willReturn('text/plain');
         $file->method('getSize')->willReturn(12);
