@@ -44,7 +44,7 @@ $this->beginPage()
 <?php $this->beginBody() ?>
 
 <div class="header">
-    <a class="header-logo" href="/">
+    <a class="header-logo" href="<?= Html::encode($urlGenerator->generate('home')) ?>">
         <img src="<?= Html::encode($assetManager->getUrl(MainAsset::class, 'yii3_sign.svg')) ?>" alt="Yii">
     </a>
     <div class="header-copy">
