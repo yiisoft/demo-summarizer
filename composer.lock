@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f176c7f2660ca4a2f24ae1c796fe3b4c",
+    "content-hash": "72231a40fb73587d7833655f370b8d21",
     "packages": [
         {
             "name": "alexkart/curl-builder",
@@ -5082,10 +5082,17 @@
         },
         {
             "name": "yiisoft/queue",
-            "version": "dev-local",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/queue.git",
+                "reference": "c6248322fb6b7034ab8db7116deb4614e9d0ab29"
+            },
             "dist": {
-                "type": "path",
-                "url": "/queue"
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/queue/zipball/c6248322fb6b7034ab8db7116deb4614e9d0ab29",
+                "reference": "c6248322fb6b7034ab8db7116deb4614e9d0ab29",
+                "shasum": ""
             },
             "require": {
                 "php": "8.1 - 8.5",
@@ -5113,17 +5120,18 @@
             "suggest": {
                 "ext-pcntl": "Need for process signals"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "3.0.x-dev"
                 },
-                "config-plugin-options": {
-                    "source-directory": "config"
-                },
                 "config-plugin": {
                     "di": "di.php",
                     "params": "params.php"
+                },
+                "config-plugin-options": {
+                    "source-directory": "config"
                 }
             },
             "autoload": {
@@ -5132,11 +5140,7 @@
                     "Yiisoft\\Queue\\Stubs\\": "stubs"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Yiisoft\\Queue\\Tests\\": "tests"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -5154,34 +5158,38 @@
                 "yii"
             ],
             "support": {
+                "chat": "https://t.me/yii3en",
+                "forum": "https://www.yiiframework.com/forum/",
+                "irc": "ircs://irc.libera.chat:6697/yii",
                 "issues": "https://github.com/yiisoft/queue/issues?state=open",
                 "source": "https://github.com/yiisoft/queue",
-                "forum": "https://www.yiiframework.com/forum/",
-                "wiki": "https://www.yiiframework.com/wiki/",
-                "irc": "ircs://irc.libera.chat:6697/yii",
-                "chat": "https://t.me/yii3en"
+                "wiki": "https://www.yiiframework.com/wiki/"
             },
             "funding": [
                 {
-                    "type": "opencollective",
-                    "url": "https://opencollective.com/yiisoft"
+                    "url": "https://github.com/sponsors/yiisoft",
+                    "type": "github"
                 },
                 {
-                    "type": "github",
-                    "url": "https://github.com/sponsors/yiisoft"
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "opencollective"
                 }
             ],
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "time": "2026-06-04T20:52:27+00:00"
         },
         {
             "name": "yiisoft/queue-amqp",
-            "version": "dev-local",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/queue-amqp.git",
+                "reference": "a02e3e4dcf5829069fbc64f663c4085f059933c8"
+            },
             "dist": {
-                "type": "path",
-                "url": "/queue-amqp"
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/queue-amqp/zipball/a02e3e4dcf5829069fbc64f663c4085f059933c8",
+                "reference": "a02e3e4dcf5829069fbc64f663c4085f059933c8",
+                "shasum": ""
             },
             "require": {
                 "ext-json": "*",
@@ -5205,16 +5213,17 @@
                 "vimeo/psalm": "^5.26.1 || ^6.10.3",
                 "yiisoft/test-support": "^3.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "3.0.x-dev"
                 },
-                "config-plugin-options": {
-                    "source-directory": "config"
-                },
                 "config-plugin": {
                     "di": "di.php"
+                },
+                "config-plugin-options": {
+                    "source-directory": "config"
                 }
             },
             "autoload": {
@@ -5222,42 +5231,52 @@
                     "Yiisoft\\Queue\\AMQP\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Yiisoft\\Queue\\AMQP\\Tests\\": "tests"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
             "description": "Yii Queue AMQP adapter based on amqp-lib package",
             "homepage": "https://www.yiiframework.com/",
             "keywords": [
-                "amqp",
+                "AMQP",
                 "async",
                 "queue",
                 "rabbitmq",
                 "yii"
             ],
             "support": {
-                "issues": "https://github.com/yiisoft/queue-amqp/issues?state=open",
-                "forum": "https://www.yiiframework.com/forum/",
-                "wiki": "https://www.yiiframework.com/wiki/",
-                "irc": "ircs://irc.libera.chat:6697/yii",
                 "chat": "https://t.me/yii3en",
-                "source": "https://github.com/yiisoft/queue-amqp"
+                "forum": "https://www.yiiframework.com/forum/",
+                "irc": "ircs://irc.libera.chat:6697/yii",
+                "issues": "https://github.com/yiisoft/queue-amqp/issues?state=open",
+                "source": "https://github.com/yiisoft/queue-amqp",
+                "wiki": "https://www.yiiframework.com/wiki/"
             },
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "funding": [
+                {
+                    "url": "https://github.com/yiisoft",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "open_collective"
+                }
+            ],
+            "time": "2026-06-04T21:05:28+00:00"
         },
         {
             "name": "yiisoft/queue-redis",
-            "version": "dev-local",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/queue-redis.git",
+                "reference": "d4458eb36ebeea74f968c59560a4f56c699ed8f9"
+            },
             "dist": {
-                "type": "path",
-                "url": "/queue-redis"
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/queue-redis/zipball/d4458eb36ebeea74f968c59560a4f56c699ed8f9",
+                "reference": "d4458eb36ebeea74f968c59560a4f56c699ed8f9",
+                "shasum": ""
             },
             "require": {
                 "ext-redis": "*",
@@ -5275,13 +5294,14 @@
                 "vimeo/psalm": "^5.16",
                 "yiisoft/test-support": "^3.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
-                "config-plugin-options": {
-                    "source-directory": "config"
-                },
                 "config-plugin": {
                     "di": "di.php"
+                },
+                "config-plugin-options": {
+                    "source-directory": "config"
                 }
             },
             "autoload": {
@@ -5289,11 +5309,7 @@
                     "Yiisoft\\Queue\\Redis\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Yiisoft\\Queue\\Redis\\Tests\\": "tests"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
@@ -5305,27 +5321,24 @@
                 "yii"
             ],
             "support": {
-                "issues": "https://github.com/yiisoft/queue-redis/issues?state=open",
-                "forum": "https://www.yiiframework.com/forum/",
-                "wiki": "https://www.yiiframework.com/wiki/",
-                "irc": "ircs://irc.libera.chat:6697/yii",
                 "chat": "https://t.me/yii3en",
-                "source": "https://github.com/yiisoft/queue-redis"
+                "forum": "https://www.yiiframework.com/forum/",
+                "irc": "ircs://irc.libera.chat:6697/yii",
+                "issues": "https://github.com/yiisoft/queue-redis/issues?state=open",
+                "source": "https://github.com/yiisoft/queue-redis",
+                "wiki": "https://www.yiiframework.com/wiki/"
             },
             "funding": [
                 {
-                    "type": "opencollective",
-                    "url": "https://opencollective.com/yiisoft"
+                    "url": "https://github.com/sponsors/yiisoft",
+                    "type": "github"
                 },
                 {
-                    "type": "github",
-                    "url": "https://github.com/sponsors/yiisoft"
+                    "url": "https://opencollective.com/yiisoft",
+                    "type": "opencollective"
                 }
             ],
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "time": "2026-06-04T21:06:06+00:00"
         },
         {
             "name": "yiisoft/request-provider",
@@ -13593,26 +13606,7 @@
             "time": "2026-05-20T13:07:01+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "yiisoft/queue",
-            "version": "dev-local",
-            "alias": "dev-master",
-            "alias_normalized": "dev-master"
-        },
-        {
-            "package": "yiisoft/queue-amqp",
-            "version": "dev-local",
-            "alias": "dev-master",
-            "alias_normalized": "dev-master"
-        },
-        {
-            "package": "yiisoft/queue-redis",
-            "version": "dev-local",
-            "alias": "dev-master",
-            "alias_normalized": "dev-master"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "yiisoft/queue": 20,
