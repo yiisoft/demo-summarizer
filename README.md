@@ -91,21 +91,39 @@ To run AMQP mode:
 
 ```bash
 QUEUE_DRIVER=amqp make up
-QUEUE_DRIVER=amqp make -- yii queue:run
 ```
 
 To run Valkey/Redis mode:
 
 ```bash
 QUEUE_DRIVER=redis make up
-QUEUE_DRIVER=redis make -- yii queue:run
 ```
+
+Any explicit non-`sync` queue driver starts the native Yii queue worker in the background.
 
 Document processing is wired through `yiisoft/queue`; there is no demo-specific worker command.
 
 ## Storage
 
-Garage is included as the local S3-compatible storage service. The `documents` bucket is created automatically.
+By default, development uses S3-compatible storage through the included Garage container. `make up` starts Garage, and the app stores document files in the automatically created `documents` bucket.
+
+Default Garage settings:
+
+```text
+DOCUMENT_STORAGE_DRIVER=s3
+S3_ENDPOINT=http://garage:3900
+S3_REGION=garage
+S3_BUCKET=documents
+S3_ACCESS_KEY=GKdemo000000000000000000000000000000
+S3_SECRET_KEY=garage-demo-secret-key-000000000000000000000000000000
+S3_PATH_STYLE=true
+```
+
+To use another S3-compatible service, set the same `S3_*` variables in `docker/dev/override.env`, then restart the demo:
+
+```bash
+make up
+```
 
 Local filesystem storage is available for testing with:
 

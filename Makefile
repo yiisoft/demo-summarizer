@@ -7,6 +7,7 @@ ifeq ($(PRIMARY_GOAL),)
 endif
 
 include docker/.env
+export QUEUE_DRIVER
 
 # Current user ID and group ID except MacOS where it conflicts with Docker abilities
 ifeq ($(shell uname), Darwin)
@@ -21,6 +22,13 @@ export COMPOSE_PROJECT_NAME=${STACK_NAME}
 DOCKER_COMPOSE_DEV := docker compose -f docker/compose.yml -f docker/dev/compose.yml
 DOCKER_COMPOSE_TEST := docker compose -f docker/compose.yml -f docker/test/compose.yml
 
+DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV)
+ifneq ($(QUEUE_DRIVER),)
+ifneq ($(QUEUE_DRIVER),sync)
+    DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV) --profile worker
+endif
+endif
+
 #
 # Development
 #
@@ -32,7 +40,7 @@ endif
 
 ifeq ($(PRIMARY_GOAL),up)
 up: ## Up the dev environment.
-	$(DOCKER_COMPOSE_DEV) up -d --remove-orphans
+	$(DOCKER_COMPOSE_DEV_UP) up -d --remove-orphans
 endif
 
 ifeq ($(PRIMARY_GOAL),down)

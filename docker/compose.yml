@@ -14,10 +14,21 @@ services:
       S3_SECRET_KEY: "${S3_SECRET_KEY:-garage-demo-secret-key-000000000000000000000000000000}"
       S3_PATH_STYLE: "${S3_PATH_STYLE:-true}"
       DOCUMENT_PROCESSING_LEASE_SECONDS: "${DOCUMENT_PROCESSING_LEASE_SECONDS:-900}"
+      AMQP_HOST: "${AMQP_HOST:-rabbitmq}"
+      AMQP_PORT: "${AMQP_PORT:-5672}"
+      AMQP_USER: "${AMQP_USER:-guest}"
+      AMQP_PASSWORD: "${AMQP_PASSWORD:-guest}"
+      AMQP_VHOST: "${AMQP_VHOST:-/}"
+      REDIS_HOST: "${REDIS_HOST:-valkey}"
+      REDIS_PORT: "${REDIS_PORT:-6379}"
+      REDIS_TIMEOUT: "${REDIS_TIMEOUT:-3}"
       EXTRACTOR_ADAPTER: "${EXTRACTOR_ADAPTER:-kreuzberg}"
       LLM_ADAPTER: "${LLM_ADAPTER:-mock}"
       OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://host.docker.internal:11434}"
       OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
+      LLM_PROVIDER: "${LLM_PROVIDER:-}"
+      LLM_API_KEY: "${LLM_API_KEY:-}"
+      LLM_MODEL: "${LLM_MODEL:-}"
 
 volumes:
   caddy_data:

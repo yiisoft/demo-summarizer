@@ -38,7 +38,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] validate uploads with yiisoft/validator, including size, extension, and server-side MIME/signature checks
     - [x] document list, status/progress, detail page with summary
     - [x] original download and markdown view/download by document ID
-    - [x] poll status every 2 seconds while documents are active
+    - [x] poll status every 500ms while documents are active
     - [x] manual retry for failed documents
     - [x] keep failed documents available for retry; deletion is an explicit user action, not automatic failure handling
 
@@ -78,6 +78,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] native Yii migration commands
     - [x] sync queue mode
     - [x] native `yiisoft/queue` worker startup with `queue:run` and `queue:listen`
+    - [x] non-sync queue modes start a background queue worker through `QUEUE_DRIVER=<driver> make up`
     - [x] RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter path-repository compatibility work
     - [x] first-run and smoke-test flow
     - [x] S3/Garage, RabbitMQ, Valkey, Kreuzberg/native extractor, and host Ollama setup

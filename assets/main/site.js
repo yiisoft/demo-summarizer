@@ -29,7 +29,7 @@ if (document.querySelector('[data-poll="1"]')) {
         });
     };
 
-    setInterval(poll, 2000);
+    setInterval(poll, 500);
 }
 
 document.querySelectorAll('[data-upload-form]').forEach((form) => {
