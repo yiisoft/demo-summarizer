@@ -12,4 +12,13 @@ return [
     'maxFileBytes' => 50 * 1024 * 1024,
     'maxBatchBytes' => 20 * 50 * 1024 * 1024,
     'allowedExtensions' => ['md', 'txt', 'html', 'pdf', 'docx'],
+    'allowedMimeTypes' => [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/zip',
+        'text/html',
+        'text/markdown',
+        'text/plain',
+        'text/x-markdown',
+    ],
 ];

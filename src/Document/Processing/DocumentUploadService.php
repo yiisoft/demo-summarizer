@@ -14,13 +14,9 @@ use Yiisoft\Validator\Rule\Each;
 use Yiisoft\Validator\Rule\File;
 use Yiisoft\Validator\ValidatorInterface;
 
-use function array_key_exists;
-use function explode;
-use function in_array;
 use function intdiv;
 use function pathinfo;
 use function strtolower;
-use function trim;
 use function uniqid;
 
 use const PATHINFO_EXTENSION;
@@ -40,6 +36,7 @@ final readonly class DocumentUploadService
      * @param int $maxFileBytes Maximum file size in bytes.
      * @param int $maxBatchBytes Maximum batch size in bytes.
      * @param list<string> $allowedExtensions Allowed lowercase file extensions.
+     * @param list<string> $allowedMimeTypes Allowed MIME types.
      */
     public function __construct(
         private DocumentRepository $repository,
@@ -50,6 +47,7 @@ final readonly class DocumentUploadService
         private int $maxFileBytes,
         private int $maxBatchBytes,
         private array $allowedExtensions,
+        private array $allowedMimeTypes,
     ) {}
 
     /**
@@ -110,10 +108,12 @@ final readonly class DocumentUploadService
             new Each([
                 new File(
                     extensions: $this->allowedExtensions,
+                    mimeTypes: $this->allowedMimeTypes,
                     maxSize: $this->maxFileBytes,
                     message: '{file} is not a valid document.',
                     uploadFailedMessage: '{file} is larger than ' . $this->megabytes($this->maxFileBytes) . ' MB.',
                     wrongExtensionMessage: '{file} is not an allowed document.',
+                    wrongMimeTypeMessage: '{file} is not a recognized document type.',
                     tooBigMessage: '{file} is larger than ' . $this->megabytes($this->maxFileBytes) . ' MB.',
                     unableToDetermineSizeMessage: 'The size of {file} cannot be determined.',
                 ),
@@ -127,19 +127,11 @@ final readonly class DocumentUploadService
 
         $batchBytes = 0;
         foreach ($files as $index => $file) {
-            $name = $file->getClientFilename() ?: 'document #' . ($index + 1);
-
             if (isset($validationErrorsByPath[(string) $index])) {
                 continue;
             }
 
-            $size = $file->getSize() ?? 0;
-            $batchBytes += $size;
-            $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-
-            if (!$this->signatureLooksValid($file, $extension)) {
-                $errors[] = "$name does not match the expected file signature.";
-            }
+            $batchBytes += $file->getSize() ?? 0;
         }
 
         if ($batchBytes > $this->maxBatchBytes) {
@@ -167,45 +159,12 @@ final readonly class DocumentUploadService
     /**
      * Converts bytes to rounded-up megabytes for validation messages.
      *
+     * TODO: Remove when https://github.com/yiisoft/validator/issues/802 is implemented.
+     *
      * @param int $bytes Byte count.
      */
     private function megabytes(int $bytes): int
     {
         return intdiv($bytes + 1024 * 1024 - 1, 1024 * 1024);
-    }
-
-    /**
-     * Checks the first bytes of a file against the expected extension signature.
-     *
-     * @param UploadedFileInterface $file Uploaded file.
-     * @param string $extension Lowercase file extension.
-     */
-    private function signatureLooksValid(UploadedFileInterface $file, string $extension): bool
-    {
-        $stream = $file->getStream();
-        $position = $stream->tell();
-        $stream->rewind();
-        $head = $stream->read(512);
-        $stream->seek($position);
-
-        $trimmed = trim($head);
-        if (in_array($extension, ['md', 'txt'], true)) {
-            return $trimmed !== '';
-        }
-
-        if ($extension === 'html') {
-            return str_contains(strtolower($head), '<html') || str_contains(strtolower($head), '<!doctype html');
-        }
-
-        if ($extension === 'pdf') {
-            return str_starts_with($head, '%PDF-');
-        }
-
-        if ($extension === 'docx') {
-            $parts = explode("\n", $head);
-            return array_key_exists(0, $parts) && str_starts_with($parts[0], 'PK');
-        }
-
-        return false;
     }
 }

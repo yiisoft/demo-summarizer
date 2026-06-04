@@ -38,11 +38,15 @@ use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\QueueInterface;
 use Yiisoft\Validator\Validator;
 
+use function file_put_contents;
+use function fopen;
 use function is_file;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertFalse;
+use function PHPUnit\Framework\assertNotFalse;
 use function PHPUnit\Framework\assertSame;
 use function sys_get_temp_dir;
+use function tempnam;
 use function uniqid;
 use function unlink;
 
@@ -54,6 +58,9 @@ final class DocumentWorkflowTest extends Unit
     private ?string $databasePath = null;
     private ?string $storageRoot = null;
 
+    /** @var list<string> */
+    private array $uploadedFilePaths = [];
+
     protected function _after(): void
     {
         if ($this->databasePath !== null && is_file($this->databasePath)) {
@@ -62,6 +69,12 @@ final class DocumentWorkflowTest extends Unit
 
         if ($this->storageRoot !== null) {
             $this->removeTree($this->storageRoot);
+        }
+
+        foreach ($this->uploadedFilePaths as $path) {
+            if (is_file($path)) {
+                unlink($path);
+            }
         }
     }
 
@@ -354,6 +367,7 @@ final class DocumentWorkflowTest extends Unit
             maxFileBytes: 50 * 1024 * 1024,
             maxBatchBytes: 20 * 50 * 1024 * 1024,
             allowedExtensions: ['md', 'txt', 'html', 'pdf', 'docx'],
+            allowedMimeTypes: $this->allowedMimeTypes(),
         );
 
         $files = [];
@@ -377,11 +391,33 @@ final class DocumentWorkflowTest extends Unit
             maxFileBytes: 50 * 1024 * 1024,
             maxBatchBytes: 20 * 50 * 1024 * 1024,
             allowedExtensions: ['md', 'txt', 'html', 'pdf', 'docx'],
+            allowedMimeTypes: $this->allowedMimeTypes(),
         );
 
         $result = $service->validate([$this->uploadedTextFile(1, UPLOAD_ERR_INI_SIZE)]);
 
         assertSame(['notes-1.txt is larger than 50 MB.'], $result->errors);
+    }
+
+    public function testUploadValidationReportsMimeMismatch(): void
+    {
+        $service = new DocumentUploadService(
+            $this->repository(),
+            new ArrayDocumentStorage(),
+            new CapturingQueue(),
+            new Validator(),
+            maxFiles: 20,
+            maxFileBytes: 50 * 1024 * 1024,
+            maxBatchBytes: 20 * 50 * 1024 * 1024,
+            allowedExtensions: ['md', 'txt', 'html', 'pdf', 'docx'],
+            allowedMimeTypes: $this->allowedMimeTypes(),
+        );
+
+        $result = $service->validate([
+            $this->uploadedFileFromDisk('notes-1.pdf', "GIF89a\nnot a pdf", 'image/gif'),
+        ]);
+
+        assertSame(['notes-1.pdf is not a recognized document type.'], $result->errors);
     }
 
     private function repository(): DocumentRepository
@@ -451,6 +487,44 @@ final class DocumentWorkflowTest extends Unit
         $file->method('getStream')->willReturnCallback(static fn () => Utils::streamFor('Test content.'));
 
         return $file;
+    }
+
+    private function uploadedFileFromDisk(string $name, string $contents, string $clientMediaType): UploadedFileInterface
+    {
+        $path = tempnam(sys_get_temp_dir(), 'doc-upload-');
+        assertNotFalse($path);
+        file_put_contents($path, $contents);
+        $this->uploadedFilePaths[] = $path;
+
+        $handle = fopen($path, 'rb');
+        assertNotFalse($handle);
+
+        $file = $this->createStub(UploadedFileInterface::class);
+        $file->method('getError')->willReturn(UPLOAD_ERR_OK);
+        $file->method('getClientFilename')->willReturn($name);
+        $file->method('getClientMediaType')->willReturn($clientMediaType);
+        $file->method('getSize')->willReturn(strlen($contents));
+        $file->method('getStream')->willReturnCallback(static fn () => Utils::streamFor($handle));
+
+        return $file;
+    }
+
+    /**
+     * Returns MIME types accepted by upload validation.
+     *
+     * @return list<string>
+     */
+    private function allowedMimeTypes(): array
+    {
+        return [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/zip',
+            'text/html',
+            'text/markdown',
+            'text/plain',
+            'text/x-markdown',
+        ];
     }
 }
 

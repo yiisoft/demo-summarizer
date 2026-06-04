@@ -19,6 +19,7 @@ return [
             'maxFileBytes' => $params['documentDemo']['maxFileBytes'],
             'maxBatchBytes' => $params['documentDemo']['maxBatchBytes'],
             'allowedExtensions' => $params['documentDemo']['allowedExtensions'],
+            'allowedMimeTypes' => $params['documentDemo']['allowedMimeTypes'],
         ],
     ],
 ];

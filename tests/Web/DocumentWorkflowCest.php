@@ -87,8 +87,8 @@ final class DocumentWorkflowCest
 
     public function failedDocumentCanBeRetried(WebTester $I): void
     {
-        $name = 'broken-' . uniqid() . '.docx';
-        $this->writeDataFile($name, "PK\nnot a valid docx archive");
+        $name = 'broken-' . uniqid() . '.pdf';
+        $this->writeDataFile($name, "%PDF-1.4\nnot a valid pdf body\n%%EOF");
 
         $I->amOnPage('/');
         $I->attachFile('documents[]', $name);
