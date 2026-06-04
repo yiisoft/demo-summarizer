@@ -10,6 +10,13 @@ use Yiisoft\Router\CurrentRoute;
 use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\View\Renderer\CsrfViewInjection;
 
+$root = dirname(__DIR__, 2);
+
+/**
+ * @param non-empty-string $key
+ */
+$env = static fn (string $key, string $default): string => getenv($key) === false ? $default : (string) getenv($key);
+
 return [
     'application' => require __DIR__ . '/application.php',
 
@@ -34,5 +41,29 @@ return [
         'injections' => [
             Reference::to(CsrfViewInjection::class),
         ],
+    ],
+
+    'documentDemo' => [
+        'queueDriver' => $env('QUEUE_DRIVER', 'sync'),
+        'databaseDsn' => $env('DATABASE_DSN', 'sqlite:' . $root . '/runtime/documents.sqlite'),
+        'storageDriver' => $env('DOCUMENT_STORAGE_DRIVER', 'local'),
+        'localStorageRoot' => $env('DOCUMENT_LOCAL_STORAGE_ROOT', $root . '/runtime/document-objects'),
+        's3Endpoint' => $env('S3_ENDPOINT', 'http://minio:9000'),
+        's3Region' => $env('S3_REGION', 'us-east-1'),
+        's3Bucket' => $env('S3_BUCKET', 'documents'),
+        's3AccessKey' => $env('S3_ACCESS_KEY', 'minioadmin'),
+        's3SecretKey' => $env('S3_SECRET_KEY', 'minioadmin'),
+        's3PathStyle' => filter_var($env('S3_PATH_STYLE', 'true'), FILTER_VALIDATE_BOOLEAN),
+        'leaseSeconds' => (int) $env('DOCUMENT_PROCESSING_LEASE_SECONDS', '900'),
+        'extractorAdapter' => $env('EXTRACTOR_ADAPTER', 'kreuzberg'),
+        'llmAdapter' => $env('LLM_ADAPTER', 'mock'),
+        'ollamaBaseUrl' => $env('OLLAMA_BASE_URL', 'http://ollama:11434'),
+        'ollamaModel' => $env('OLLAMA_MODEL', 'llama3.2'),
+        'llmProvider' => $env('LLM_PROVIDER', ''),
+        'llmApiKey' => $env('LLM_API_KEY', ''),
+        'llmModel' => $env('LLM_MODEL', ''),
+        'maxFileBytes' => 20 * 1024 * 1024,
+        'maxBatchBytes' => 100 * 1024 * 1024,
+        'allowedExtensions' => ['md', 'txt', 'html', 'pdf', 'docx'],
     ],
 ];

@@ -10,8 +10,8 @@ body {
     flex-direction: column;
     height: 100%;
     font: 16px/24px "Trebuchet MS", Helvetica, sans-serif;
-    background: #f8f8f8;
-    color: #4b4b4b;
+    background: #f5f7f9;
+    color: #2e3742;
 }
 
 .header {
@@ -29,8 +29,6 @@ body {
 
 .content {
     flex-grow: 1;
-    display: flex;
-    align-items: center;
 }
 .content_i {
     flex-grow: 1;
@@ -82,4 +80,237 @@ body {
 
 .text-center {
     text-align: center;
+}
+
+.demo-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.demo-header,
+.detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.demo-header h1,
+.detail-header h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    line-height: 40px;
+}
+
+.demo-header p {
+    margin: 0;
+    color: #657181;
+}
+
+.demo-mode {
+    min-width: 120px;
+    padding: 10px 12px;
+    border: 1px solid #d9e1e8;
+    border-radius: 8px;
+    background: #fff;
+    text-align: right;
+}
+
+.demo-mode span {
+    display: block;
+    font-weight: 700;
+}
+
+.demo-mode small,
+.document-table small,
+.timeline small {
+    display: block;
+    color: #6b7582;
+}
+
+.upload-panel {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #d9e1e8;
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 24px;
+}
+
+.upload-panel input {
+    flex: 1;
+}
+
+button,
+.actions a {
+    border: 1px solid #0f6b78;
+    border-radius: 6px;
+    background: #0f6b78;
+    color: #fff;
+    padding: 7px 10px;
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button:hover,
+.actions a:hover {
+    background: #094c55;
+    color: #fff;
+}
+
+.document-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #d9e1e8;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.document-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.document-table th,
+.document-table td {
+    padding: 12px;
+    border-bottom: 1px solid #edf1f4;
+    text-align: left;
+    vertical-align: top;
+}
+
+.document-table th {
+    color: #586574;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.empty {
+    text-align: center;
+    color: #687484;
+}
+
+.status {
+    display: inline-block;
+    min-width: 92px;
+    border-radius: 999px;
+    padding: 3px 9px;
+    background: #e8eef3;
+    color: #344454;
+    text-align: center;
+    font-size: 13px;
+}
+
+.status-completed {
+    background: #dff3e6;
+    color: #146236;
+}
+
+.status-failed {
+    background: #fde7e7;
+    color: #9f2525;
+}
+
+.status-extracting,
+.status-summarizing,
+.status-queued {
+    background: #e1f1f5;
+    color: #075d6a;
+}
+
+.progress {
+    width: 120px;
+    height: 8px;
+    border-radius: 999px;
+    background: #dfe6ec;
+    overflow: hidden;
+}
+
+.progress span {
+    display: block;
+    height: 100%;
+    background: #2196a8;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.actions form {
+    display: inline;
+    margin: 0;
+}
+
+.notice {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.notice-error {
+    border: 1px solid #f1c5c5;
+    background: #fff0f0;
+    color: #842525;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 24px;
+}
+
+.detail-grid > section,
+.detail-grid > aside {
+    border: 1px solid #d9e1e8;
+    border-radius: 8px;
+    background: #fff;
+    padding: 18px;
+}
+
+.detail-grid h2 {
+    margin-top: 0;
+}
+
+.summary {
+    white-space: pre-wrap;
+    padding: 14px;
+    background: #f6f8fa;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.timeline {
+    margin: 0;
+    padding-left: 22px;
+}
+
+.timeline li {
+    margin-bottom: 14px;
+}
+
+.timeline span {
+    display: block;
+}
+
+@media (max-width: 780px) {
+    .demo-header,
+    .detail-header,
+    .upload-panel {
+        display: block;
+    }
+
+    .demo-mode,
+    .upload-panel button {
+        margin-top: 12px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
 }

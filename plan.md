@@ -9,75 +9,76 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 
 ## Key Changes
 
-- [ ] Add dependencies:
-    - [ ] yiisoft/queue, yiisoft/queue-amqp, yiisoft/queue-redis
-    - [ ] yiisoft/validator
-    - [ ] yiisoft/db-migration
-    - [ ] S3-compatible storage client or Flysystem S3 adapter
+- [x] Add dependencies:
+    - [x] yiisoft/queue, yiisoft/queue-amqp, yiisoft/queue-redis
+    - [x] yiisoft/validator
+    - [x] yiisoft/db-migration
+    - [x] S3-compatible storage client or Flysystem S3 adapter
     - [ ] kreuzberg/kreuzberg for the preferred universal document extraction adapter
 
 - [ ] Update Docker with pdo_sqlite, Redis extension, RabbitMQ, Valkey, S3-compatible storage such as MinIO, Kreuzberg PHP extension support, and optional worker services.
-- [ ] Add config:
-    - [ ] QUEUE_DRIVER=sync|amqp|redis
-    - [ ] DATABASE_DSN=sqlite:@runtime/documents.sqlite
-    - [ ] S3_ENDPOINT, S3_REGION, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY, S3_PATH_STYLE
-    - [ ] DOCUMENT_PROCESSING_LEASE_SECONDS=900
-    - [ ] EXTRACTOR_ADAPTER=kreuzberg|native
-    - [ ] LLM_ADAPTER=mock|ollama
-    - [ ] OLLAMA_BASE_URL, OLLAMA_MODEL
-    - [ ] reserved future vars: LLM_PROVIDER, LLM_API_KEY, LLM_MODEL
+- [x] Add config:
+    - [x] QUEUE_DRIVER=sync|amqp|redis
+    - [x] DATABASE_DSN=sqlite:@runtime/documents.sqlite
+    - [x] S3_ENDPOINT, S3_REGION, S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY, S3_PATH_STYLE
+    - [x] DOCUMENT_PROCESSING_LEASE_SECONDS=900
+    - [x] EXTRACTOR_ADAPTER=kreuzberg|native
+    - [x] LLM_ADAPTER=mock|ollama
+    - [x] OLLAMA_BASE_URL, OLLAMA_MODEL
+    - [x] reserved future vars: LLM_PROVIDER, LLM_API_KEY, LLM_MODEL
 
 - [ ] Add Yii migrations for:
-    - [ ] documents: file metadata, generated object key, status, progress, processing lease, markdown object key, summary, short error, detailed error, retry metadata, timestamps
-    - [ ] processing_events: document id, event type, message, progress, timestamp
+    - [x] documents: file metadata, generated object key, status, progress, processing lease, markdown object key, summary, short error, detailed error, retry metadata, timestamps
+    - [x] processing_events: document id, event type, message, progress, timestamp
 
-- [ ] Add web UI:
-    - [ ] upload .md, .txt, .html, .pdf, .docx
-    - [ ] max 20 MB per file, 100 MB per batch
-    - [ ] validate uploads with yiisoft/validator, including size, extension, and server-side MIME/signature checks
-    - [ ] document list, status/progress, detail page with summary
-    - [ ] original download and markdown view/download by document ID
-    - [ ] poll status every 2 seconds while documents are active
-    - [ ] manual retry for failed documents
-    - [ ] keep failed documents available for retry; deletion is an explicit user action, not automatic failure handling
+- [x] Add web UI:
+    - [x] upload .md, .txt, .html, .pdf, .docx
+    - [x] max 20 MB per file, 100 MB per batch
+    - [x] validate uploads with yiisoft/validator, including size, extension, and server-side MIME/signature checks
+    - [x] document list, status/progress, detail page with summary
+    - [x] original download and markdown view/download by document ID
+    - [x] poll status every 2 seconds while documents are active
+    - [x] manual retry for failed documents
+    - [x] keep failed documents available for retry; deletion is an explicit user action, not automatic failure handling
 
 - [ ] Add queue processing:
-    - [ ] queue message payload is only documentId
-    - [ ] handler reloads document state from SQLite
-    - [ ] handler uses app-level claim/lease so multiple workers can run safely
-    - [ ] handler transitions through uploaded, queued, extracting, summarizing, completed, failed
-    - [ ] unsupported formats fail only that document
-    - [ ] retries are available from the regular web UI
-    - [ ] failed documents stay in storage until retried, explicitly deleted, or replaced by a successful retry
-    - [ ] reprocessing overwrites markdown/summary and appends events
+    - [x] queue message payload is only documentId
+    - [x] handler reloads document state from SQLite
+    - [x] handler uses app-level claim/lease so multiple workers can run safely
+    - [x] handler transitions through uploaded, queued, extracting, summarizing, completed, failed
+    - [x] unsupported formats fail only that document
+    - [x] retries are available from the regular web UI
+    - [x] failed documents stay in storage until retried, explicitly deleted, or replaced by a successful retry
+    - [x] reprocessing overwrites markdown/summary and appends events
     - [ ] stale temporary objects and obsolete successful retry artifacts are cleaned during regular processing
 
 - [ ] Add extraction:
-    - [ ] .md and .txt: read as text/markdown
+    - [x] .md and .txt: read as text/markdown
     - [ ] implement an ExtractorInterface with a preferred KreuzbergExtractor adapter using kreuzberg/kreuzberg
     - [ ] use Kreuzberg for .html, .pdf, .docx, and other supported document formats when available
-    - [ ] normalize Kreuzberg output to markdown-like content suitable for summarization
-    - [ ] keep native per-format extraction as a fallback adapter only if Kreuzberg format support or extraction quality is not acceptable for a required format
+    - [x] normalize Kreuzberg output to markdown-like content suitable for summarization
+    - [x] keep native per-format extraction as a fallback adapter only if Kreuzberg format support or extraction quality is not acceptable for a required format
 
-- [ ] Add LLM abstraction:
-    - [ ] chunk-ready SummarizerInterface
-    - [ ] deterministic MockSummarizer that summarizes a configured first slice
-    - [ ] OllamaSummarizer adapter with configurable base URL and model
-    - [ ] DI binding ready for additional adapters later
+- [x] Add LLM abstraction:
+    - [x] chunk-ready SummarizerInterface
+    - [x] deterministic MockSummarizer that summarizes a configured first slice
+    - [x] OllamaSummarizer adapter with configurable base URL and model
+    - [x] DI binding ready for additional adapters later
 
 - [ ] Add observability:
-    - [ ] app-level progress and event timeline from SQLite
+    - [x] app-level progress and event timeline from SQLite
     - [ ] read queue/broker progress, depth, or status where the selected queue adapter exposes it
-    - [ ] fall back to database progress when broker-level state is unavailable or adapter-specific
-    - [ ] enqueue/start/finish/failure timestamps
-    - [ ] short user-facing errors and detailed internal error events
+    - [x] fall back to database progress when broker-level state is unavailable or adapter-specific
+    - [x] enqueue/start/finish/failure timestamps
+    - [x] short user-facing errors and detailed internal error events
 
-- [ ] Add CLI/docs:
-    - [ ] Yii migration commands
-    - [ ] sync, RabbitMQ/AMQP, and Valkey-backed Redis-protocol modes
-    - [ ] worker startup
-    - [ ] first-run and smoke-test flow
-    - [ ] S3/MinIO, RabbitMQ, Valkey, Kreuzberg/native extractor, and Ollama setup
+- [x] Add CLI/docs:
+    - [x] Yii migration commands
+    - [x] sync, RabbitMQ/AMQP, and Valkey-backed Redis-protocol modes
+    - [x] worker startup
+    - [x] first-run and smoke-test flow
+    - [x] S3/MinIO, RabbitMQ, Valkey, Kreuzberg/native extractor, and Ollama setup
+    - [x] document that project commands must run through `make`, not direct host `./yii` or `composer`
 
 ## Upstream Queue Work
 
@@ -111,25 +112,25 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 
 - [ ] Acceptance smoke path:
     - [ ] install dependencies
-    - [ ] run migrations
+    - [x] run migrations
     - [ ] upload 3 mixed supported files
     - [ ] see queued/progress events
     - [ ] process successfully in sync, AMQP, and Valkey modes
     - [ ] verify summaries and extracted markdown
     - [ ] force one failure, verify the failed document remains available, and retry it through the UI
 
-- [ ] Quality checks:
-    - [ ] composer test
-    - [ ] Psalm
-    - [ ] composer dependency analyser
+- [x] Quality checks:
+    - [x] make test
+    - [x] make psalm
+    - [x] make composer-dependency-analyser
     - [ ] upstream package tests for every queue package changed
 
 ## Assumptions
 
-- [ ] SQLite is the selected persistence layer.
+- [x] SQLite is the selected persistence layer.
 - [ ] S3-compatible object storage is the selected document storage layer; local filesystem storage is not used for durable document blobs.
-- [ ] The first LLM implementations are mock and Ollama.
+- [x] The first LLM implementations are mock and Ollama.
 - [ ] Kreuzberg through the kreuzberg/kreuzberg PHP package is the preferred universal extractor because Docker owns the PHP extension/runtime dependencies.
-- [ ] Valkey is the Docker key-value store; yiisoft/queue-redis may still be used through the Redis protocol if compatible.
-- [ ] Uploaded files use generated storage names; original names are display-only.
-- [ ] Queue observability v1 should use broker/adapter state where practical and database progress as the portable fallback.
+- [x] Valkey is the Docker key-value store; yiisoft/queue-redis may still be used through the Redis protocol if compatible.
+- [x] Uploaded files use generated storage names; original names are display-only.
+- [x] Queue observability v1 should use broker/adapter state where practical and database progress as the portable fallback.

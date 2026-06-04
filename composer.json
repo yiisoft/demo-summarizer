@@ -34,9 +34,16 @@
     },
     "require": {
         "php": "8.2 - 8.5",
+        "aws/aws-sdk-php": "^3.384",
         "ext-filter": "*",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-pdo_sqlite": "*",
+        "ext-sockets": "*",
         "httpsoft/http-message": "^1.1.6",
+        "league/flysystem": "^3.34",
         "league/flysystem-aws-s3-v3": "^3.34",
+        "league/flysystem-local": "^3.31",
         "psr/container": "^2.0.2",
         "psr/http-factory": "^1.1",
         "psr/http-message": "^2.0",
@@ -73,6 +80,7 @@
         "yiisoft/yii-view-renderer": "^7.4.1"
     },
     "require-dev": {
+        "ext-dom": "*",
         "vlucas/phpdotenv": "^5.6",
         "codeception/c3": "^2.9",
         "codeception/codeception": "^5.3.5",

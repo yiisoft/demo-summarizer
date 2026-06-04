@@ -1,0 +1,73 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Document\Domain\Document;
+use App\Document\Domain\DocumentEvent;
+use App\Document\Domain\DocumentStatus;
+use Yiisoft\Html\Html;
+use Yiisoft\View\WebView;
+use Yiisoft\Yii\View\Renderer\Csrf;
+
+/**
+ * @var WebView $this
+ * @var Document $document
+ * @var list<DocumentEvent> $events
+ * @var Csrf|null $csrf
+ */
+
+$this->setTitle($document->originalName);
+?>
+
+<section class="demo-shell">
+    <div class="detail-header">
+        <div>
+            <a href="/">Back to documents</a>
+            <h1><?= Html::encode($document->originalName) ?></h1>
+        </div>
+        <span class="status status-<?= Html::encode($document->status) ?>"><?= Html::encode($document->status) ?></span>
+    </div>
+
+    <div class="detail-grid">
+        <section>
+            <h2>Summary</h2>
+            <?php if ($document->summary !== null): ?>
+                <pre class="summary"><?= Html::encode($document->summary) ?></pre>
+            <?php elseif ($document->error !== null): ?>
+                <div class="notice notice-error"><?= Html::encode($document->error) ?></div>
+            <?php else: ?>
+                <p>Processing has not produced a summary yet.</p>
+            <?php endif ?>
+
+            <div class="actions">
+                <a href="/documents/<?= $document->id ?>/download">Download original</a>
+                <?php if ($document->markdownKey !== null): ?>
+                    <a href="/documents/<?= $document->id ?>/markdown">View markdown</a>
+                <?php endif ?>
+                <?php if ($document->status === DocumentStatus::FAILED): ?>
+                    <form action="/documents/<?= $document->id ?>/retry" method="post">
+                        <?= $csrf?->hiddenInput() ?>
+                        <button type="submit">Retry</button>
+                    </form>
+                <?php endif ?>
+                <form action="/documents/<?= $document->id ?>/delete" method="post">
+                    <?= $csrf?->hiddenInput() ?>
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+        </section>
+
+        <aside>
+            <h2>Events</h2>
+            <ol class="timeline">
+                <?php foreach ($events as $event): ?>
+                    <li>
+                        <strong><?= Html::encode($event->type) ?></strong>
+                        <span><?= Html::encode($event->message) ?></span>
+                        <small><?= Html::encode($event->createdAt) ?> · <?= $event->progress ?>%</small>
+                    </li>
+                <?php endforeach ?>
+            </ol>
+        </aside>
+    </div>
+</section>

@@ -26,6 +26,6 @@ final class NotFoundHandlerCest
         $I->canSeeResponseCodeIs(404);
         $I->click('Go Back Home');
         $I->expectTo('see page home.');
-        $I->see('Hello!');
+        $I->see('Document Summarizer');
     }
 }

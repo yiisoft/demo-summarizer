@@ -2,9 +2,9 @@ actor: WebTester
 extensions:
   enabled:
     - Codeception\Extension\RunProcess:
-        0: composer serve
+        0: php ./yii serve 127.0.0.1 --port=18080
         sleep: 3
 modules:
   enabled:
     - PhpBrowser:
-        url: http://127.0.0.1:8080
+        url: http://127.0.0.1:18080

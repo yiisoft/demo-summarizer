@@ -2,6 +2,22 @@ services:
   app: &appconfig
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      QUEUE_DRIVER: "${QUEUE_DRIVER:-sync}"
+      DATABASE_DSN: "${DATABASE_DSN:-sqlite:/app/runtime/documents.sqlite}"
+      DOCUMENT_STORAGE_DRIVER: "${DOCUMENT_STORAGE_DRIVER:-local}"
+      DOCUMENT_LOCAL_STORAGE_ROOT: "${DOCUMENT_LOCAL_STORAGE_ROOT:-/app/runtime/document-objects}"
+      S3_ENDPOINT: "${S3_ENDPOINT:-http://minio:9000}"
+      S3_REGION: "${S3_REGION:-us-east-1}"
+      S3_BUCKET: "${S3_BUCKET:-documents}"
+      S3_ACCESS_KEY: "${S3_ACCESS_KEY:-minioadmin}"
+      S3_SECRET_KEY: "${S3_SECRET_KEY:-minioadmin}"
+      S3_PATH_STYLE: "${S3_PATH_STYLE:-true}"
+      DOCUMENT_PROCESSING_LEASE_SECONDS: "${DOCUMENT_PROCESSING_LEASE_SECONDS:-900}"
+      EXTRACTOR_ADAPTER: "${EXTRACTOR_ADAPTER:-kreuzberg}"
+      LLM_ADAPTER: "${LLM_ADAPTER:-mock}"
+      OLLAMA_BASE_URL: "${OLLAMA_BASE_URL:-http://ollama:11434}"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2}"
 
 volumes:
   caddy_data:

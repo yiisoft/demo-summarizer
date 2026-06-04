@@ -1,5 +1,5 @@
 services:
-  app:
+  app: &app
     build:
       dockerfile: docker/Dockerfile
       context: ..
@@ -19,4 +19,49 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     tty: true
+    depends_on:
+      - minio
+      - rabbitmq
+      - valkey
 
+  worker:
+    <<: *app
+    command: ["php", "./yii", "document:work"]
+    ports: []
+    depends_on:
+      - app
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+
+  valkey:
+    image: valkey/valkey:8
+    ports:
+      - "${VALKEY_PORT:-6379}:6379"
+
+  minio:
+    image: minio/minio
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: "${S3_ACCESS_KEY:-minioadmin}"
+      MINIO_ROOT_PASSWORD: "${S3_SECRET_KEY:-minioadmin}"
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio_data:/data
+
+  ollama:
+    image: ollama/ollama
+    profiles: ["ollama"]
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  minio_data:
+  ollama_data:
