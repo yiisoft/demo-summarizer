@@ -10,7 +10,7 @@ This repository contains a runnable Yii3 document summarizer demo. The detailed 
 - Server-side upload validation with size, extension, MIME, and signature checks.
 - S3-compatible object storage by default, with Garage wired for local development.
 - Queue-oriented processing through `yiisoft/queue`, with sync mode by default.
-- AMQP/Valkey queue adapters are installed but currently blocked by an upstream Yii queue adapter/core compatibility issue recorded in [docs/upstream-queue-notes.md](docs/upstream-queue-notes.md).
+- AMQP and Valkey queue modes use `yiisoft/queue` adapters through local Composer path repositories while upstream compatibility fixes are prepared.
 - Preferred extraction through the Docker-installed Kreuzberg CLI, with a native fallback for text, Markdown, and HTML.
 - Mock and Ollama summarizer adapters.
 - Web UI for document status, progress, summaries, downloads, deletion, and retry.
@@ -26,7 +26,7 @@ make build
 make up
 ```
 
-Garage is started with the development stack and the `documents` bucket is created automatically.
+Garage is the local S3-compatible storage service for the demo; MinIO is not required. The `documents` bucket is created automatically.
 
 The Docker image installs a pinned Kreuzberg CLI runtime for PDF, DOCX, HTML, and other supported document extraction. Rebuild the image after Dockerfile or extractor runtime changes.
 
@@ -48,7 +48,7 @@ Create the SQLite tables:
 make -- yii migrate:up -y
 ```
 
-Process queued messages with the native Yii queue worker when a compatible non-sync Yii queue adapter is configured:
+Process queued messages with the native Yii queue worker:
 
 ```bash
 make yii queue:run
@@ -56,6 +56,16 @@ make yii queue:listen
 ```
 
 Do not use a demo-specific worker command; document processing is wired through `yiisoft/queue`.
+
+Run non-sync queue modes by selecting the queue driver and using the same native worker commands:
+
+```bash
+QUEUE_DRIVER=amqp make up
+QUEUE_DRIVER=amqp make -- yii queue:run
+
+QUEUE_DRIVER=redis make up
+QUEUE_DRIVER=redis make -- yii queue:run
+```
 
 Open a shell in the app container:
 
@@ -95,6 +105,9 @@ The demo should use Yii3 packages and native Yii commands where they exist. App-
 Common environment variables:
 
 - `QUEUE_DRIVER=sync|amqp|redis`
+- `QUEUE_NAME`
+- `AMQP_HOST`, `AMQP_PORT`, `AMQP_USER`, `AMQP_PASSWORD`, `AMQP_VHOST`
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_TIMEOUT`
 - `DATABASE_DSN=sqlite:/app/runtime/documents.sqlite`
 - `DOCUMENT_STORAGE_DRIVER=s3|local`
 - `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_PATH_STYLE`
@@ -102,4 +115,4 @@ Common environment variables:
 - `LLM_ADAPTER=mock|ollama`
 - `OLLAMA_BASE_URL`, `OLLAMA_MODEL`
 
-`QUEUE_DRIVER=amqp|redis` records the current upstream adapter compatibility blocker until the Yii adapter packages are aligned with the installed `yiisoft/queue` core.
+The demo currently points Composer at sibling `yiisoft/queue`, `yiisoft/queue-amqp`, and `yiisoft/queue-redis` repositories so AMQP and Valkey can run against the current Yii queue core while upstream fixes are prepared.

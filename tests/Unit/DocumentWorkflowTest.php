@@ -14,6 +14,7 @@ use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Migration\M250604000000CreateDocumentTables;
 use App\Document\Processing\ConfiguredDocumentQueue;
 use App\Document\Processing\DocumentMessage;
+use App\Document\Processing\DocumentMessageHandler;
 use App\Document\Processing\DocumentProcessor;
 use App\Document\Summarization\SummarizerInterface;
 use Aws\MockHandler;
@@ -30,6 +31,7 @@ use Yiisoft\Db\Migration\Informer\NullMigrationInformer;
 use Yiisoft\Db\Migration\Migrator;
 use Yiisoft\Db\Sqlite\Connection;
 use Yiisoft\Db\Sqlite\Driver;
+use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\QueueInterface;
@@ -96,11 +98,11 @@ final class DocumentWorkflowTest extends Unit
         $storage = (new DocumentStorageFactory(
             storageDriver: 'local',
             localStorageRoot: $this->storageRoot(),
-            s3Endpoint: 'http://minio:9000',
-            s3Region: 'us-east-1',
+            s3Endpoint: 'http://garage:3900',
+            s3Region: 'garage',
             s3Bucket: 'documents',
-            s3AccessKey: 'minioadmin',
-            s3SecretKey: 'minioadmin',
+            s3AccessKey: 'GKdemo000000000000000000000000000000',
+            s3SecretKey: 'garage-demo-secret-key-000000000000000000000000000000',
             s3PathStyle: true,
         ))->create();
 
@@ -162,6 +164,27 @@ final class DocumentWorkflowTest extends Unit
         assertSame(DocumentStatus::COMPLETED, $completed->status);
         assertSame('Summary text', $completed->summary);
         assertSame('Extracted markdown', $storage->read('documents/' . $document->id . '/extracted.md'));
+    }
+
+    public function testMessageHandlerProcessesYiiQueueEnvelope(): void
+    {
+        $repository = $this->repository();
+        $storage = new ArrayDocumentStorage();
+        $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
+        $repository->markQueued($document->id);
+        $storage->put($document->storageKey, 'Original text');
+
+        $handler = new DocumentMessageHandler(new DocumentProcessor(
+            900,
+            $repository,
+            $storage,
+            new StaticExtractor('Extracted markdown'),
+            new StaticSummarizer('Summary text'),
+        ));
+
+        $handler->handle(new IdEnvelope(new DocumentMessage($document->id), 1));
+
+        assertSame(DocumentStatus::COMPLETED, $repository->get($document->id)->status);
     }
 
     public function testProcessorFailsOnlyCurrentDocument(): void
@@ -229,24 +252,12 @@ final class DocumentWorkflowTest extends Unit
         $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
         $queue = new CapturingQueue();
 
-        (new ConfiguredDocumentQueue('sync', $repository, $queue))->enqueue($document->id);
+        (new ConfiguredDocumentQueue($repository, $queue))->enqueue($document->id);
 
         assertSame(DocumentStatus::QUEUED, $repository->get($document->id)->status);
         assertCount(1, $queue->messages);
         self::assertInstanceOf(DocumentMessage::class, $queue->messages[0]);
         assertSame($document->id, $queue->messages[0]->documentId);
-    }
-
-    public function testConfiguredQueueRecordsAdapterBlockerForNonSyncModes(): void
-    {
-        $repository = $this->repository();
-        $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
-
-        (new ConfiguredDocumentQueue('amqp', $repository, new CapturingQueue()))
-            ->enqueue($document->id);
-
-        $events = $repository->events($document->id);
-        assertSame('queue-adapter-unavailable', $events[array_key_last($events)]->type);
     }
 
     private function repository(): DocumentRepository

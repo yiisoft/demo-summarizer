@@ -17,6 +17,9 @@ services:
       DOCUMENT_LOCAL_STORAGE_ROOT: /app/runtime/test-document-objects
     volumes:
       - ../:/app
+      - ../../queue:/queue
+      - ../../queue-amqp:/queue-amqp
+      - ../../queue-redis:/queue-redis
       - ../runtime:/app/runtime
       - caddy_data:/data
       - caddy_config:/config

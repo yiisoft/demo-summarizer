@@ -78,42 +78,45 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] native Yii migration commands
     - [x] sync queue mode
     - [x] native `yiisoft/queue` worker startup with `queue:run` and `queue:listen`
-    - [x] current RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter compatibility blocker
+    - [x] RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter path-repository compatibility work
     - [x] first-run and smoke-test flow
     - [x] S3/Garage, RabbitMQ, Valkey, Kreuzberg/native extractor, and Ollama setup
     - [x] document that project commands must run through `make`, not direct host `./yii` or `composer`
 
 ## Upstream Queue Work
 
-- [ ] Clone sibling repositories:
-    - [ ] /home/samdark/src/queue
-    - [ ] /home/samdark/src/queue-amqp
-    - [ ] /home/samdark/src/queue-redis
+- [x] Clone sibling repositories:
+    - [x] /home/samdark/src/queue
+    - [x] /home/samdark/src/queue-amqp
+    - [x] /home/samdark/src/queue-redis
 
-- [ ] Use Composer path repositories while developing the demo.
-- [ ] Assess yiisoft/queue architecture while implementing: driver abstractions, message lifecycle, acknowledgement/retry semantics, delayed jobs, visibility/lease behavior, serialization, worker commands, observability hooks, and extension points.
-- [ ] Assess adapter issues in yiisoft/queue-amqp and yiisoft/queue-redis: RabbitMQ compatibility, Valkey compatibility through Redis protocol, connection/config ergonomics, failure handling, queue depth/status access, tests, and documentation.
+- [x] Use Composer path repositories while developing the demo.
+- [x] Assess yiisoft/queue architecture while implementing: driver abstractions, message lifecycle, acknowledgement/retry semantics, delayed jobs, visibility/lease behavior, serialization, worker commands, observability hooks, and extension points.
+- [x] Assess adapter issues in yiisoft/queue-amqp and yiisoft/queue-redis: RabbitMQ compatibility, Valkey compatibility through Redis protocol, connection/config ergonomics, failure handling, queue depth/status access, tests, and documentation.
 - [x] Record bugs, missing features, and adapter limitations encountered during demo implementation.
+- [x] Commit focused local upstream changes:
+    - [x] yiisoft/queue-amqp `de0064d` on `current-core-compat`
+    - [x] yiisoft/queue-redis `8218187` on `current-core-compat`
 - [ ] Create focused upstream PRs only for generic queue/adaptor usage, config, command, docs, or test issues.
-- [ ] Each upstream PR should include a reproduction test, minimal fix, and directly related docs/config updates.
+- [x] Each upstream change should include a reproduction test, minimal fix, and directly related docs/config updates.
 - [ ] Release affected queue packages only after focused PRs are merged and package tests pass.
 
 ## Test Plan
 
-- [ ] Default tests:
+- [x] Default tests:
     - [x] functional tests for upload, list, detail, status endpoint, downloads, delete, and manual retry
     - [x] unit workflow tests for schema creation, repository transitions, local storage, processor success, and processor failure
-    - [x] unit queue tests for sync `yiisoft/queue` push and non-sync adapter blocker recording
+    - [x] unit queue tests for sync `yiisoft/queue` push and Yii queue envelope handling
     - [x] unit tests for repositories, migrations, status transitions, processing leases, event recording, extraction, mock summarization, and handler success/failure
-    - [ ] unit tests for Ollama adapter request handling and S3 storage
+    - [x] unit tests for Ollama adapter request handling and S3 storage
     - [x] sync-mode queue processing tests
 
 - [ ] Opt-in/local integration tests:
-    - [ ] RabbitMQ/AMQP queue mode
-    - [ ] Valkey-backed Redis-protocol queue mode
+    - [x] RabbitMQ/AMQP queue mode
+    - [x] Valkey-backed Redis-protocol queue mode
     - [x] S3-compatible storage via Garage
     - [x] Kreuzberg CLI extraction adapter
-    - [ ] native fallback extractor only if fallback support is implemented
+    - [x] native fallback extractor only if fallback support is implemented
     - [ ] Ollama adapter against a local Ollama service when available
 
 - [ ] Acceptance smoke path:
@@ -121,7 +124,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] run migrations
     - [x] upload mixed supported files including PDF and DOCX
     - [x] see queued/progress events
-    - [ ] process successfully in sync, AMQP, and Valkey modes
+    - [x] process successfully in sync, AMQP, and Valkey modes
     - [x] process successfully in sync mode
     - [x] verify summaries and extracted markdown
     - [x] force one failure, verify the failed document remains available, and retry it through the UI
@@ -130,7 +133,8 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] make test
     - [x] make psalm
     - [x] make composer-dependency-analyser
-    - [x] no upstream queue package was changed in this repo; upstream package tests remain part of future upstream PR work
+    - [x] upstream yiisoft/queue-amqp package tests
+    - [x] upstream yiisoft/queue-redis package tests
 
 ## Assumptions
 

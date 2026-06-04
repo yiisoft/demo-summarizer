@@ -65,6 +65,15 @@ return [
 
     'documentDemo' => [
         'queueDriver' => $env('QUEUE_DRIVER', 'sync'),
+        'queueName' => $env('QUEUE_NAME', 'document-demo'),
+        'amqpHost' => $env('AMQP_HOST', 'rabbitmq'),
+        'amqpPort' => (int) $env('AMQP_PORT', '5672'),
+        'amqpUser' => $env('AMQP_USER', 'guest'),
+        'amqpPassword' => $env('AMQP_PASSWORD', 'guest'),
+        'amqpVhost' => $env('AMQP_VHOST', '/'),
+        'redisHost' => $env('REDIS_HOST', 'valkey'),
+        'redisPort' => (int) $env('REDIS_PORT', '6379'),
+        'redisTimeout' => (int) $env('REDIS_TIMEOUT', '3'),
         'databaseDsn' => $env('DATABASE_DSN', 'sqlite:' . $root . '/runtime/documents.sqlite'),
         'storageDriver' => $env('DOCUMENT_STORAGE_DRIVER', 's3'),
         'localStorageRoot' => $env('DOCUMENT_LOCAL_STORAGE_ROOT', $root . '/runtime/document-objects'),
