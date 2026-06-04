@@ -5183,12 +5183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/queue-amqp.git",
-                "reference": "a02e3e4dcf5829069fbc64f663c4085f059933c8"
+                "reference": "d1e9207a4466fcbc277fe9b08feab542431e6e0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/queue-amqp/zipball/a02e3e4dcf5829069fbc64f663c4085f059933c8",
-                "reference": "a02e3e4dcf5829069fbc64f663c4085f059933c8",
+                "url": "https://api.github.com/repos/yiisoft/queue-amqp/zipball/d1e9207a4466fcbc277fe9b08feab542431e6e0f",
+                "reference": "d1e9207a4466fcbc277fe9b08feab542431e6e0f",
                 "shasum": ""
             },
             "require": {
@@ -5228,7 +5228,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Yiisoft\\Queue\\AMQP\\": "src"
+                    "Yiisoft\\Queue\\Amqp\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -5262,7 +5262,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2026-06-04T21:05:28+00:00"
+            "time": "2026-06-04T22:03:12+00:00"
         },
         {
             "name": "yiisoft/queue-redis",
