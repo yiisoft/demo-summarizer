@@ -38,6 +38,7 @@ use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\QueueInterface;
 use Yiisoft\Validator\Validator;
 
+use function array_column;
 use function file_put_contents;
 use function fopen;
 use function is_file;
@@ -89,6 +90,10 @@ final class DocumentWorkflowTest extends Unit
 
         self::assertContains('documents', $tables);
         self::assertContains('processing_events', $tables);
+
+        $documentColumns = $db->createCommand("PRAGMA table_info(documents)")
+            ->queryAll();
+        self::assertContains('created_at', array_column($documentColumns, 'name'));
     }
 
     public function testRepositoryRecordsStatusTransitionsAndEvents(): void

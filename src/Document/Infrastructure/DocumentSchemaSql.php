@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS documents (
     summary TEXT NULL,
     error TEXT NULL,
     retry_count INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 )
 SQL;

@@ -40,6 +40,7 @@ final readonly class DocumentRepository
         string $extension,
         int $byteSize,
     ): Document {
+        $now = $this->now();
         $this->db->createCommand()->insert('documents', [
             'original_name' => $originalName,
             'storage_key' => $storageKey,
@@ -48,7 +49,8 @@ final readonly class DocumentRepository
             'byte_size' => $byteSize,
             'status' => DocumentStatus::UPLOADED,
             'progress' => 0,
-            'updated_at' => $this->now(),
+            'created_at' => $now,
+            'updated_at' => $now,
         ])->execute();
 
         $document = $this->get((int) $this->db->getLastInsertId());
