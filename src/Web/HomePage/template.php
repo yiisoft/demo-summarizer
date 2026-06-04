@@ -75,13 +75,12 @@ foreach ($documents as $document) {
                 <th>Status</th>
                 <th>Progress</th>
                 <th>Updated</th>
-                <th aria-label="Document actions"></th>
             </tr>
             </thead>
             <tbody>
             <?php if ($documents === []): ?>
                 <tr>
-                    <td colspan="5" class="empty">No documents uploaded yet.</td>
+                    <td colspan="4" class="empty">No documents uploaded yet.</td>
                 </tr>
             <?php endif ?>
             <?php foreach ($documents as $document): ?>
@@ -100,17 +99,6 @@ foreach ($documents as $document) {
                         <small data-progress="<?= $document->id ?>"><?= $document->progress ?>%</small>
                     </td>
                     <td><?= Html::encode($document->updatedAt) ?></td>
-                    <td class="actions">
-                        <a href="/documents/<?= $document->id ?>">Open</a>
-                        <a href="/documents/<?= $document->id ?>/download">Original</a>
-                        <?php if ($document->markdownKey !== null): ?>
-                            <a href="/documents/<?= $document->id ?>/markdown">Markdown</a>
-                        <?php endif ?>
-                        <form action="/documents/<?= $document->id ?>/retry" method="post">
-                            <?= $csrf?->hiddenInput() ?>
-                            <button type="submit">Retry</button>
-                        </form>
-                    </td>
                 </tr>
             <?php endforeach ?>
             </tbody>
