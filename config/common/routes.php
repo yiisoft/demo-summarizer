@@ -15,6 +15,9 @@ return [
             Route::post('/documents/upload')
                 ->action(Web\Document\UploadAction::class)
                 ->name('documents/upload'),
+            Route::post('/documents/clear')
+                ->action(Web\Document\ClearAction::class)
+                ->name('documents/clear'),
             Route::get('/documents/{id:\d+}')
                 ->action(Web\Document\DetailAction::class)
                 ->name('documents/detail'),

@@ -75,3 +75,13 @@ document.querySelectorAll('[data-upload-form]').forEach((form) => {
         updateFileList();
     });
 });
+
+document.querySelectorAll('[data-confirm]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+        const message = form.getAttribute('data-confirm');
+
+        if (message && !confirm(message)) {
+            event.preventDefault();
+        }
+    });
+});

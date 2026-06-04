@@ -93,6 +93,19 @@ final class DocumentWorkflowTest extends Unit
         assertCount(5, $repository->events($document->id));
     }
 
+    public function testRepositoryDeletesAllDocumentsAndEvents(): void
+    {
+        $repository = $this->repository();
+        $first = $repository->create('first.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
+        $second = $repository->create('second.txt', 'documents/2/original.txt', 'text/plain', 'txt', 12);
+
+        $repository->deleteAll();
+
+        self::assertSame([], $repository->all());
+        self::assertSame([], $repository->events($first->id));
+        self::assertSame([], $repository->events($second->id));
+    }
+
     public function testLocalStorageWritesReadsAndDeletesObjects(): void
     {
         $storage = (new DocumentStorageFactory(
@@ -113,6 +126,30 @@ final class DocumentWorkflowTest extends Unit
         $storage->delete('documents/test/original.txt');
 
         assertFalse(is_file($this->storageRoot . '/documents/test/original.txt'));
+    }
+
+    public function testLocalStorageClearsDocumentObjects(): void
+    {
+        $storage = (new DocumentStorageFactory(
+            storageDriver: 'local',
+            localStorageRoot: $this->storageRoot(),
+            s3Endpoint: 'http://garage:3900',
+            s3Region: 'garage',
+            s3Bucket: 'documents',
+            s3AccessKey: 'GKdemo000000000000000000000000000000',
+            s3SecretKey: 'garage-demo-secret-key-000000000000000000000000000000',
+            s3PathStyle: true,
+        ))->create();
+
+        $storage->put('documents/1/original.txt', 'first');
+        $storage->put('documents/1/extracted.md', 'markdown');
+        $storage->put('documents/2/original.txt', 'second');
+
+        $storage->clear();
+
+        assertFalse(is_file($this->storageRoot . '/documents/1/original.txt'));
+        assertFalse(is_file($this->storageRoot . '/documents/1/extracted.md'));
+        assertFalse(is_file($this->storageRoot . '/documents/2/original.txt'));
     }
 
     public function testS3StorageUsesFlysystemS3Adapter(): void
@@ -185,6 +222,27 @@ final class DocumentWorkflowTest extends Unit
         $handler->handle(new IdEnvelope(new DocumentMessage($document->id), 1));
 
         assertSame(DocumentStatus::COMPLETED, $repository->get($document->id)->status);
+    }
+
+    public function testMessageHandlerIgnoresDocumentClearedBeforeProcessing(): void
+    {
+        $repository = $this->repository();
+        $storage = new ArrayDocumentStorage();
+        $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
+        $repository->markQueued($document->id);
+        $repository->deleteAll();
+
+        $handler = new DocumentMessageHandler(new DocumentProcessor(
+            900,
+            $repository,
+            $storage,
+            new StaticExtractor('Extracted markdown'),
+            new StaticSummarizer('Summary text'),
+        ));
+
+        $handler->handle(new IdEnvelope(new DocumentMessage($document->id), 1));
+
+        self::assertSame([], $repository->all());
     }
 
     public function testProcessorFailsOnlyCurrentDocument(): void
@@ -340,6 +398,11 @@ final class ArrayDocumentStorage implements DocumentStorageInterface
     {
         $this->deleted[] = $key;
         unset($this->objects[$key]);
+    }
+
+    public function clear(): void
+    {
+        $this->objects = [];
     }
 }
 

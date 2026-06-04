@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Document\Processing;
 
 use App\Document\Extraction\ExtractorInterface;
+use App\Document\Infrastructure\DocumentNotFoundException;
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Summarization\SummarizerInterface;
@@ -25,7 +26,12 @@ final readonly class DocumentProcessor
 
     public function process(int $documentId): void
     {
-        $document = $this->repository->claim($documentId, $this->leaseSeconds);
+        try {
+            $document = $this->repository->claim($documentId, $this->leaseSeconds);
+        } catch (DocumentNotFoundException) {
+            return;
+        }
+
         if ($document === null) {
             return;
         }

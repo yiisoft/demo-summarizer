@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Document\Processing\ConfiguredDocumentQueue;
+use App\Document\Processing\ConfiguredDocumentQueuePurger;
 use App\Document\Processing\DocumentQueueInterface;
+use App\Document\Processing\DocumentQueuePurgerInterface;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Queue\AMQP\Adapter as AmqpAdapter;
@@ -76,4 +78,19 @@ return [
         QueueProviderInterface::DEFAULT_QUEUE => $queue,
     ]),
     DocumentQueueInterface::class => ConfiguredDocumentQueue::class,
+    DocumentQueuePurgerInterface::class => [
+        'class' => ConfiguredDocumentQueuePurger::class,
+        '__construct()' => [
+            'queueDriver' => $params['documentDemo']['queueDriver'],
+            'queueName' => $params['documentDemo']['queueName'],
+            'amqpHost' => $params['documentDemo']['amqpHost'],
+            'amqpPort' => $params['documentDemo']['amqpPort'],
+            'amqpUser' => $params['documentDemo']['amqpUser'],
+            'amqpPassword' => $params['documentDemo']['amqpPassword'],
+            'amqpVhost' => $params['documentDemo']['amqpVhost'],
+            'redisHost' => $params['documentDemo']['redisHost'],
+            'redisPort' => $params['documentDemo']['redisPort'],
+            'redisTimeout' => $params['documentDemo']['redisTimeout'],
+        ],
+    ],
 ];

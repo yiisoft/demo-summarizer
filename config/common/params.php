@@ -64,11 +64,11 @@ return [
     ],
 
     'documentDemo' => array_merge(
-        require __DIR__ . '/document-demo/db.php',
-        require __DIR__ . '/document-demo/extraction.php',
-        require __DIR__ . '/document-demo/processing.php',
-        require __DIR__ . '/document-demo/queue.php',
-        require __DIR__ . '/document-demo/storage.php',
-        require __DIR__ . '/document-demo/summarization.php',
+        require __DIR__ . '/document-demo-db.php',
+        require __DIR__ . '/document-demo-extraction.php',
+        require __DIR__ . '/document-demo-processing.php',
+        require __DIR__ . '/document-demo-queue.php',
+        require __DIR__ . '/document-demo-storage.php',
+        require __DIR__ . '/document-demo-summarization.php',
     ),
 ];

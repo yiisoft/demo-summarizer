@@ -59,6 +59,13 @@ foreach ($documents as $document) {
         <button type="submit">Upload</button>
     </form>
 
+    <?php if ($documents !== []): ?>
+        <form class="clear-panel" action="/documents/clear" method="post" data-confirm="Clear all documents, stored files, database records, and pending queue jobs?">
+            <?= $csrf?->hiddenInput() ?>
+            <button class="button-danger" type="submit">Clear all</button>
+        </form>
+    <?php endif ?>
+
     <div class="document-table-wrap">
         <table class="document-table">
             <thead>

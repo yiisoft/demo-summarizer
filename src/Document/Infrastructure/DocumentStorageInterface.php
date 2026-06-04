@@ -14,4 +14,6 @@ interface DocumentStorageInterface
     public function read(string $key): string;
 
     public function delete(string $key): void;
+
+    public function clear(): void;
 }

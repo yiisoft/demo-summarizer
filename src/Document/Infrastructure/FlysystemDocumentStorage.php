@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Document\Infrastructure;
 
 use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToDeleteDirectory;
 use League\Flysystem\UnableToDeleteFile;
 
 /**
@@ -31,6 +32,14 @@ final readonly class FlysystemDocumentStorage implements DocumentStorageInterfac
         try {
             $this->filesystem->delete($key);
         } catch (UnableToDeleteFile) {
+        }
+    }
+
+    public function clear(): void
+    {
+        try {
+            $this->filesystem->deleteDirectory('documents');
+        } catch (UnableToDeleteDirectory) {
         }
     }
 }

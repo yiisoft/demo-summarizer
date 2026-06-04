@@ -133,7 +133,7 @@ body {
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
 }
 
 .upload-dropzone {
@@ -184,6 +184,12 @@ body {
     overflow-wrap: anywhere;
 }
 
+.clear-panel {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+}
+
 button,
 .actions a {
     border: 1px solid #0f6b78;
@@ -200,6 +206,15 @@ button:hover,
 .actions a:hover {
     background: #094c55;
     color: #fff;
+}
+
+button.button-danger {
+    border-color: #9f2525;
+    background: #9f2525;
+}
+
+button.button-danger:hover {
+    background: #7d1717;
 }
 
 .document-table-wrap {

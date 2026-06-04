@@ -215,6 +215,12 @@ final readonly class DocumentRepository
         $this->db->createCommand()->delete('documents', ['id' => $id])->execute();
     }
 
+    public function deleteAll(): void
+    {
+        $this->db->createCommand()->delete('processing_events')->execute();
+        $this->db->createCommand()->delete('documents')->execute();
+    }
+
     public function addEvent(int $documentId, string $type, string $message, int $progress): void
     {
         $this->db->createCommand()->insert('processing_events', [

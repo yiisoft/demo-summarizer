@@ -89,6 +89,30 @@ final class DocumentWorkflowCest
         $I->see('failed');
     }
 
+    public function clearAllDocuments(WebTester $I): void
+    {
+        $first = 'clear-first-' . uniqid() . '.md';
+        $second = 'clear-second-' . uniqid() . '.txt';
+        $this->writeDataFile($first, "# First\n\nDocument to clear.");
+        $this->writeDataFile($second, "Second document to clear.");
+
+        $I->amOnPage('/');
+        $I->attachFile('documents[]', $first);
+        $I->click('Upload');
+        $I->see($first);
+
+        $I->attachFile('documents[]', $second);
+        $I->click('Upload');
+        $I->see($second);
+
+        $I->click('Clear all');
+        $I->seeInCurrentUrl('/');
+        $I->dontSee($first);
+        $I->dontSee($second);
+        $I->see('No documents uploaded yet.');
+    }
+
+
     private function writeDataFile(string $name, string $contents): void
     {
         $path = __DIR__ . '/../Support/Data/' . $name;
