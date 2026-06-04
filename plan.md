@@ -14,9 +14,9 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] yiisoft/validator
     - [x] yiisoft/db-migration
     - [x] S3-compatible storage client or Flysystem S3 adapter
-    - [ ] kreuzberg/kreuzberg for the preferred universal document extraction adapter
+    - [x] pinned Kreuzberg CLI runtime in Docker for the preferred universal document extraction adapter
 
-- [ ] Update Docker with pdo_sqlite, Redis extension, RabbitMQ, Valkey, S3-compatible storage such as MinIO, Kreuzberg PHP extension support, and optional worker services.
+- [x] Update Docker with pdo_sqlite, Redis extension, RabbitMQ, Valkey, S3-compatible storage such as MinIO, pinned Kreuzberg CLI support, and optional worker services.
 - [x] Add config:
     - [x] QUEUE_DRIVER=sync|amqp|redis
     - [x] DATABASE_DSN=sqlite:@runtime/documents.sqlite
@@ -54,8 +54,8 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 
 - [ ] Add extraction:
     - [x] .md and .txt: read as text/markdown
-    - [ ] implement an ExtractorInterface with a preferred KreuzbergExtractor adapter using kreuzberg/kreuzberg
-    - [ ] use Kreuzberg for .html, .pdf, .docx, and other supported document formats when available
+    - [x] implement an ExtractorInterface with a preferred KreuzbergExtractor adapter using the Docker-installed Kreuzberg CLI
+    - [x] use Kreuzberg for .html, .pdf, .docx, and other supported document formats when available
     - [x] normalize Kreuzberg output to markdown-like content suitable for summarization
     - [x] keep native per-format extraction as a fallback adapter only if Kreuzberg format support or extraction quality is not acceptable for a required format
 
@@ -111,12 +111,13 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [ ] Ollama adapter against a local Ollama service when available
 
 - [ ] Acceptance smoke path:
-    - [ ] install dependencies
+    - [x] install dependencies
     - [x] run migrations
-    - [ ] upload 3 mixed supported files
+    - [x] upload mixed supported files including PDF and DOCX
     - [ ] see queued/progress events
     - [ ] process successfully in sync, AMQP, and Valkey modes
-    - [ ] verify summaries and extracted markdown
+    - [x] process successfully in sync mode
+    - [x] verify summaries and extracted markdown
     - [ ] force one failure, verify the failed document remains available, and retry it through the UI
 
 - [x] Quality checks:
@@ -130,7 +131,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [x] SQLite is the selected persistence layer.
 - [ ] S3-compatible object storage is the selected document storage layer; local filesystem storage is not used for durable document blobs.
 - [x] The first LLM implementations are mock and Ollama.
-- [ ] Kreuzberg through the kreuzberg/kreuzberg PHP package is the preferred universal extractor because Docker owns the PHP extension/runtime dependencies.
+- [x] Kreuzberg through the Docker-installed CLI is the preferred universal extractor because Docker owns the extraction runtime dependency.
 - [x] Valkey is the Docker key-value store; yiisoft/queue-redis may still be used through the Redis protocol if compatible.
 - [x] Uploaded files use generated storage names; original names are display-only.
 - [x] Queue observability v1 should use broker/adapter state where practical and database progress as the portable fallback.

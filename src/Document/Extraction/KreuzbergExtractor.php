@@ -4,57 +4,81 @@ declare(strict_types=1);
 
 namespace App\Document\Extraction;
 
-use function class_exists;
-use function function_exists;
-use function is_object;
-use function is_string;
-use function method_exists;
+use function bin2hex;
+use function fclose;
 use function sys_get_temp_dir;
-use function tempnam;
-use function unlink;
 use function file_put_contents;
+use function is_executable;
+use function proc_close;
+use function proc_open;
+use function random_bytes;
+use function sprintf;
+use function stream_get_contents;
+use function trim;
+use function unlink;
 
 final readonly class KreuzbergExtractor implements ExtractorInterface
 {
     public function __construct(
         private NativeExtractor $fallback = new NativeExtractor(),
+        private string $binaryPath = '/usr/local/bin/kreuzberg',
     ) {}
 
     public function extract(string $contents, string $extension, string $originalName): string
     {
-        if (!function_exists('\\Kreuzberg\\extract_file')) {
+        if (!is_executable($this->binaryPath)) {
             return $this->fallback->extract($contents, $extension, $originalName);
         }
 
-        $path = tempnam(sys_get_temp_dir(), 'doc-extract-');
-        if ($path === false) {
-            throw new ExtractionException('Unable to allocate a temporary extraction file.');
-        }
+        $path = sprintf(
+            '%s/doc-extract-%s.%s',
+            sys_get_temp_dir(),
+            bin2hex(random_bytes(8)),
+            $extension,
+        );
 
         try {
             file_put_contents($path, $contents);
-            $extract = '\\Kreuzberg\\extract_file';
-            $result = $extract($path);
 
-            if (is_string($result)) {
-                return $result;
+            $process = proc_open(
+                [
+                    $this->binaryPath,
+                    '--log-level',
+                    'error',
+                    'extract',
+                    $path,
+                    '--content-format',
+                    'markdown',
+                    '--format',
+                    'text',
+                ],
+                [
+                    1 => ['pipe', 'w'],
+                    2 => ['pipe', 'w'],
+                ],
+                $pipes,
+            );
+
+            if ($process === false) {
+                throw new ExtractionException('Unable to start the Kreuzberg extractor.');
             }
 
-            if (is_object($result) && method_exists($result, 'getMarkdown')) {
-                return (string) $result->getMarkdown();
+            $markdown = stream_get_contents($pipes[1]) ?: '';
+            $error = stream_get_contents($pipes[2]) ?: '';
+
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+
+            $exitCode = proc_close($process);
+            if ($exitCode !== 0) {
+                throw new ExtractionException(
+                    trim($error) ?: "Kreuzberg extraction failed for $originalName.",
+                );
             }
 
-            if (is_object($result) && method_exists($result, 'getText')) {
-                return (string) $result->getText();
-            }
-
-            if (class_exists('Stringable') && $result instanceof \Stringable) {
-                return (string) $result;
-            }
+            return trim($markdown);
         } finally {
             @unlink($path);
         }
-
-        throw new ExtractionException('Kreuzberg returned an unsupported extraction result.');
     }
 }

@@ -8,6 +8,7 @@ use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Yiisoft\Router\CurrentRoute;
 
 final readonly class DownloadAction
@@ -16,6 +17,7 @@ final readonly class DownloadAction
         private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
+        private StreamFactoryInterface $streamFactory,
     ) {}
 
     public function __invoke(): ResponseInterface
@@ -28,7 +30,7 @@ final readonly class DownloadAction
                 'Content-Type' => $document->mimeType,
                 'Content-Disposition' => 'attachment; filename="' . addslashes($document->originalName) . '"',
             ],
-            $this->storage->read($document->storageKey),
+            $this->streamFactory->createStream($this->storage->read($document->storageKey)),
         );
     }
 }

@@ -10,7 +10,7 @@ This repository contains a runnable Yii3 document summarizer demo. The detailed 
 - Server-side upload validation with size, extension, MIME, and signature checks.
 - Local object storage by default, with S3-compatible storage configuration for MinIO or another compatible service.
 - Queue-oriented processing with sync mode by default and AMQP/Valkey modes queued for worker processing.
-- Text, Markdown, and HTML extraction through the native adapter; PDF and DOCX require the optional Kreuzberg runtime.
+- Preferred extraction through the Docker-installed Kreuzberg CLI, with a native fallback for text, Markdown, and HTML.
 - Mock and Ollama summarizer adapters.
 - Web UI for document status, progress, summaries, downloads, deletion, and retry.
 
@@ -24,6 +24,8 @@ Build and start the Docker development environment:
 make build
 make up
 ```
+
+The Docker image installs a pinned Kreuzberg CLI runtime for PDF, DOCX, HTML, and other supported document extraction. Rebuild the image after Dockerfile or extractor runtime changes.
 
 Run Composer commands inside Docker:
 
