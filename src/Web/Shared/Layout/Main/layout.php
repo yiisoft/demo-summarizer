@@ -81,7 +81,7 @@ $this->beginPage()
 <div class="footer">
     <div class="footer_copyright">
         <a href="https://www.yiiframework.com/" target="_blank" rel="noopener">
-            © <?= date('Y') ?>  <?= Html::encode($applicationParams->name) ?>
+            © <?= date('Y') ?> Yii Team
         </a>
     </div>
     <div class="footer_icons">
