@@ -27,7 +27,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] OLLAMA_BASE_URL, OLLAMA_MODEL
     - [x] reserved future vars: LLM_PROVIDER, LLM_API_KEY, LLM_MODEL
 
-- [ ] Add Yii migrations for:
+- [x] Add Yii migrations for:
     - [x] documents: file metadata, generated object key, status, progress, processing lease, markdown object key, summary, short error, detailed error, retry metadata, timestamps
     - [x] processing_events: document id, event type, message, progress, timestamp
 
@@ -90,7 +90,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [ ] Use Composer path repositories while developing the demo.
 - [ ] Assess yiisoft/queue architecture while implementing: driver abstractions, message lifecycle, acknowledgement/retry semantics, delayed jobs, visibility/lease behavior, serialization, worker commands, observability hooks, and extension points.
 - [ ] Assess adapter issues in yiisoft/queue-amqp and yiisoft/queue-redis: RabbitMQ compatibility, Valkey compatibility through Redis protocol, connection/config ergonomics, failure handling, queue depth/status access, tests, and documentation.
-- [ ] Record bugs, missing features, and adapter limitations encountered during demo implementation.
+- [x] Record bugs, missing features, and adapter limitations encountered during demo implementation.
 - [ ] Create focused upstream PRs only for generic queue/adaptor usage, config, command, docs, or test issues.
 - [ ] Each upstream PR should include a reproduction test, minimal fix, and directly related docs/config updates.
 - [ ] Release affected queue packages only after focused PRs are merged and package tests pass.
@@ -99,6 +99,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 
 - [ ] Default tests:
     - [ ] functional tests for upload, list, detail, status polling, downloads, delete, and manual retry
+    - [x] unit workflow tests for schema creation, repository transitions, local storage, processor success, and processor failure
     - [ ] unit tests for repositories, migrations, status transitions, processing leases, event recording, extraction, mock summarization, Ollama adapter request handling, S3 storage, and handler success/failure
     - [ ] sync-mode queue processing tests
 
