@@ -11,6 +11,10 @@ services:
       - path: ./test/.env
       - path: ./test/override.env
         required: false
+    environment:
+      DATABASE_DSN: sqlite:/app/runtime/test-documents.sqlite
+      DOCUMENT_STORAGE_DRIVER: local
+      DOCUMENT_LOCAL_STORAGE_ROOT: /app/runtime/test-document-objects
     volumes:
       - ../:/app
       - ../runtime:/app/runtime

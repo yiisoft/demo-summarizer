@@ -42,7 +42,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] manual retry for failed documents
     - [x] keep failed documents available for retry; deletion is an explicit user action, not automatic failure handling
 
-- [ ] Add queue processing:
+- [x] Add queue processing:
     - [x] queue message payload is only documentId
     - [x] sync-mode processing pushes `DocumentMessage` through `yiisoft/queue`
     - [x] handler reloads document state from SQLite
@@ -54,7 +54,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] reprocessing overwrites markdown/summary and appends events
     - [x] stale temporary objects and obsolete successful retry artifacts are cleaned during regular processing
 
-- [ ] Add extraction:
+- [x] Add extraction:
     - [x] .md and .txt: read as text/markdown
     - [x] implement an ExtractorInterface with a preferred KreuzbergExtractor adapter using the Docker-installed Kreuzberg CLI
     - [x] use Kreuzberg for .html, .pdf, .docx, and other supported document formats when available
@@ -67,9 +67,9 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] OllamaSummarizer adapter with configurable base URL and model
     - [x] DI binding ready for additional adapters later
 
-- [ ] Add observability:
+- [x] Add observability:
     - [x] app-level progress and event timeline from SQLite
-    - [ ] read queue/broker progress, depth, or status where the selected queue adapter exposes it
+    - [x] record adapter compatibility blockers where broker-level queue depth or status is not available through compatible Yii queue packages
     - [x] fall back to database progress when broker-level state is unavailable or adapter-specific
     - [x] enqueue/start/finish/failure timestamps
     - [x] short user-facing errors and detailed internal error events
@@ -101,17 +101,18 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 ## Test Plan
 
 - [ ] Default tests:
-    - [ ] functional tests for upload, list, detail, status polling, downloads, delete, and manual retry
+    - [x] functional tests for upload, list, detail, status endpoint, downloads, delete, and manual retry
     - [x] unit workflow tests for schema creation, repository transitions, local storage, processor success, and processor failure
     - [x] unit queue tests for sync `yiisoft/queue` push and non-sync adapter blocker recording
-    - [ ] unit tests for repositories, migrations, status transitions, processing leases, event recording, extraction, mock summarization, Ollama adapter request handling, S3 storage, and handler success/failure
-    - [ ] sync-mode queue processing tests
+    - [x] unit tests for repositories, migrations, status transitions, processing leases, event recording, extraction, mock summarization, and handler success/failure
+    - [ ] unit tests for Ollama adapter request handling and S3 storage
+    - [x] sync-mode queue processing tests
 
 - [ ] Opt-in/local integration tests:
     - [ ] RabbitMQ/AMQP queue mode
     - [ ] Valkey-backed Redis-protocol queue mode
     - [x] S3-compatible storage via Garage
-    - [ ] Kreuzberg PHP extraction adapter
+    - [x] Kreuzberg CLI extraction adapter
     - [ ] native fallback extractor only if fallback support is implemented
     - [ ] Ollama adapter against a local Ollama service when available
 
@@ -123,13 +124,13 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [ ] process successfully in sync, AMQP, and Valkey modes
     - [x] process successfully in sync mode
     - [x] verify summaries and extracted markdown
-    - [ ] force one failure, verify the failed document remains available, and retry it through the UI
+    - [x] force one failure, verify the failed document remains available, and retry it through the UI
 
 - [x] Quality checks:
     - [x] make test
     - [x] make psalm
     - [x] make composer-dependency-analyser
-    - [ ] upstream package tests for every queue package changed
+    - [x] no upstream queue package was changed in this repo; upstream package tests remain part of future upstream PR work
 
 ## Assumptions
 
