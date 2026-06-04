@@ -133,7 +133,14 @@ body {
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 24px;
+}
+
+.upload-form {
+    flex: 1;
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
 .upload-dropzone {
@@ -185,9 +192,11 @@ body {
 }
 
 .clear-panel {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 24px;
+    margin: 0;
+}
+
+.upload-panel button {
+    width: 92px;
 }
 
 button,
@@ -357,6 +366,10 @@ button.button-danger:hover {
     .demo-header,
     .detail-header,
     .upload-panel {
+        display: block;
+    }
+
+    .upload-form {
         display: block;
     }
 

@@ -48,23 +48,25 @@ foreach ($documents as $document) {
         </div>
     <?php endif ?>
 
-    <form class="upload-panel" action="/documents/upload" method="post" enctype="multipart/form-data" data-upload-form>
-        <?= $csrf?->hiddenInput() ?>
-        <label class="upload-dropzone" data-upload-dropzone>
-            <input type="file" name="documents[]" multiple accept=".md,.txt,.html,.pdf,.docx" data-upload-input>
-            <span class="upload-dropzone-title">Drop files here or browse</span>
-            <span class="upload-dropzone-text">PDF, DOCX, Markdown, text, and HTML files are supported.</span>
-            <span class="upload-file-list" data-upload-file-list>No files selected.</span>
-        </label>
-        <button type="submit">Upload</button>
-    </form>
-
-    <?php if ($documents !== []): ?>
-        <form class="clear-panel" action="/documents/clear" method="post" data-confirm="Clear all documents, stored files, database records, and pending queue jobs?">
+    <div class="upload-panel">
+        <form class="upload-form" action="/documents/upload" method="post" enctype="multipart/form-data" data-upload-form>
             <?= $csrf?->hiddenInput() ?>
-            <button class="button-danger" type="submit">Clear all</button>
+            <label class="upload-dropzone" data-upload-dropzone>
+                <input type="file" name="documents[]" multiple accept=".md,.txt,.html,.pdf,.docx" data-upload-input>
+                <span class="upload-dropzone-title">Drop files here or browse</span>
+                <span class="upload-dropzone-text">PDF, DOCX, Markdown, text, and HTML files are supported.</span>
+                <span class="upload-file-list" data-upload-file-list>No files selected.</span>
+            </label>
+            <button type="submit">Upload</button>
         </form>
-    <?php endif ?>
+
+        <?php if ($documents !== []): ?>
+            <form class="clear-panel" action="/documents/clear" method="post" data-confirm="Clear all documents, stored files, database records, and pending queue jobs?">
+                <?= $csrf?->hiddenInput() ?>
+                <button class="button-danger" type="submit">Clear all</button>
+            </form>
+        <?php endif ?>
+    </div>
 
     <div class="document-table-wrap">
         <table class="document-table">
