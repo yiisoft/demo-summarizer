@@ -75,7 +75,7 @@ foreach ($documents as $document) {
                 <th>Status</th>
                 <th>Progress</th>
                 <th>Updated</th>
-                <th>Actions</th>
+                <th aria-label="Document actions"></th>
             </tr>
             </thead>
             <tbody>
