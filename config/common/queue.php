@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 return [
     'queueDriver' => $env('QUEUE_DRIVER', 'sync'),
+    'workers' => (int) $env('WORKERS', '2'),
     'queueName' => $env('QUEUE_NAME', 'document-demo'),
     'amqpHost' => $env('AMQP_HOST', 'rabbitmq'),
     'amqpPort' => (int) $env('AMQP_PORT', '5672'),

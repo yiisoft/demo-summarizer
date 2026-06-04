@@ -15,16 +15,42 @@ body {
 }
 
 .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     margin: 24px;
-    padding: 12px;
+    padding: 14px 18px;
     border-radius: 12px;
     background: #fff;
-    color: #888;
+    color: #2e3742;
     box-shadow: 0 0 24px #f4f4f4;
-    text-align: center;
 }
-.header svg {
-    height: 48px;
+
+.header-logo {
+    display: inline-flex;
+    flex: 0 0 auto;
+}
+
+.header-logo img {
+    display: block;
+    width: 56px;
+    height: 56px;
+}
+
+.header-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.header-copy strong {
+    color: #20313f;
+    font-size: 24px;
+    line-height: 30px;
+}
+
+.header-copy span {
+    color: #657181;
 }
 
 .content {
@@ -96,6 +122,10 @@ body {
     margin-bottom: 24px;
 }
 
+.demo-header {
+    justify-content: flex-end;
+}
+
 .demo-header h1,
 .detail-header h1 {
     margin: 0 0 8px;
@@ -108,8 +138,14 @@ body {
     color: #657181;
 }
 
-.demo-mode {
-    min-width: 120px;
+.demo-runtime {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(104px, 1fr));
+    gap: 8px;
+    min-width: 520px;
+}
+
+.demo-runtime-item {
     padding: 10px 12px;
     border: 1px solid #d9e1e8;
     border-radius: 8px;
@@ -117,12 +153,17 @@ body {
     text-align: right;
 }
 
-.demo-mode span {
-    display: block;
-    font-weight: 700;
+.demo-runtime-item-wide {
+    grid-column: span 2;
 }
 
-.demo-mode small,
+.demo-runtime span {
+    display: block;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.demo-runtime small,
 .document-table small,
 .timeline small {
     display: block;
@@ -363,6 +404,21 @@ button.button-danger:hover {
 }
 
 @media (max-width: 780px) {
+    .header {
+        align-items: flex-start;
+        margin: 16px;
+    }
+
+    .header-logo img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .header-copy strong {
+        font-size: 22px;
+        line-height: 28px;
+    }
+
     .demo-header,
     .detail-header,
     .upload-panel {
@@ -373,9 +429,24 @@ button.button-danger:hover {
         display: block;
     }
 
-    .demo-mode,
+    .demo-runtime,
     .upload-panel button {
         margin-top: 12px;
+    }
+
+    .demo-header .demo-runtime {
+        margin-top: 0;
+    }
+
+    .demo-runtime {
+        grid-template-columns: 1fr 1fr;
+        min-width: 0;
+    }
+
+    .demo-runtime-item,
+    .demo-runtime-item-wide {
+        grid-column: auto;
+        text-align: left;
     }
 
     .detail-grid {

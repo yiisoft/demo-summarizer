@@ -21,12 +21,22 @@ final readonly class UploadAction
      * @param DocumentUploadService $uploadService Upload workflow service.
      * @param DocumentRepository $repository Document persistence gateway.
      * @param string $queueDriver Active queue driver name.
+     * @param int $workers Configured queue worker count.
+     * @param string $extractorAdapter Active document extractor adapter.
+     * @param string $llmAdapter Active LLM adapter.
+     * @param string $llmModel Active LLM model name.
+     * @param string $storageDriver Active document storage driver.
      * @param WebViewRenderer $viewRenderer Yii view renderer.
      */
     public function __construct(
         private DocumentUploadService $uploadService,
         private DocumentRepository $repository,
         private string $queueDriver,
+        private int $workers,
+        private string $extractorAdapter,
+        private string $llmAdapter,
+        private string $llmModel,
+        private string $storageDriver,
         private WebViewRenderer $viewRenderer,
     ) {}
 
@@ -44,6 +54,11 @@ final readonly class UploadAction
                 [
                     'documents' => $this->repository->all(),
                     'queueDriver' => $this->queueDriver,
+                    'workers' => $this->queueDriver === 'sync' ? 0 : $this->workers,
+                    'extractorAdapter' => $this->extractorAdapter,
+                    'llmAdapter' => $this->llmAdapter,
+                    'llmModel' => $this->llmModel,
+                    'storageDriver' => $this->storageDriver,
                     'errors' => $result['errors'],
                 ],
             );

@@ -14,6 +14,11 @@ use Yiisoft\View\WebView;
  * @var Csrf|null $csrf
  * @var list<Document> $documents
  * @var string $queueDriver
+ * @var int $workers
+ * @var string $extractorAdapter
+ * @var string $llmAdapter
+ * @var string $llmModel
+ * @var string $storageDriver
  * @var list<string> $errors
  */
 
@@ -29,13 +34,31 @@ foreach ($documents as $document) {
 
 <section class="demo-shell" data-poll="<?= $hasActiveDocuments ? '1' : '0' ?>">
     <div class="demo-header">
-        <div>
-            <h1>Document Summarizer</h1>
-            <p>Upload documents, extract markdown, summarize content, and track queue progress.</p>
-        </div>
-        <div class="demo-mode">
-            <span><?= Html::encode(strtoupper($queueDriver)) ?></span>
-            <small>queue mode</small>
+        <div class="demo-runtime">
+            <div class="demo-runtime-item">
+                <span><?= Html::encode(strtoupper($queueDriver)) ?></span>
+                <small>queue driver</small>
+            </div>
+            <div class="demo-runtime-item">
+                <span><?= $workers ?></span>
+                <small>workers</small>
+            </div>
+            <div class="demo-runtime-item">
+                <span><?= Html::encode($extractorAdapter) ?></span>
+                <small>extractor</small>
+            </div>
+            <div class="demo-runtime-item">
+                <span><?= Html::encode($llmAdapter) ?></span>
+                <small>LLM adapter</small>
+            </div>
+            <div class="demo-runtime-item demo-runtime-item-wide">
+                <span><?= Html::encode($llmModel) ?></span>
+                <small>LLM model</small>
+            </div>
+            <div class="demo-runtime-item">
+                <span><?= Html::encode($storageDriver) ?></span>
+                <small>document storage driver</small>
+            </div>
         </div>
     </div>
 
