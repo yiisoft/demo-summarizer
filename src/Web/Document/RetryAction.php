@@ -10,6 +10,7 @@ use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Queue\QueueInterface;
 use Yiisoft\Router\CurrentRoute;
+use Yiisoft\Router\UrlGeneratorInterface;
 
 /**
  * Resets a failed document and enqueues it for another processing attempt.
@@ -20,11 +21,13 @@ final readonly class RetryAction
      * @param CurrentRoute $currentRoute Current route with the document identifier.
      * @param DocumentRepository $repository Document persistence gateway.
      * @param QueueInterface $queue Yii queue used for the retry message.
+     * @param UrlGeneratorInterface $urlGenerator Yii route URL generator.
      */
     public function __construct(
         private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
         private QueueInterface $queue,
+        private UrlGeneratorInterface $urlGenerator,
     ) {}
 
     /**
@@ -37,6 +40,6 @@ final readonly class RetryAction
         $this->repository->markQueued($id);
         $this->queue->push(new SummarizeDocumentMessage($id));
 
-        return new Response(303, ['Location' => '/documents/' . $id]);
+        return new Response(303, ['Location' => $this->urlGenerator->generate('documents/detail', ['id' => $id])]);
     }
 }

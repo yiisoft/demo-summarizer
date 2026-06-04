@@ -136,30 +136,6 @@ final class Environment
     }
 
     /**
-     * Stores an integer environment value.
-     *
-     * @param string $key Environment variable name.
-     * @param int $default Default value when the variable is absent.
-     */
-    private static function setInteger(string $key, int $default): void
-    {
-        $value = self::getRawValue($key);
-        self::$values[$key] = $value === null ? $default : (int) $value;
-    }
-
-    /**
-     * Stores a string environment value.
-     *
-     * @param string $key Environment variable name.
-     * @param string $default Default value when the variable is absent.
-     */
-    private static function setString(string $key, string $default): void
-    {
-        $value = self::getRawValue($key);
-        self::$values[$key] = $value ?? $default;
-    }
-
-    /**
      * Stores a non-empty string value or null.
      *
      * @param string $key Environment variable name.

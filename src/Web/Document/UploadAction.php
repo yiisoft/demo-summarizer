@@ -10,6 +10,7 @@ use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 
 /**
@@ -26,6 +27,7 @@ final readonly class UploadAction
      * @param string $llmAdapter Active LLM adapter.
      * @param string $llmModel Active LLM model name.
      * @param string $storageDriver Active document storage driver.
+     * @param UrlGeneratorInterface $urlGenerator Yii route URL generator.
      * @param WebViewRenderer $viewRenderer Yii view renderer.
      */
     public function __construct(
@@ -37,6 +39,7 @@ final readonly class UploadAction
         private string $llmAdapter,
         private string $llmModel,
         private string $storageDriver,
+        private UrlGeneratorInterface $urlGenerator,
         private WebViewRenderer $viewRenderer,
     ) {}
 
@@ -64,7 +67,7 @@ final readonly class UploadAction
             );
         }
 
-        return new Response(303, ['Location' => '/']);
+        return new Response(303, ['Location' => $this->urlGenerator->generate('home')]);
     }
 
     /**

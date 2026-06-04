@@ -6,12 +6,14 @@ use App\Shared\ApplicationParams;
 use App\Document\Domain\Document;
 use Yiisoft\Yii\View\Renderer\Csrf;
 use Yiisoft\Html\Html;
+use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\View\WebView;
 
 /**
  * @var WebView $this
  * @var ApplicationParams $applicationParams
  * @var Csrf|null $csrf
+ * @var UrlGeneratorInterface $urlGenerator
  * @var list<Document> $documents
  * @var string $queueDriver
  * @var int $workers
@@ -23,6 +25,8 @@ use Yiisoft\View\WebView;
  */
 
 $this->setTitle($applicationParams->name);
+$uploadUrl = $urlGenerator->generate('documents/upload');
+$clearUrl = $urlGenerator->generate('documents/clear');
 $hasActiveDocuments = false;
 foreach ($documents as $document) {
     if ($document->isActive()) {
@@ -71,7 +75,7 @@ foreach ($documents as $document) {
     <?php endif ?>
 
     <div class="upload-panel">
-        <form class="upload-form" action="/documents/upload" method="post" enctype="multipart/form-data" data-upload-form>
+        <form class="upload-form" action="<?= Html::encode($uploadUrl) ?>" method="post" enctype="multipart/form-data" data-upload-form>
             <?= $csrf?->hiddenInput() ?>
             <label class="upload-dropzone" data-upload-dropzone>
                 <input type="file" name="documents[]" multiple accept=".md,.txt,.html,.pdf,.docx" data-upload-input>
@@ -83,7 +87,7 @@ foreach ($documents as $document) {
         </form>
 
         <?php if ($documents !== []): ?>
-            <form class="clear-panel" action="/documents/clear" method="post" data-confirm="Clear all documents, stored files, database records, and pending queue jobs?">
+            <form class="clear-panel" action="<?= Html::encode($clearUrl) ?>" method="post" data-confirm="Clear all documents, stored files, database records, and pending queue jobs?">
                 <?= $csrf?->hiddenInput() ?>
                 <button class="button-danger" type="submit">Clear all</button>
             </form>
@@ -106,9 +110,11 @@ foreach ($documents as $document) {
                 </tr>
             <?php endif ?>
             <?php foreach ($documents as $document): ?>
-                <tr data-document-row="<?= $document->id ?>">
+                <?php $detailUrl = $urlGenerator->generate('documents/detail', ['id' => $document->id]); ?>
+                <?php $statusUrl = $urlGenerator->generate('documents/status', ['id' => $document->id]); ?>
+                <tr data-document-row="<?= $document->id ?>" data-status-url="<?= Html::encode($statusUrl) ?>">
                     <td>
-                        <a href="/documents/<?= $document->id ?>"><?= Html::encode($document->originalName) ?></a>
+                        <a href="<?= Html::encode($detailUrl) ?>"><?= Html::encode($document->originalName) ?></a>
                         <small><?= Html::encode($document->extension) ?> · <?= number_format($document->byteSize / 1024, 1) ?> KB</small>
                     </td>
                     <td>

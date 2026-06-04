@@ -40,7 +40,6 @@ final readonly class DocumentRepository
         string $extension,
         int $byteSize,
     ): Document {
-        $now = $this->now();
         $this->db->createCommand()->insert('documents', [
             'original_name' => $originalName,
             'storage_key' => $storageKey,
@@ -49,8 +48,7 @@ final readonly class DocumentRepository
             'byte_size' => $byteSize,
             'status' => DocumentStatus::UPLOADED,
             'progress' => 0,
-            'created_at' => $now,
-            'updated_at' => $now,
+            'updated_at' => $this->now(),
         ])->execute();
 
         $document = $this->get((int) $this->db->getLastInsertId());
@@ -115,26 +113,6 @@ final readonly class DocumentRepository
     }
 
     /**
-     * Returns queued documents for portable queue observability.
-     *
-     * @param int $limit Maximum number of queued documents.
-     *
-     * @return list<Document>
-     */
-    public function queued(int $limit = 20): array
-    {
-        $rows = $this->db
-            ->select('*')
-            ->from('documents')
-            ->where(['status' => DocumentStatus::QUEUED])
-            ->orderBy(['id' => SORT_ASC])
-            ->limit($limit)
-            ->all();
-
-        return $this->documentsFromRows($rows);
-    }
-
-    /**
      * Marks a document as queued for processing.
      *
      * @param int $id Document identifier.
@@ -145,11 +123,7 @@ final readonly class DocumentRepository
         $this->update($id, [
             'status' => DocumentStatus::QUEUED,
             'progress' => 5,
-            'queued_at' => $now,
-            'completed_at' => null,
-            'failed_at' => null,
             'error' => null,
-            'error_detail' => null,
             'updated_at' => $now,
         ]);
         $this->addEvent($id, 'queued', 'Document queued for processing.', 5);
@@ -179,11 +153,7 @@ final readonly class DocumentRepository
             'status' => DocumentStatus::EXTRACTING,
             'progress' => 20,
             'lease_until' => $leaseUntil,
-            'started_at' => $startedAt,
-            'completed_at' => null,
-            'failed_at' => null,
             'error' => null,
-            'error_detail' => null,
             'updated_at' => $startedAt,
         ]);
         $this->addEvent($id, 'extracting', 'Extraction started.', 20);
@@ -222,7 +192,6 @@ final readonly class DocumentRepository
             'progress' => 100,
             'summary' => $summary,
             'lease_until' => null,
-            'completed_at' => $now,
             'updated_at' => $now,
         ]);
         $this->addEvent($id, 'completed', 'Processing completed.', 100);
@@ -233,9 +202,8 @@ final readonly class DocumentRepository
      *
      * @param int $id Document identifier.
      * @param string $error User-facing error message.
-     * @param string $detail Internal error detail.
      */
-    public function fail(int $id, string $error, string $detail): void
+    public function fail(int $id, string $error): void
     {
         $now = $this->now();
         $this->update($id, [
@@ -243,8 +211,6 @@ final readonly class DocumentRepository
             'progress' => 100,
             'lease_until' => null,
             'error' => $error,
-            'error_detail' => $detail,
-            'failed_at' => $now,
             'updated_at' => $now,
         ]);
         $this->addEvent($id, 'failed', $error, 100);
@@ -265,7 +231,6 @@ final readonly class DocumentRepository
             'lease_until' => null,
             'summary' => null,
             'error' => null,
-            'error_detail' => null,
             'retry_count' => $document->retryCount + 1,
             'updated_at' => $now,
         ]);

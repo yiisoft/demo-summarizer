@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace App\Web\Document;
 
 use App\Document\Infrastructure\DocumentRepository;
-use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamFactoryInterface;
+use Yiisoft\DataResponse\ResponseFactory\JsonResponseFactory;
 use Yiisoft\Router\CurrentRoute;
-
-use function json_encode;
 
 /**
  * Returns the current document processing status as JSON.
@@ -20,12 +17,12 @@ final readonly class StatusAction
     /**
      * @param CurrentRoute $currentRoute Current route with the document identifier.
      * @param DocumentRepository $repository Document persistence gateway.
-     * @param StreamFactoryInterface $streamFactory PSR-7 stream factory.
+     * @param JsonResponseFactory $responseFactory JSON response factory.
      */
     public function __construct(
         private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
-        private StreamFactoryInterface $streamFactory,
+        private JsonResponseFactory $responseFactory,
     ) {}
 
     /**
@@ -35,19 +32,13 @@ final readonly class StatusAction
     {
         $document = $this->repository->get((int) $this->currentRoute->getArgument('id'));
 
-        return new Response(
-            200,
-            ['Content-Type' => 'application/json'],
-            $this->streamFactory->createStream(
-                json_encode([
-                    'id' => $document->id,
-                    'status' => $document->status,
-                    'progress' => $document->progress,
-                    'summary' => $document->summary,
-                    'error' => $document->error,
-                    'updatedAt' => $document->updatedAt,
-                ], JSON_THROW_ON_ERROR),
-            ),
-        );
+        return $this->responseFactory->createResponse([
+            'id' => $document->id,
+            'status' => $document->status,
+            'progress' => $document->progress,
+            'summary' => $document->summary,
+            'error' => $document->error,
+            'updatedAt' => $document->updatedAt,
+        ]);
     }
 }

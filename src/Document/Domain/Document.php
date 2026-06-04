@@ -22,13 +22,7 @@ final readonly class Document
      * @param string|null $markdownKey Storage object key for markdown extracted from the original document; null until extraction succeeds.
      * @param string|null $summary Generated summary text.
      * @param string|null $error User-facing processing error.
-     * @param string|null $errorDetail Internal processing error detail.
      * @param int $retryCount Manual retry count.
-     * @param string|null $queuedAt Queue timestamp.
-     * @param string|null $startedAt Processing start timestamp.
-     * @param string|null $completedAt Completion timestamp.
-     * @param string|null $failedAt Failure timestamp.
-     * @param string $createdAt Creation timestamp.
      * @param string $updatedAt Last update timestamp.
      */
     public function __construct(
@@ -44,13 +38,7 @@ final readonly class Document
         public ?string $markdownKey,
         public ?string $summary,
         public ?string $error,
-        public ?string $errorDetail,
         public int $retryCount,
-        public ?string $queuedAt,
-        public ?string $startedAt,
-        public ?string $completedAt,
-        public ?string $failedAt,
-        public string $createdAt,
         public string $updatedAt,
     ) {}
 
@@ -74,13 +62,7 @@ final readonly class Document
             $row['markdown_key'] === null ? null : (string) $row['markdown_key'],
             $row['summary'] === null ? null : (string) $row['summary'],
             $row['error'] === null ? null : (string) $row['error'],
-            $row['error_detail'] === null ? null : (string) $row['error_detail'],
             (int) $row['retry_count'],
-            $row['queued_at'] === null ? null : (string) $row['queued_at'],
-            $row['started_at'] === null ? null : (string) $row['started_at'],
-            $row['completed_at'] === null ? null : (string) $row['completed_at'],
-            $row['failed_at'] === null ? null : (string) $row['failed_at'],
-            (string) $row['created_at'],
             (string) $row['updated_at'],
         );
     }

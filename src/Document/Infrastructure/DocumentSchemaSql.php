@@ -23,13 +23,7 @@ CREATE TABLE IF NOT EXISTS documents (
     markdown_key TEXT NULL,
     summary TEXT NULL,
     error TEXT NULL,
-    error_detail TEXT NULL,
     retry_count INTEGER NOT NULL DEFAULT 0,
-    queued_at TEXT NULL,
-    started_at TEXT NULL,
-    completed_at TEXT NULL,
-    failed_at TEXT NULL,
-    created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
 )
 SQL;

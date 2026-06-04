@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Document\Domain\Document;
 use App\Document\Domain\DocumentEvent;
 use Yiisoft\Html\Html;
+use Yiisoft\Router\UrlGeneratorInterface;
 use Yiisoft\View\WebView;
 use Yiisoft\Yii\View\Renderer\Csrf;
 
@@ -13,21 +14,29 @@ use Yiisoft\Yii\View\Renderer\Csrf;
  * @var Document $document
  * @var list<DocumentEvent> $events
  * @var Csrf|null $csrf
+ * @var UrlGeneratorInterface $urlGenerator
  */
 
 $this->setTitle($document->originalName);
+$homeUrl = $urlGenerator->generate('home');
+$downloadUrl = $urlGenerator->generate('documents/download', ['id' => $document->id]);
+$markdownUrl = $urlGenerator->generate('documents/markdown', ['id' => $document->id]);
+$retryUrl = $urlGenerator->generate('documents/retry', ['id' => $document->id]);
+$deleteUrl = $urlGenerator->generate('documents/delete', ['id' => $document->id]);
+$statusUrl = $urlGenerator->generate('documents/status', ['id' => $document->id]);
 ?>
 
 <section
     class="demo-shell"
     data-poll="<?= $document->isActive() ? '1' : '0' ?>"
     data-document-detail="<?= $document->id ?>"
+    data-status-url="<?= Html::encode($statusUrl) ?>"
     data-current-status="<?= Html::encode($document->status) ?>"
     data-refresh-on-terminal="1"
 >
     <div class="detail-header">
         <div>
-            <a href="/">Back to documents</a>
+            <a href="<?= Html::encode($homeUrl) ?>">Back to documents</a>
             <h1><?= Html::encode($document->originalName) ?></h1>
         </div>
         <span class="status status-<?= Html::encode($document->status) ?>" data-status="<?= $document->id ?>">
@@ -50,15 +59,15 @@ $this->setTitle($document->originalName);
             <?php endif ?>
 
             <div class="actions">
-                <a href="/documents/<?= $document->id ?>/download">Download original</a>
+                <a href="<?= Html::encode($downloadUrl) ?>">Download original</a>
                 <?php if ($document->markdownKey !== null): ?>
-                    <a href="/documents/<?= $document->id ?>/markdown">View markdown</a>
+                    <a href="<?= Html::encode($markdownUrl) ?>">View markdown</a>
                 <?php endif ?>
-                <form action="/documents/<?= $document->id ?>/retry" method="post">
+                <form action="<?= Html::encode($retryUrl) ?>" method="post">
                     <?= $csrf?->hiddenInput() ?>
                     <button type="submit">Retry</button>
                 </form>
-                <form action="/documents/<?= $document->id ?>/delete" method="post">
+                <form action="<?= Html::encode($deleteUrl) ?>" method="post">
                     <?= $csrf?->hiddenInput() ?>
                     <button type="submit">Delete</button>
                 </form>

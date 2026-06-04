@@ -4,14 +4,15 @@ if (document.querySelector('[data-poll="1"]')) {
     const poll = () => {
         document.querySelectorAll('[data-document-row], [data-document-detail]').forEach((target) => {
             const id = target.getAttribute('data-document-row') || target.getAttribute('data-document-detail');
+            const statusUrl = target.getAttribute('data-status-url');
             const refreshOnTerminal = target.getAttribute('data-refresh-on-terminal') === '1';
             const previousStatus = target.getAttribute('data-current-status');
 
-            if (!id) {
+            if (!id || !statusUrl) {
                 return;
             }
 
-            fetch(`/documents/${id}/status`)
+            fetch(statusUrl)
                 .then((response) => response.ok ? response.json() : null)
                 .then((data) => {
                     if (!data) {

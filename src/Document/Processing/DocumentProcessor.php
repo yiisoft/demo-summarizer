@@ -72,7 +72,6 @@ final readonly class DocumentProcessor
             $this->repository->fail(
                 $document->id,
                 $throwable->getMessage(),
-                $throwable::class . ': ' . $throwable->getMessage() . "\n" . $throwable->getTraceAsString(),
             );
         }
     }
