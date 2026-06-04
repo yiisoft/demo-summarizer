@@ -1,0 +1,14 @@
+# Ignore everything
+*
+
+# except:
+
+!/docker/**/Caddyfile
+!/config
+!/public
+!/src
+!autoload.php
+!yii
+!composer.json
+!composer.lock
+!.env*
