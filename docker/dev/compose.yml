@@ -26,9 +26,9 @@ services:
       garage:
         condition: service_started
       rabbitmq:
-        condition: service_started
+        condition: service_healthy
       valkey:
-        condition: service_started
+        condition: service_healthy
 
   worker:
     <<: *app
@@ -67,16 +67,33 @@ services:
     ports: []
     profiles: ["worker"]
     depends_on:
-      - app
+      app:
+        condition: service_started
+      garage:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
 
   rabbitmq:
     image: rabbitmq:3-management
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
     ports:
       - "${RABBITMQ_PORT:-5672}:5672"
       - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
 
   valkey:
     image: valkey/valkey:8
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
     ports:
       - "${VALKEY_PORT:-6379}:6379"
 
