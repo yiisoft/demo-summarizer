@@ -165,6 +165,7 @@ LLM_ADAPTER=llamacpp make up
 `make up` starts the `llama.cpp` server profile when `LLM_ADAPTER=llamacpp`. The service uses the official `ghcr.io/ggml-org/llama.cpp:server` image and is available to the app inside Docker at `http://llama:8080/v1`.
 
 The default `llama.cpp` model is `bartowski/SmolLM2-135M-Instruct-GGUF:Q4_K_M`. It is a small instruct GGUF that is suitable for a demo on CPU-only hardware.
+The default server uses one request slot and a 4096-token context so document summaries do not fail from the tiny model's context being split across parallel slots.
 
 For deterministic mock summaries without the `llama.cpp` service:
 

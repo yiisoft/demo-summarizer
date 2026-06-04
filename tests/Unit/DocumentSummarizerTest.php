@@ -97,6 +97,22 @@ final class DocumentSummarizerTest extends Unit
     }
 
     /**
+     * Verifies provider error responses are reported with their message.
+     */
+    public function testOpenAiCompatibleSummarizerReportsProviderError(): void
+    {
+        OpenAiCompatibleTestStream::$response = '{"error":{"message":"request exceeds the available context size"}}';
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(
+            'OpenAI-compatible API request failed: request exceeds the available context size',
+        );
+
+        (new OpenAiCompatibleSummarizer('openai-compatible-test://localhost/v1', 'SmolLM2-135M-Instruct-Q4_K_M'))
+            ->summarize('Important markdown.', 'notes.md');
+    }
+
+    /**
      * Verifies transport failures include the target endpoint.
      */
     public function testOpenAiCompatibleSummarizerReportsTransportFailure(): void

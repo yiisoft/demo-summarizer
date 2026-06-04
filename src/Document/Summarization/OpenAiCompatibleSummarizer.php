@@ -23,6 +23,11 @@ use function trim;
 final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
 {
     /**
+     * Character budget sent to the local model before tokenization.
+     */
+    private const MAX_MARKDOWN_CHARS = 3500;
+
+    /**
      * @param string $baseUrl Base URL of the OpenAI-compatible API, including the API version prefix.
      * @param string $model Model name sent in the chat completions request.
      * @param string $apiKey Optional bearer token for protected local or remote endpoints.
@@ -50,7 +55,7 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
                 ],
                 [
                     'role' => 'user',
-                    'content' => "Document: {$documentName}\n\n" . mb_substr($markdown, 0, 12000),
+                    'content' => "Document: {$documentName}\n\n" . mb_substr($markdown, 0, self::MAX_MARKDOWN_CHARS),
                 ],
             ],
             'stream' => false,
@@ -77,6 +82,7 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
                     'method' => 'POST',
                     'header' => $headers,
                     'content' => $payload,
+                    'ignore_errors' => true,
                     'timeout' => 120,
                 ],
             ]),
@@ -95,6 +101,11 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
 
         if (!is_array($decoded)) {
             throw new RuntimeException('OpenAI-compatible API returned an unexpected response.');
+        }
+
+        $error = $this->extractError($decoded);
+        if ($error !== null) {
+            throw new RuntimeException('OpenAI-compatible API request failed: ' . $error);
         }
 
         $choices = $decoded['choices'] ?? null;
@@ -118,5 +129,25 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
         }
 
         return trim($content);
+    }
+
+    /**
+     * Extracts a provider error message from a decoded OpenAI-compatible response.
+     *
+     * @param array<array-key, mixed> $decoded Decoded response body.
+     */
+    private function extractError(array $decoded): ?string
+    {
+        $error = $decoded['error'] ?? null;
+        if (is_string($error)) {
+            return $error;
+        }
+
+        if (!is_array($error)) {
+            return null;
+        }
+
+        $message = $error['message'] ?? null;
+        return is_string($message) ? $message : null;
     }
 }
