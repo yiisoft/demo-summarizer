@@ -16,6 +16,12 @@ use Yiisoft\Router\CurrentRoute;
  */
 final readonly class DownloadAction
 {
+    /**
+     * @param CurrentRoute $currentRoute Current route with the document identifier.
+     * @param DocumentRepository $repository Document persistence gateway.
+     * @param DocumentStorageInterface $storage Document blob storage.
+     * @param StreamFactoryInterface $streamFactory PSR-7 stream factory.
+     */
     public function __construct(
         private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
@@ -23,6 +29,9 @@ final readonly class DownloadAction
         private StreamFactoryInterface $streamFactory,
     ) {}
 
+    /**
+     * Streams the original uploaded file.
+     */
     public function __invoke(): ResponseInterface
     {
         $document = $this->repository->get((int) $this->currentRoute->getArgument('id'));

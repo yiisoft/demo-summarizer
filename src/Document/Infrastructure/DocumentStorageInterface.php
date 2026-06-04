@@ -9,11 +9,30 @@ namespace App\Document\Infrastructure;
  */
 interface DocumentStorageInterface
 {
+    /**
+     * Writes a document blob.
+     *
+     * @param string $key Storage object key.
+     * @param string $contents Blob contents.
+     */
     public function put(string $key, string $contents): void;
 
+    /**
+     * Reads a document blob.
+     *
+     * @param string $key Storage object key.
+     */
     public function read(string $key): string;
 
+    /**
+     * Deletes a document blob if it exists.
+     *
+     * @param string $key Storage object key.
+     */
     public function delete(string $key): void;
 
+    /**
+     * Clears all document blobs managed by the demo.
+     */
     public function clear(): void;
 }

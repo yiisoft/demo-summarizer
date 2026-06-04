@@ -17,10 +17,22 @@ use Yiisoft\Db\Connection\ConnectionInterface;
  */
 final readonly class DocumentRepository
 {
+    /**
+     * @param ConnectionInterface $db Database connection.
+     */
     public function __construct(
         private ConnectionInterface $db,
     ) {}
 
+    /**
+     * Creates a document record in uploaded state.
+     *
+     * @param string $originalName Original client filename.
+     * @param string $storageKey Storage key for the original file.
+     * @param string $mimeType Client MIME type.
+     * @param string $extension Lowercase file extension.
+     * @param int $byteSize Uploaded file size in bytes.
+     */
     public function create(
         string $originalName,
         string $storageKey,
@@ -47,6 +59,8 @@ final readonly class DocumentRepository
     }
 
     /**
+     * Returns all documents ordered for the dashboard.
+     *
      * @return list<Document>
      */
     public function all(): array
@@ -60,6 +74,11 @@ final readonly class DocumentRepository
         return $this->documentsFromRows($rows);
     }
 
+    /**
+     * Returns a document by identifier.
+     *
+     * @param int $id Document identifier.
+     */
     public function get(int $id): Document
     {
         $row = $this->db
@@ -77,6 +96,10 @@ final readonly class DocumentRepository
     }
 
     /**
+     * Returns timeline events for a document.
+     *
+     * @param int $documentId Document identifier.
+     *
      * @return list<DocumentEvent>
      */
     public function events(int $documentId): array
@@ -92,6 +115,10 @@ final readonly class DocumentRepository
     }
 
     /**
+     * Returns queued documents for portable queue observability.
+     *
+     * @param int $limit Maximum number of queued documents.
+     *
      * @return list<Document>
      */
     public function queued(int $limit = 20): array
@@ -107,6 +134,11 @@ final readonly class DocumentRepository
         return $this->documentsFromRows($rows);
     }
 
+    /**
+     * Marks a document as queued for processing.
+     *
+     * @param int $id Document identifier.
+     */
     public function markQueued(int $id): void
     {
         $now = $this->now();
@@ -123,6 +155,12 @@ final readonly class DocumentRepository
         $this->addEvent($id, 'queued', 'Document queued for processing.', 5);
     }
 
+    /**
+     * Claims a document for processing if it is available.
+     *
+     * @param int $id Document identifier.
+     * @param int $leaseSeconds Processing lease duration in seconds.
+     */
     public function claim(int $id, int $leaseSeconds): ?Document
     {
         $document = $this->get($id);
@@ -153,6 +191,12 @@ final readonly class DocumentRepository
         return $this->get($id);
     }
 
+    /**
+     * Marks a document as summarizing after markdown extraction.
+     *
+     * @param int $id Document identifier.
+     * @param string $markdownKey Storage key for extracted markdown.
+     */
     public function markSummarizing(int $id, string $markdownKey): void
     {
         $this->update($id, [
@@ -164,6 +208,12 @@ final readonly class DocumentRepository
         $this->addEvent($id, 'summarizing', 'Markdown extracted. Summarization started.', 70);
     }
 
+    /**
+     * Marks a document as completed with its generated summary.
+     *
+     * @param int $id Document identifier.
+     * @param string $summary Generated summary text.
+     */
     public function complete(int $id, string $summary): void
     {
         $now = $this->now();
@@ -178,6 +228,13 @@ final readonly class DocumentRepository
         $this->addEvent($id, 'completed', 'Processing completed.', 100);
     }
 
+    /**
+     * Marks a document as failed.
+     *
+     * @param int $id Document identifier.
+     * @param string $error User-facing error message.
+     * @param string $detail Internal error detail.
+     */
     public function fail(int $id, string $error, string $detail): void
     {
         $now = $this->now();
@@ -193,6 +250,11 @@ final readonly class DocumentRepository
         $this->addEvent($id, 'failed', $error, 100);
     }
 
+    /**
+     * Resets a failed document for manual retry.
+     *
+     * @param int $id Document identifier.
+     */
     public function prepareRetry(int $id): void
     {
         $document = $this->get($id);
@@ -210,17 +272,33 @@ final readonly class DocumentRepository
         $this->addEvent($id, 'retry', 'Manual retry requested.', 0);
     }
 
+    /**
+     * Deletes a document record.
+     *
+     * @param int $id Document identifier.
+     */
     public function delete(int $id): void
     {
         $this->db->createCommand()->delete('documents', ['id' => $id])->execute();
     }
 
+    /**
+     * Deletes all document records and timeline events.
+     */
     public function deleteAll(): void
     {
         $this->db->createCommand()->delete('processing_events')->execute();
         $this->db->createCommand()->delete('documents')->execute();
     }
 
+    /**
+     * Adds a document timeline event.
+     *
+     * @param int $documentId Document identifier.
+     * @param string $type Event type.
+     * @param string $message User-facing event message.
+     * @param int $progress Progress percentage.
+     */
     public function addEvent(int $documentId, string $type, string $message, int $progress): void
     {
         $this->db->createCommand()->insert('processing_events', [
@@ -233,25 +311,38 @@ final readonly class DocumentRepository
     }
 
     /**
-     * @param array<string, int|string|null> $values
+     * Updates a document row.
+     *
+     * @param int $id Document identifier.
+     * @param array<string, int|string|null> $values Column values.
      */
     private function update(int $id, array $values): void
     {
         $this->db->createCommand()->update('documents', $values, ['id' => $id])->execute();
     }
 
+    /**
+     * Returns the current timestamp in database format.
+     */
     private function now(): string
     {
         return $this->format(new DateTimeImmutable());
     }
 
+    /**
+     * Formats a timestamp for database storage.
+     *
+     * @param DateTimeImmutable $date Timestamp to format.
+     */
     private function format(DateTimeImmutable $date): string
     {
         return $date->format('Y-m-d H:i:s');
     }
 
     /**
-     * @param array<array-key, mixed> $rows
+     * Hydrates document rows.
+     *
+     * @param array<array-key, mixed> $rows Raw database rows.
      *
      * @return list<Document>
      */
@@ -271,7 +362,9 @@ final readonly class DocumentRepository
     }
 
     /**
-     * @param array<array-key, mixed> $rows
+     * Hydrates timeline event rows.
+     *
+     * @param array<array-key, mixed> $rows Raw database rows.
      *
      * @return list<DocumentEvent>
      */

@@ -18,11 +18,21 @@ use function trim;
  */
 final readonly class OllamaSummarizer implements SummarizerInterface
 {
+    /**
+     * @param string $baseUrl Base URL of the host Ollama service.
+     * @param string $model Ollama model name.
+     */
     public function __construct(
         private string $baseUrl,
         private string $model,
     ) {}
 
+    /**
+     * Requests a summary from Ollama.
+     *
+     * @param string $markdown Extracted document markdown.
+     * @param string $documentName Original document filename.
+     */
     public function summarize(string $markdown, string $documentName): string
     {
         $payload = json_encode([

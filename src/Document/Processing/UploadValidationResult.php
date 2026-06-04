@@ -10,12 +10,15 @@ namespace App\Document\Processing;
 final readonly class UploadValidationResult
 {
     /**
-     * @param list<string> $errors
+     * @param list<string> $errors Validation error messages.
      */
     public function __construct(
         public array $errors,
     ) {}
 
+    /**
+     * Returns whether the upload batch passed validation.
+     */
     public function isValid(): bool
     {
         return $this->errors === [];

@@ -9,6 +9,28 @@ namespace App\Document\Domain;
  */
 final readonly class Document
 {
+    /**
+     * @param int $id Database identifier.
+     * @param string $originalName Original client filename.
+     * @param string $storageKey Storage key for the original file.
+     * @param string $mimeType Client MIME type.
+     * @param string $extension Lowercase file extension.
+     * @param int $byteSize Uploaded file size in bytes.
+     * @param string $status Current processing status.
+     * @param int $progress Current processing progress percentage.
+     * @param string|null $leaseUntil Active processing lease timestamp.
+     * @param string|null $markdownKey Storage key for extracted markdown.
+     * @param string|null $summary Generated summary text.
+     * @param string|null $error User-facing processing error.
+     * @param string|null $errorDetail Internal processing error detail.
+     * @param int $retryCount Manual retry count.
+     * @param string|null $queuedAt Queue timestamp.
+     * @param string|null $startedAt Processing start timestamp.
+     * @param string|null $completedAt Completion timestamp.
+     * @param string|null $failedAt Failure timestamp.
+     * @param string $createdAt Creation timestamp.
+     * @param string $updatedAt Last update timestamp.
+     */
     public function __construct(
         public int $id,
         public string $originalName,
@@ -33,6 +55,8 @@ final readonly class Document
     ) {}
 
     /**
+     * Hydrates a document from a database row.
+     *
      * @param array<string, mixed> $row
      */
     public static function fromRow(array $row): self
@@ -61,6 +85,9 @@ final readonly class Document
         );
     }
 
+    /**
+     * Returns whether the document is in an active processing status.
+     */
     public function isActive(): bool
     {
         return in_array($this->status, DocumentStatus::ACTIVE, true);

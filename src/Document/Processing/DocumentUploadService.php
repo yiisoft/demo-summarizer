@@ -8,7 +8,7 @@ use App\Document\Domain\Document;
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use RuntimeException;
+use Yiisoft\Queue\QueueInterface;
 use Yiisoft\Validator\Rule\In;
 use Yiisoft\Validator\Rule\Number;
 use Yiisoft\Validator\ValidatorInterface;
@@ -32,12 +32,18 @@ use const UPLOAD_ERR_OK;
 final readonly class DocumentUploadService
 {
     /**
-     * @param list<string> $allowedExtensions
+     * @param DocumentRepository $repository Document persistence gateway.
+     * @param DocumentStorageInterface $storage Document blob storage.
+     * @param QueueInterface $queue Yii queue used for processing messages.
+     * @param ValidatorInterface $validator Yii validator.
+     * @param int $maxFileBytes Maximum file size in bytes.
+     * @param int $maxBatchBytes Maximum batch size in bytes.
+     * @param list<string> $allowedExtensions Allowed lowercase file extensions.
      */
     public function __construct(
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
-        private DocumentQueueInterface $queue,
+        private QueueInterface $queue,
         private ValidatorInterface $validator,
         private int $maxFileBytes,
         private int $maxBatchBytes,
@@ -45,7 +51,9 @@ final readonly class DocumentUploadService
     ) {}
 
     /**
-     * @param list<UploadedFileInterface> $files
+     * Validates, stores, creates, and queues uploaded documents.
+     *
+     * @param list<UploadedFileInterface> $files Uploaded document files.
      *
      * @return array{documents: list<Document>, errors: list<string>}
      */
@@ -73,14 +81,17 @@ final readonly class DocumentUploadService
                 $file->getSize() ?? strlen($contents),
             );
             $documents[] = $document;
-            $this->queue->enqueue($document->id);
+            $this->repository->markQueued($document->id);
+            $this->queue->push(new SummarizeDocumentMessage($document->id));
         }
 
         return ['documents' => $documents, 'errors' => []];
     }
 
     /**
-     * @param list<UploadedFileInterface> $files
+     * Validates an upload batch.
+     *
+     * @param list<UploadedFileInterface> $files Uploaded document files.
      */
     public function validate(array $files): UploadValidationResult
     {
@@ -131,7 +142,9 @@ final readonly class DocumentUploadService
     }
 
     /**
-     * @param list<UploadedFileInterface> $files
+     * Removes empty file-upload slots from a batch.
+     *
+     * @param list<UploadedFileInterface> $files Uploaded document files.
      *
      * @return list<UploadedFileInterface>
      */
@@ -143,6 +156,12 @@ final readonly class DocumentUploadService
         ));
     }
 
+    /**
+     * Checks the first bytes of a file against the expected extension signature.
+     *
+     * @param UploadedFileInterface $file Uploaded file.
+     * @param string $extension Lowercase file extension.
+     */
     private function signatureLooksValid(UploadedFileInterface $file, string $extension): bool
     {
         $stream = $file->getStream();

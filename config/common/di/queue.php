@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Document\Processing\ConfiguredDocumentQueue;
 use App\Document\Processing\ConfiguredDocumentQueuePurger;
-use App\Document\Processing\DocumentQueueInterface;
 use App\Document\Processing\DocumentQueuePurgerInterface;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Psr\Log\LoggerInterface;
@@ -77,7 +75,6 @@ return [
     QueueProviderInterface::class => static fn (QueueInterface $queue): QueueProviderInterface => new PredefinedQueueProvider([
         QueueProviderInterface::DEFAULT_QUEUE => $queue,
     ]),
-    DocumentQueueInterface::class => ConfiguredDocumentQueue::class,
     DocumentQueuePurgerInterface::class => [
         'class' => ConfiguredDocumentQueuePurger::class,
         '__construct()' => [

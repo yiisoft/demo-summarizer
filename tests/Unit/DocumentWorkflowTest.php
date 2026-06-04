@@ -12,10 +12,9 @@ use App\Document\Infrastructure\FlysystemDocumentStorage;
 use App\Document\Infrastructure\DocumentStorageFactory;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Migration\M250604000000CreateDocumentTables;
-use App\Document\Processing\ConfiguredDocumentQueue;
-use App\Document\Processing\DocumentMessage;
-use App\Document\Processing\DocumentMessageHandler;
 use App\Document\Processing\DocumentProcessor;
+use App\Document\Processing\SummarizeDocumentMessage;
+use App\Document\Processing\SummarizeDocumentMessageHandler;
 use App\Document\Summarization\SummarizerInterface;
 use Aws\MockHandler;
 use Aws\Result;
@@ -211,7 +210,7 @@ final class DocumentWorkflowTest extends Unit
         $repository->markQueued($document->id);
         $storage->put($document->storageKey, 'Original text');
 
-        $handler = new DocumentMessageHandler(new DocumentProcessor(
+        $handler = new SummarizeDocumentMessageHandler(new DocumentProcessor(
             900,
             $repository,
             $storage,
@@ -219,7 +218,7 @@ final class DocumentWorkflowTest extends Unit
             new StaticSummarizer('Summary text'),
         ));
 
-        $handler->handle(new IdEnvelope(new DocumentMessage($document->id), 1));
+        $handler->handle(new IdEnvelope(new SummarizeDocumentMessage($document->id), 1));
 
         assertSame(DocumentStatus::COMPLETED, $repository->get($document->id)->status);
     }
@@ -232,7 +231,7 @@ final class DocumentWorkflowTest extends Unit
         $repository->markQueued($document->id);
         $repository->deleteAll();
 
-        $handler = new DocumentMessageHandler(new DocumentProcessor(
+        $handler = new SummarizeDocumentMessageHandler(new DocumentProcessor(
             900,
             $repository,
             $storage,
@@ -240,7 +239,7 @@ final class DocumentWorkflowTest extends Unit
             new StaticSummarizer('Summary text'),
         ));
 
-        $handler->handle(new IdEnvelope(new DocumentMessage($document->id), 1));
+        $handler->handle(new IdEnvelope(new SummarizeDocumentMessage($document->id), 1));
 
         self::assertSame([], $repository->all());
     }
@@ -304,18 +303,15 @@ final class DocumentWorkflowTest extends Unit
         assertSame('Document uploaded.', $event->message);
     }
 
-    public function testConfiguredQueuePushesSyncJobsThroughYiiQueue(): void
+    public function testSummarizeDocumentMessageCanBePushedThroughYiiQueue(): void
     {
-        $repository = $this->repository();
-        $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
         $queue = new CapturingQueue();
+        $message = new SummarizeDocumentMessage(42);
 
-        (new ConfiguredDocumentQueue($repository, $queue))->enqueue($document->id);
+        $queue->push($message);
 
-        assertSame(DocumentStatus::QUEUED, $repository->get($document->id)->status);
         assertCount(1, $queue->messages);
-        self::assertInstanceOf(DocumentMessage::class, $queue->messages[0]);
-        assertSame($document->id, $queue->messages[0]->documentId);
+        assertSame($message, $queue->messages[0]);
     }
 
     private function repository(): DocumentRepository

@@ -17,12 +17,22 @@ use Yiisoft\Yii\View\Renderer\WebViewRenderer;
  */
 final readonly class NotFoundHandler implements RequestHandlerInterface
 {
+    /**
+     * @param UrlGeneratorInterface $urlGenerator URL generator passed to the view.
+     * @param CurrentRoute $currentRoute Current route passed to the view.
+     * @param WebViewRenderer $viewRenderer Yii view renderer.
+     */
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private CurrentRoute $currentRoute,
         private WebViewRenderer $viewRenderer,
     ) {}
 
+    /**
+     * Renders a 404 response for unmatched requests.
+     *
+     * @param ServerRequestInterface $request Current server request.
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         return $this->viewRenderer

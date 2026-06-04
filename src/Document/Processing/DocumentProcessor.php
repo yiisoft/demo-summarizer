@@ -16,6 +16,13 @@ use Throwable;
  */
 final readonly class DocumentProcessor
 {
+    /**
+     * @param int $leaseSeconds Processing lease duration in seconds.
+     * @param DocumentRepository $repository Document persistence gateway.
+     * @param DocumentStorageInterface $storage Document blob storage.
+     * @param ExtractorInterface $extractor Document text extractor.
+     * @param SummarizerInterface $summarizer Document summarizer.
+     */
     public function __construct(
         private int $leaseSeconds,
         private DocumentRepository $repository,
@@ -24,6 +31,11 @@ final readonly class DocumentProcessor
         private SummarizerInterface $summarizer,
     ) {}
 
+    /**
+     * Processes a queued document if it can be claimed.
+     *
+     * @param int $documentId Document identifier to process.
+     */
     public function process(int $documentId): void
     {
         try {

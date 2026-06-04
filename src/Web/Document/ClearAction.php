@@ -13,10 +13,16 @@ use Psr\Http\Message\ResponseInterface;
  */
 final readonly class ClearAction
 {
+    /**
+     * @param DocumentClearService $clearService Service that clears documents and queues.
+     */
     public function __construct(
         private DocumentClearService $clearService,
     ) {}
 
+    /**
+     * Clears all demo document data and redirects to the dashboard.
+     */
     public function __invoke(): ResponseInterface
     {
         $this->clearService->clear();

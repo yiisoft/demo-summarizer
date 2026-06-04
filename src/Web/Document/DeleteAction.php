@@ -15,12 +15,20 @@ use Yiisoft\Router\CurrentRoute;
  */
 final readonly class DeleteAction
 {
+    /**
+     * @param CurrentRoute $currentRoute Current route with the document identifier.
+     * @param DocumentRepository $repository Document persistence gateway.
+     * @param DocumentStorageInterface $storage Document blob storage.
+     */
     public function __construct(
         private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
     ) {}
 
+    /**
+     * Deletes the selected document and redirects to the dashboard.
+     */
     public function __invoke(): ResponseInterface
     {
         $document = $this->repository->get((int) $this->currentRoute->getArgument('id'));

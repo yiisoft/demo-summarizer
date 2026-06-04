@@ -12,12 +12,20 @@ use App\Document\Infrastructure\DocumentStorageInterface;
  */
 final readonly class DocumentClearService
 {
+    /**
+     * @param DocumentRepository $repository Document persistence gateway.
+     * @param DocumentStorageInterface $storage Document blob storage.
+     * @param DocumentQueuePurgerInterface $queuePurger Queue backend purger.
+     */
     public function __construct(
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
         private DocumentQueuePurgerInterface $queuePurger,
     ) {}
 
+    /**
+     * Clears pending queue jobs, stored files, and document records.
+     */
     public function clear(): void
     {
         $this->queuePurger->purge();

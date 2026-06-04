@@ -15,6 +15,16 @@ use RuntimeException;
  */
 final readonly class DocumentStorageFactory
 {
+    /**
+     * @param string $storageDriver Storage driver name.
+     * @param string $localStorageRoot Root path for local filesystem storage.
+     * @param string $s3Endpoint S3-compatible endpoint URL.
+     * @param string $s3Region S3 region.
+     * @param string $s3Bucket S3 bucket name.
+     * @param string $s3AccessKey S3 access key.
+     * @param string $s3SecretKey S3 secret key.
+     * @param bool $s3PathStyle Whether to use S3 path-style addressing.
+     */
     public function __construct(
         private string $storageDriver,
         private string $localStorageRoot,
@@ -26,6 +36,9 @@ final readonly class DocumentStorageFactory
         private bool $s3PathStyle,
     ) {}
 
+    /**
+     * Creates the configured document storage adapter.
+     */
     public function create(): DocumentStorageInterface
     {
         if ($this->storageDriver === 's3') {

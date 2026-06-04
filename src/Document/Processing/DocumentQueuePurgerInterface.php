@@ -9,5 +9,8 @@ namespace App\Document\Processing;
  */
 interface DocumentQueuePurgerInterface
 {
+    /**
+     * Purges pending jobs from the configured queue backend.
+     */
     public function purge(): void;
 }

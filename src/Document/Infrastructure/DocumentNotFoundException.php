@@ -11,6 +11,9 @@ use RuntimeException;
  */
 final class DocumentNotFoundException extends RuntimeException
 {
+    /**
+     * @param int $id Missing document identifier.
+     */
     public function __construct(int $id)
     {
         parent::__construct("Document #$id was not found.");

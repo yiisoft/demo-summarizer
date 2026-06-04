@@ -14,6 +14,13 @@ use function trim;
  */
 final class NativeExtractor implements ExtractorInterface
 {
+    /**
+     * Extracts text from natively supported document formats.
+     *
+     * @param string $contents Original document bytes.
+     * @param string $extension Lowercase document extension.
+     * @param string $originalName Original client filename.
+     */
     public function extract(string $contents, string $extension, string $originalName): string
     {
         return match ($extension) {
@@ -25,6 +32,11 @@ final class NativeExtractor implements ExtractorInterface
         };
     }
 
+    /**
+     * Converts simple HTML into readable markdown-like plain text.
+     *
+     * @param string $contents HTML document contents.
+     */
     private function htmlToMarkdownLike(string $contents): string
     {
         $contents = preg_replace('~<(h[1-6])[^>]*>(.*?)</\1>~is', "\n\n## $2\n\n", $contents) ?? $contents;

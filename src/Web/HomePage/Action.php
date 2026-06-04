@@ -13,12 +13,20 @@ use Yiisoft\Yii\View\Renderer\WebViewRenderer;
  */
 final readonly class Action
 {
+    /**
+     * @param WebViewRenderer $viewRenderer Yii view renderer.
+     * @param DocumentRepository $repository Document persistence gateway.
+     * @param string $queueDriver Active queue driver name.
+     */
     public function __construct(
         private WebViewRenderer $viewRenderer,
         private DocumentRepository $repository,
         private string $queueDriver,
     ) {}
 
+    /**
+     * Renders the dashboard with current documents.
+     */
     public function __invoke(): ResponseInterface
     {
         return $this->viewRenderer->render(

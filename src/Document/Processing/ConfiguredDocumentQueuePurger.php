@@ -11,6 +11,18 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
  */
 final readonly class ConfiguredDocumentQueuePurger implements DocumentQueuePurgerInterface
 {
+    /**
+     * @param string $queueDriver Active queue driver name.
+     * @param string $queueName Queue name to purge.
+     * @param string $amqpHost AMQP broker host.
+     * @param int $amqpPort AMQP broker port.
+     * @param string $amqpUser AMQP username.
+     * @param string $amqpPassword AMQP password.
+     * @param string $amqpVhost AMQP virtual host.
+     * @param string $redisHost Redis-compatible host.
+     * @param int $redisPort Redis-compatible port.
+     * @param int $redisTimeout Redis connection timeout in seconds.
+     */
     public function __construct(
         private string $queueDriver,
         private string $queueName,
@@ -24,6 +36,9 @@ final readonly class ConfiguredDocumentQueuePurger implements DocumentQueuePurge
         private int $redisTimeout,
     ) {}
 
+    /**
+     * Purges pending jobs from the active non-sync queue backend.
+     */
     public function purge(): void
     {
         match ($this->queueDriver) {
@@ -34,6 +49,9 @@ final readonly class ConfiguredDocumentQueuePurger implements DocumentQueuePurge
         };
     }
 
+    /**
+     * Purges pending jobs from RabbitMQ.
+     */
     private function purgeAmqp(): void
     {
         $connection = new AMQPStreamConnection(
@@ -54,6 +72,9 @@ final readonly class ConfiguredDocumentQueuePurger implements DocumentQueuePurge
         }
     }
 
+    /**
+     * Purges pending jobs from Redis-compatible queue keys.
+     */
     private function purgeRedis(): void
     {
         $redis = new \Redis();

@@ -17,6 +17,12 @@ use Yiisoft\Yii\View\Renderer\WebViewRenderer;
  */
 final readonly class UploadAction
 {
+    /**
+     * @param DocumentUploadService $uploadService Upload workflow service.
+     * @param DocumentRepository $repository Document persistence gateway.
+     * @param string $queueDriver Active queue driver name.
+     * @param WebViewRenderer $viewRenderer Yii view renderer.
+     */
     public function __construct(
         private DocumentUploadService $uploadService,
         private DocumentRepository $repository,
@@ -24,6 +30,11 @@ final readonly class UploadAction
         private WebViewRenderer $viewRenderer,
     ) {}
 
+    /**
+     * Handles an upload request and redirects or re-renders validation errors.
+     *
+     * @param ServerRequestInterface $request Upload form request.
+     */
     public function __invoke(ServerRequestInterface $request): ResponseInterface
     {
         $result = $this->uploadService->upload($this->files($request->getUploadedFiles()['documents'] ?? []));
@@ -42,6 +53,8 @@ final readonly class UploadAction
     }
 
     /**
+     * Normalizes the uploaded files value for the documents input.
+     *
      * @param mixed $files
      *
      * @return list<UploadedFileInterface>

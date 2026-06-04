@@ -9,5 +9,11 @@ namespace App\Document\Summarization;
  */
 interface SummarizerInterface
 {
+    /**
+     * Summarizes extracted document markdown.
+     *
+     * @param string $markdown Extracted document markdown.
+     * @param string $documentName Original document filename.
+     */
     public function summarize(string $markdown, string $documentName): string;
 }

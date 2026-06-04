@@ -13,6 +13,11 @@ use Yiisoft\Db\Migration\RevertibleMigrationInterface;
  */
 final class M250604000000CreateDocumentTables implements RevertibleMigrationInterface
 {
+    /**
+     * Applies document workflow schema changes.
+     *
+     * @param MigrationBuilder $b Migration builder.
+     */
     public function up(MigrationBuilder $b): void
     {
         $b->execute(DocumentSchemaSql::CREATE_DOCUMENTS);
@@ -21,6 +26,11 @@ final class M250604000000CreateDocumentTables implements RevertibleMigrationInte
         $b->execute(DocumentSchemaSql::CREATE_PROCESSING_EVENTS_DOCUMENT_INDEX);
     }
 
+    /**
+     * Reverts document workflow schema changes.
+     *
+     * @param MigrationBuilder $b Migration builder.
+     */
     public function down(MigrationBuilder $b): void
     {
         $b->execute(DocumentSchemaSql::DROP_PROCESSING_EVENTS_DOCUMENT_INDEX);

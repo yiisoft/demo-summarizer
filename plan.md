@@ -44,7 +44,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 
 - [x] Add queue processing:
     - [x] queue message payload is only documentId
-    - [x] sync-mode processing pushes `DocumentMessage` through `yiisoft/queue`
+    - [x] sync-mode processing pushes `SummarizeDocumentMessage` through `yiisoft/queue`
     - [x] handler reloads document state from SQLite
     - [x] handler uses app-level claim/lease so multiple workers can run safely
     - [x] handler transitions through uploaded, queued, extracting, summarizing, completed, failed

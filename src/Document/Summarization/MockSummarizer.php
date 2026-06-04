@@ -13,6 +13,12 @@ use function trim;
  */
 final class MockSummarizer implements SummarizerInterface
 {
+    /**
+     * Returns a deterministic summary for mock mode.
+     *
+     * @param string $markdown Extracted document markdown.
+     * @param string $documentName Original document filename.
+     */
     public function summarize(string $markdown, string $documentName): string
     {
         $slice = trim(mb_substr(preg_replace('~\s+~u', ' ', $markdown) ?? $markdown, 0, 700));

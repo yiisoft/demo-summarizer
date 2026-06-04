@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Shared\ApplicationParams;
-use App\Document\Processing\DocumentMessage;
-use App\Document\Processing\DocumentMessageHandler;
+use App\Document\Processing\SummarizeDocumentMessage;
+use App\Document\Processing\SummarizeDocumentMessageHandler;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Definitions\Reference;
@@ -47,7 +47,7 @@ return [
 
     'yiisoft/queue' => [
         'handlers' => [
-            DocumentMessage::class => DocumentMessageHandler::class,
+            SummarizeDocumentMessage::class => SummarizeDocumentMessageHandler::class,
         ],
         'middlewares-push' => [],
         'middlewares-consume' => [],
@@ -64,11 +64,11 @@ return [
     ],
 
     'documentDemo' => array_merge(
-        require __DIR__ . '/document-demo-db.php',
-        require __DIR__ . '/document-demo-extraction.php',
-        require __DIR__ . '/document-demo-processing.php',
-        require __DIR__ . '/document-demo-queue.php',
-        require __DIR__ . '/document-demo-storage.php',
-        require __DIR__ . '/document-demo-summarization.php',
+        require __DIR__ . '/db.php',
+        require __DIR__ . '/extraction.php',
+        require __DIR__ . '/processing.php',
+        require __DIR__ . '/queue.php',
+        require __DIR__ . '/storage.php',
+        require __DIR__ . '/summarization.php',
     ),
 ];
