@@ -9,7 +9,8 @@ This repository contains a runnable Yii3 document summarizer demo. The detailed 
 - Batch upload for text, markdown, HTML, PDF, and DOCX documents.
 - Server-side upload validation with size, extension, MIME, and signature checks.
 - Local object storage by default, with S3-compatible storage configuration for MinIO or another compatible service.
-- Queue-oriented processing with sync mode by default and AMQP/Valkey modes queued for worker processing.
+- Queue-oriented processing through `yiisoft/queue`, with sync mode by default.
+- AMQP/Valkey queue adapters are installed but currently blocked by an upstream Yii queue adapter/core compatibility issue recorded in [docs/upstream-queue-notes.md](docs/upstream-queue-notes.md).
 - Preferred extraction through the Docker-installed Kreuzberg CLI, with a native fallback for text, Markdown, and HTML.
 - Mock and Ollama summarizer adapters.
 - Web UI for document status, progress, summaries, downloads, deletion, and retry.
@@ -45,11 +46,14 @@ Create the SQLite tables:
 make -- yii migrate:up -y
 ```
 
-Process queued documents when `QUEUE_DRIVER` is not `sync`:
+Process queued messages with the native Yii queue worker when a compatible non-sync Yii queue adapter is configured:
 
 ```bash
-make yii document:work
+make yii queue:run
+make yii queue:listen
 ```
+
+Do not use a demo-specific worker command; document processing is wired through `yiisoft/queue`.
 
 Open a shell in the app container:
 
@@ -95,3 +99,5 @@ Common environment variables:
 - `EXTRACTOR_ADAPTER=kreuzberg|native`
 - `LLM_ADAPTER=mock|ollama`
 - `OLLAMA_BASE_URL`, `OLLAMA_MODEL`
+
+`QUEUE_DRIVER=amqp|redis` records the current upstream adapter compatibility blocker until the Yii adapter packages are aligned with the installed `yiisoft/queue` core.

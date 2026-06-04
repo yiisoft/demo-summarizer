@@ -7,7 +7,7 @@ namespace App\Shared;
 final readonly class ApplicationParams
 {
     public function __construct(
-        public string $name = 'My Project',
+        public string $name = 'Yii3 Document Summarizer Demo',
         public string $charset = 'UTF-8',
         public string $locale = 'en',
     ) {}

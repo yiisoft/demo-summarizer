@@ -24,6 +24,11 @@ $this->addJsFiles($assetManager->getJsFiles());
 $this->addJsStrings($assetManager->getJsStrings());
 $this->addJsVars($assetManager->getJsVars());
 
+$title = $this->getTitle();
+if ($title === '') {
+    $title = $applicationParams->name;
+}
+
 $this->beginPage()
 ?>
 <!DOCTYPE html>
@@ -32,7 +37,7 @@ $this->beginPage()
     <meta charset="<?= Html::encode($applicationParams->charset) ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="<?= $aliases->get('@baseUrl/favicon.svg') ?>" type="image/svg+xml">
-    <title><?= Html::encode($this->getTitle()) ?></title>
+    <title><?= Html::encode($title) ?></title>
     <?php $this->head() ?>
 </head>
 <body>

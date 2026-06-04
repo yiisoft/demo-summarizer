@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Web\Document;
 
-use App\Document\DocumentDemoConfig;
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Processing\DocumentUploadService;
 use HttpSoft\Message\Response;
@@ -18,7 +17,7 @@ final readonly class UploadAction
     public function __construct(
         private DocumentUploadService $uploadService,
         private DocumentRepository $repository,
-        private DocumentDemoConfig $config,
+        private string $queueDriver,
         private WebViewRenderer $viewRenderer,
     ) {}
 
@@ -30,7 +29,7 @@ final readonly class UploadAction
                 '@src/Web/HomePage/template',
                 [
                     'documents' => $this->repository->all(),
-                    'config' => $this->config,
+                    'queueDriver' => $this->queueDriver,
                     'errors' => $result['errors'],
                 ],
             );

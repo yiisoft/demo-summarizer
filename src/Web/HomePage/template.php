@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Shared\ApplicationParams;
-use App\Document\DocumentDemoConfig;
 use App\Document\Domain\Document;
 use App\Document\Domain\DocumentStatus;
 use Yiisoft\Yii\View\Renderer\Csrf;
@@ -15,7 +14,7 @@ use Yiisoft\View\WebView;
  * @var ApplicationParams $applicationParams
  * @var Csrf|null $csrf
  * @var list<Document> $documents
- * @var DocumentDemoConfig $config
+ * @var string $queueDriver
  * @var list<string> $errors
  */
 
@@ -36,7 +35,7 @@ foreach ($documents as $document) {
             <p>Upload documents, extract markdown, summarize content, and track queue progress.</p>
         </div>
         <div class="demo-mode">
-            <span><?= Html::encode(strtoupper($config->queueDriver)) ?></span>
+            <span><?= Html::encode(strtoupper($queueDriver)) ?></span>
             <small>queue mode</small>
         </div>
     </div>

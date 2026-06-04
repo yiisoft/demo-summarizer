@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Document\Processing;
 
-use App\Document\DocumentDemoConfig;
 use App\Document\Extraction\ExtractorInterface;
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
@@ -14,7 +13,7 @@ use Throwable;
 final readonly class DocumentProcessor
 {
     public function __construct(
-        private DocumentDemoConfig $config,
+        private int $leaseSeconds,
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
         private ExtractorInterface $extractor,
@@ -23,7 +22,7 @@ final readonly class DocumentProcessor
 
     public function process(int $documentId): void
     {
-        $document = $this->repository->claim($documentId, $this->config->leaseSeconds);
+        $document = $this->repository->claim($documentId, $this->leaseSeconds);
         if ($document === null) {
             return;
         }

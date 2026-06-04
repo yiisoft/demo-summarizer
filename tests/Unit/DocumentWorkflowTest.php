@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit;
 
-use App\Document\DocumentDemoConfig;
 use App\Document\Domain\DocumentStatus;
 use App\Document\Extraction\ExtractionException;
 use App\Document\Extraction\ExtractorInterface;
@@ -12,6 +11,8 @@ use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageFactory;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Migration\M250604000000CreateDocumentTables;
+use App\Document\Processing\ConfiguredDocumentQueue;
+use App\Document\Processing\DocumentMessage;
 use App\Document\Processing\DocumentProcessor;
 use App\Document\Summarization\SummarizerInterface;
 use Codeception\Test\Unit;
@@ -22,6 +23,9 @@ use Yiisoft\Db\Migration\Informer\NullMigrationInformer;
 use Yiisoft\Db\Migration\Migrator;
 use Yiisoft\Db\Sqlite\Connection;
 use Yiisoft\Db\Sqlite\Driver;
+use Yiisoft\Queue\Message\MessageInterface;
+use Yiisoft\Queue\MessageStatus;
+use Yiisoft\Queue\QueueInterface;
 
 use function is_file;
 use function PHPUnit\Framework\assertCount;
@@ -82,7 +86,16 @@ final class DocumentWorkflowTest extends Unit
 
     public function testLocalStorageWritesReadsAndDeletesObjects(): void
     {
-        $storage = (new DocumentStorageFactory($this->config()))->create();
+        $storage = (new DocumentStorageFactory(
+            storageDriver: 'local',
+            localStorageRoot: $this->storageRoot(),
+            s3Endpoint: 'http://minio:9000',
+            s3Region: 'us-east-1',
+            s3Bucket: 'documents',
+            s3AccessKey: 'minioadmin',
+            s3SecretKey: 'minioadmin',
+            s3PathStyle: true,
+        ))->create();
 
         $storage->put('documents/test/original.txt', 'content');
 
@@ -102,7 +115,7 @@ final class DocumentWorkflowTest extends Unit
         $storage->put($document->storageKey, 'Original text');
 
         $processor = new DocumentProcessor(
-            $this->config(),
+            900,
             $repository,
             $storage,
             new StaticExtractor('Extracted markdown'),
@@ -128,7 +141,7 @@ final class DocumentWorkflowTest extends Unit
         $storage->put($failing->storageKey, '%PDF-');
 
         $processor = new DocumentProcessor(
-            $this->config(),
+            900,
             $repository,
             $storage,
             new FailingExtractor(),
@@ -139,6 +152,32 @@ final class DocumentWorkflowTest extends Unit
 
         assertSame(DocumentStatus::FAILED, $repository->get($failing->id)->status);
         assertSame(DocumentStatus::QUEUED, $repository->get($other->id)->status);
+    }
+
+    public function testConfiguredQueuePushesSyncJobsThroughYiiQueue(): void
+    {
+        $repository = $this->repository();
+        $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
+        $queue = new CapturingQueue();
+
+        (new ConfiguredDocumentQueue('sync', $repository, $queue))->enqueue($document->id);
+
+        assertSame(DocumentStatus::QUEUED, $repository->get($document->id)->status);
+        assertCount(1, $queue->messages);
+        self::assertInstanceOf(DocumentMessage::class, $queue->messages[0]);
+        assertSame($document->id, $queue->messages[0]->documentId);
+    }
+
+    public function testConfiguredQueueRecordsAdapterBlockerForNonSyncModes(): void
+    {
+        $repository = $this->repository();
+        $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
+
+        (new ConfiguredDocumentQueue('amqp', $repository, new CapturingQueue()))
+            ->enqueue($document->id);
+
+        $events = $repository->events($document->id);
+        assertSame('queue-adapter-unavailable', $events[array_key_last($events)]->type);
     }
 
     private function repository(): DocumentRepository
@@ -164,30 +203,11 @@ final class DocumentWorkflowTest extends Unit
         (new Migrator($db, new NullMigrationInformer()))->up(new M250604000000CreateDocumentTables());
     }
 
-    private function config(): DocumentDemoConfig
+    private function storageRoot(): string
     {
         $this->storageRoot ??= sys_get_temp_dir() . '/' . uniqid('doc-storage-', true);
 
-        return new DocumentDemoConfig(
-            queueDriver: 'sync',
-            databaseDsn: 'sqlite:' . ($this->databasePath ?? ':memory:'),
-            storageDriver: 'local',
-            localStorageRoot: $this->storageRoot,
-            s3Endpoint: 'http://minio:9000',
-            s3Region: 'us-east-1',
-            s3Bucket: 'documents',
-            s3AccessKey: 'minioadmin',
-            s3SecretKey: 'minioadmin',
-            s3PathStyle: true,
-            leaseSeconds: 900,
-            extractorAdapter: 'native',
-            llmAdapter: 'mock',
-            ollamaBaseUrl: 'http://ollama:11434',
-            ollamaModel: 'llama3.2',
-            maxFileBytes: 20 * 1024 * 1024,
-            maxBatchBytes: 100 * 1024 * 1024,
-            allowedExtensions: ['md', 'txt', 'html', 'pdf', 'docx'],
-        );
+        return $this->storageRoot;
     }
 
     private function removeTree(string $path): void
@@ -268,5 +288,46 @@ final readonly class StaticSummarizer implements SummarizerInterface
     public function summarize(string $markdown, string $documentName): string
     {
         return $this->summary;
+    }
+}
+
+final class CapturingQueue implements QueueInterface
+{
+    /** @var list<MessageInterface> */
+    public array $messages = [];
+
+    public function push(MessageInterface $message): MessageInterface
+    {
+        $this->messages[] = $message;
+        return $message;
+    }
+
+    public function run(int $max = 0): int
+    {
+        return 0;
+    }
+
+    public function listen(): void
+    {
+    }
+
+    public function status(string|int $id): MessageStatus
+    {
+        return MessageStatus::NOT_FOUND;
+    }
+
+    public function getName(): string
+    {
+        return 'test';
+    }
+
+    public function withMiddlewares(mixed ...$middlewareDefinitions): self
+    {
+        return $this;
+    }
+
+    public function withMiddlewaresAdded(mixed ...$middlewareDefinitions): self
+    {
+        return $this;
     }
 }

@@ -15,6 +15,7 @@ Impact:
 
 - Redis broker status is intended to be available through the adapter, but this mismatch must be fixed upstream before the app can safely rely on the adapter type contract.
 - AMQP status is explicitly unsupported by the adapter even after the type mismatch is fixed, so the demo should keep using database progress as the portable fallback for AMQP.
+- The demo uses `yiisoft/queue` for sync processing and native Yii queue commands for workers. It should not add a demo-specific worker or direct broker transport to work around this package compatibility issue.
 
 Expected upstream direction:
 

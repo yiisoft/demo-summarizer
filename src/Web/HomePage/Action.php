@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Web\HomePage;
 
-use App\Document\DocumentDemoConfig;
 use App\Document\Infrastructure\DocumentRepository;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
@@ -14,7 +13,7 @@ final readonly class Action
     public function __construct(
         private WebViewRenderer $viewRenderer,
         private DocumentRepository $repository,
-        private DocumentDemoConfig $config,
+        private string $queueDriver,
     ) {}
 
     public function __invoke(): ResponseInterface
@@ -23,7 +22,7 @@ final readonly class Action
             __DIR__ . '/template',
             [
                 'documents' => $this->repository->all(),
-                'config' => $this->config,
+                'queueDriver' => $this->queueDriver,
                 'errors' => [],
             ],
         );

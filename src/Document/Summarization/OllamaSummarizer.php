@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Document\Summarization;
 
-use App\Document\DocumentDemoConfig;
 use RuntimeException;
 
 use function file_get_contents;
@@ -17,13 +16,14 @@ use function trim;
 final readonly class OllamaSummarizer implements SummarizerInterface
 {
     public function __construct(
-        private DocumentDemoConfig $config,
+        private string $baseUrl,
+        private string $model,
     ) {}
 
     public function summarize(string $markdown, string $documentName): string
     {
         $payload = json_encode([
-            'model' => $this->config->ollamaModel,
+            'model' => $this->model,
             'stream' => false,
             'prompt' => "Summarize this document in 5 concise bullet points.\n\n"
                 . "Document: $documentName\n\n"
@@ -34,7 +34,7 @@ final readonly class OllamaSummarizer implements SummarizerInterface
         }
 
         $body = file_get_contents(
-            rtrim($this->config->ollamaBaseUrl, '/') . '/api/generate',
+            rtrim($this->baseUrl, '/') . '/api/generate',
             false,
             stream_context_create([
                 'http' => [

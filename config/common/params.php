@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Shared\ApplicationParams;
+use App\Document\Processing\DocumentMessage;
+use App\Document\Processing\DocumentMessageHandler;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Definitions\Reference;
@@ -41,6 +43,15 @@ return [
         'injections' => [
             Reference::to(CsrfViewInjection::class),
         ],
+    ],
+
+    'yiisoft/queue' => [
+        'handlers' => [
+            DocumentMessage::class => DocumentMessageHandler::class,
+        ],
+        'middlewares-push' => [],
+        'middlewares-consume' => [],
+        'middlewares-fail' => [],
     ],
 
     'yiisoft/db-migration' => [

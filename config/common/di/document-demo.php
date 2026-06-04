@@ -2,26 +2,31 @@
 
 declare(strict_types=1);
 
-use App\Document\DocumentDemoConfig;
 use App\Document\Extraction\ConfiguredExtractor;
 use App\Document\Extraction\ExtractorInterface;
 use App\Document\Infrastructure\DocumentStorageFactory;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Processing\ConfiguredDocumentQueue;
 use App\Document\Processing\DocumentQueueInterface;
+use App\Document\Processing\DocumentProcessor;
+use App\Document\Processing\DocumentUploadService;
 use App\Document\Summarization\ConfiguredSummarizer;
+use App\Document\Summarization\OllamaSummarizer;
 use App\Document\Summarization\SummarizerInterface;
+use App\Web\Document\UploadAction;
+use App\Web\HomePage\Action as HomePageAction;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Sqlite\Connection;
 use Yiisoft\Db\Sqlite\Driver;
+use Yiisoft\Queue\Provider\PredefinedQueueProvider;
+use Yiisoft\Queue\Provider\QueueProviderInterface;
+use Yiisoft\Queue\Queue;
+use Yiisoft\Queue\QueueInterface;
 
 /** @var array $params */
 
 return [
-    DocumentDemoConfig::class => [
-        '__construct()' => $params['documentDemo'],
-    ],
     ConnectionInterface::class => static function (SchemaCache $schemaCache) use ($params): ConnectionInterface {
         $dsn = $params['documentDemo']['databaseDsn'];
         if (str_starts_with($dsn, 'sqlite:')) {
@@ -36,8 +41,67 @@ return [
 
         return new Connection(new Driver($dsn), $schemaCache);
     },
+    DocumentStorageFactory::class => [
+        '__construct()' => [
+            'storageDriver' => $params['documentDemo']['storageDriver'],
+            'localStorageRoot' => $params['documentDemo']['localStorageRoot'],
+            's3Endpoint' => $params['documentDemo']['s3Endpoint'],
+            's3Region' => $params['documentDemo']['s3Region'],
+            's3Bucket' => $params['documentDemo']['s3Bucket'],
+            's3AccessKey' => $params['documentDemo']['s3AccessKey'],
+            's3SecretKey' => $params['documentDemo']['s3SecretKey'],
+            's3PathStyle' => $params['documentDemo']['s3PathStyle'],
+        ],
+    ],
+    ConfiguredExtractor::class => [
+        '__construct()' => [
+            'extractorAdapter' => $params['documentDemo']['extractorAdapter'],
+        ],
+    ],
+    ConfiguredSummarizer::class => [
+        '__construct()' => [
+            'llmAdapter' => $params['documentDemo']['llmAdapter'],
+        ],
+    ],
+    OllamaSummarizer::class => [
+        '__construct()' => [
+            'baseUrl' => $params['documentDemo']['ollamaBaseUrl'],
+            'model' => $params['documentDemo']['ollamaModel'],
+        ],
+    ],
+    DocumentProcessor::class => [
+        '__construct()' => [
+            'leaseSeconds' => $params['documentDemo']['leaseSeconds'],
+        ],
+    ],
+    ConfiguredDocumentQueue::class => [
+        '__construct()' => [
+            'queueDriver' => $params['documentDemo']['queueDriver'],
+        ],
+    ],
+    DocumentUploadService::class => [
+        '__construct()' => [
+            'maxFileBytes' => $params['documentDemo']['maxFileBytes'],
+            'maxBatchBytes' => $params['documentDemo']['maxBatchBytes'],
+            'allowedExtensions' => $params['documentDemo']['allowedExtensions'],
+        ],
+    ],
+    HomePageAction::class => [
+        '__construct()' => [
+            'queueDriver' => $params['documentDemo']['queueDriver'],
+        ],
+    ],
+    UploadAction::class => [
+        '__construct()' => [
+            'queueDriver' => $params['documentDemo']['queueDriver'],
+        ],
+    ],
     DocumentStorageInterface::class => static fn (DocumentStorageFactory $factory): DocumentStorageInterface => $factory->create(),
     ExtractorInterface::class => ConfiguredExtractor::class,
     SummarizerInterface::class => ConfiguredSummarizer::class,
+    QueueInterface::class => Queue::class,
+    QueueProviderInterface::class => static fn (QueueInterface $queue): QueueProviderInterface => new PredefinedQueueProvider([
+        QueueProviderInterface::DEFAULT_QUEUE => $queue,
+    ]),
     DocumentQueueInterface::class => ConfiguredDocumentQueue::class,
 ];

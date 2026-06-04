@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Document\Processing;
 
-use App\Document\DocumentDemoConfig;
 use App\Document\Domain\Document;
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
@@ -28,12 +27,17 @@ use const UPLOAD_ERR_OK;
 
 final readonly class DocumentUploadService
 {
+    /**
+     * @param list<string> $allowedExtensions
+     */
     public function __construct(
-        private DocumentDemoConfig $config,
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
         private DocumentQueueInterface $queue,
         private ValidatorInterface $validator,
+        private int $maxFileBytes,
+        private int $maxBatchBytes,
+        private array $allowedExtensions,
     ) {}
 
     /**
@@ -98,8 +102,8 @@ final readonly class DocumentUploadService
                     'size' => $size,
                 ],
                 [
-                    'extension' => [new In($this->config->allowedExtensions)],
-                    'size' => [new Number(max: $this->config->maxFileBytes)],
+                    'extension' => [new In($this->allowedExtensions)],
+                    'size' => [new Number(max: $this->maxFileBytes)],
                 ],
             );
 
@@ -113,7 +117,7 @@ final readonly class DocumentUploadService
             }
         }
 
-        if ($batchBytes > $this->config->maxBatchBytes) {
+        if ($batchBytes > $this->maxBatchBytes) {
             $errors[] = 'The upload batch is larger than 100 MB.';
         }
 

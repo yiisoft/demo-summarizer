@@ -44,6 +44,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 
 - [ ] Add queue processing:
     - [x] queue message payload is only documentId
+    - [x] sync-mode processing pushes `DocumentMessage` through `yiisoft/queue`
     - [x] handler reloads document state from SQLite
     - [x] handler uses app-level claim/lease so multiple workers can run safely
     - [x] handler transitions through uploaded, queued, extracting, summarizing, completed, failed
@@ -75,8 +76,9 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 
 - [x] Add CLI/docs:
     - [x] native Yii migration commands
-    - [x] sync, RabbitMQ/AMQP, and Valkey-backed Redis-protocol modes
-    - [x] worker startup
+    - [x] sync queue mode
+    - [x] native `yiisoft/queue` worker startup with `queue:run` and `queue:listen`
+    - [x] current RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter compatibility blocker
     - [x] first-run and smoke-test flow
     - [x] S3/MinIO, RabbitMQ, Valkey, Kreuzberg/native extractor, and Ollama setup
     - [x] document that project commands must run through `make`, not direct host `./yii` or `composer`
@@ -101,6 +103,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [ ] Default tests:
     - [ ] functional tests for upload, list, detail, status polling, downloads, delete, and manual retry
     - [x] unit workflow tests for schema creation, repository transitions, local storage, processor success, and processor failure
+    - [x] unit queue tests for sync `yiisoft/queue` push and non-sync adapter blocker recording
     - [ ] unit tests for repositories, migrations, status transitions, processing leases, event recording, extraction, mock summarization, Ollama adapter request handling, S3 storage, and handler success/failure
     - [ ] sync-mode queue processing tests
 
