@@ -23,6 +23,5 @@ return (new Configuration())
     ->ignoreErrorsOnPackage('yiisoft/router-fastroute', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnExtension('ext-pdo_sqlite', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnExtension('ext-sockets', [ErrorType::UNUSED_DEPENDENCY])
-    ->ignoreErrorsOnPackage('yiisoft/db-sqlite', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnPackage('yiisoft/queue-amqp', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnPackage('yiisoft/queue-redis', [ErrorType::UNUSED_DEPENDENCY]);

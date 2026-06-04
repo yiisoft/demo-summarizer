@@ -9,14 +9,13 @@ use App\Document\Domain\DocumentEvent;
 use App\Document\Domain\DocumentStatus;
 use DateInterval;
 use DateTimeImmutable;
-use PDO;
 use UnexpectedValueException;
+use Yiisoft\Db\Connection\ConnectionInterface;
 
 final readonly class DocumentRepository
 {
     public function __construct(
-        private DocumentDatabase $database,
-        private DocumentSchema $schema,
+        private ConnectionInterface $db,
     ) {}
 
     public function create(
@@ -26,30 +25,20 @@ final readonly class DocumentRepository
         string $extension,
         int $byteSize,
     ): Document {
-        $this->schema->migrate();
         $now = $this->now();
-        $pdo = $this->database->pdo();
-        $statement = $pdo->prepare(
-            <<<'SQL'
-INSERT INTO documents (
-    original_name, storage_key, mime_type, extension, byte_size, status, progress, created_at, updated_at
-) VALUES (
-    :original_name, :storage_key, :mime_type, :extension, :byte_size, :status, 0, :created_at, :updated_at
-)
-SQL
-        );
-        $statement->execute([
+        $this->db->createCommand()->insert('documents', [
             'original_name' => $originalName,
             'storage_key' => $storageKey,
             'mime_type' => $mimeType,
             'extension' => $extension,
             'byte_size' => $byteSize,
             'status' => DocumentStatus::UPLOADED,
+            'progress' => 0,
             'created_at' => $now,
             'updated_at' => $now,
-        ]);
+        ])->execute();
 
-        $document = $this->get((int) $pdo->lastInsertId());
+        $document = $this->get((int) $this->db->getLastInsertId());
         $this->addEvent($document->id, 'uploaded', 'Document uploaded.', 0);
         return $document;
     }
@@ -59,20 +48,22 @@ SQL
      */
     public function all(): array
     {
-        $this->schema->migrate();
-        $rows = $this->database->pdo()
-            ->query('SELECT * FROM documents ORDER BY id DESC')
-            ->fetchAll();
+        $rows = $this->db
+            ->select('*')
+            ->from('documents')
+            ->orderBy(['id' => SORT_DESC])
+            ->all();
 
         return $this->documentsFromRows($rows);
     }
 
     public function get(int $id): Document
     {
-        $this->schema->migrate();
-        $statement = $this->database->pdo()->prepare('SELECT * FROM documents WHERE id = :id');
-        $statement->execute(['id' => $id]);
-        $row = $statement->fetch();
+        $row = $this->db
+            ->select('*')
+            ->from('documents')
+            ->where(['id' => $id])
+            ->one();
 
         if (!is_array($row)) {
             throw new DocumentNotFoundException($id);
@@ -87,13 +78,14 @@ SQL
      */
     public function events(int $documentId): array
     {
-        $this->schema->migrate();
-        $statement = $this->database->pdo()->prepare(
-            'SELECT * FROM processing_events WHERE document_id = :document_id ORDER BY id ASC',
-        );
-        $statement->execute(['document_id' => $documentId]);
+        $rows = $this->db
+            ->select('*')
+            ->from('processing_events')
+            ->where(['document_id' => $documentId])
+            ->orderBy(['id' => SORT_ASC])
+            ->all();
 
-        return $this->eventsFromRows($statement->fetchAll());
+        return $this->eventsFromRows($rows);
     }
 
     /**
@@ -101,15 +93,15 @@ SQL
      */
     public function queued(int $limit = 20): array
     {
-        $this->schema->migrate();
-        $statement = $this->database->pdo()->prepare(
-            'SELECT * FROM documents WHERE status = :status ORDER BY id ASC LIMIT :limit',
-        );
-        $statement->bindValue('status', DocumentStatus::QUEUED);
-        $statement->bindValue('limit', $limit, PDO::PARAM_INT);
-        $statement->execute();
+        $rows = $this->db
+            ->select('*')
+            ->from('documents')
+            ->where(['status' => DocumentStatus::QUEUED])
+            ->orderBy(['id' => SORT_ASC])
+            ->limit($limit)
+            ->all();
 
-        return $this->documentsFromRows($statement->fetchAll());
+        return $this->documentsFromRows($rows);
     }
 
     public function markQueued(int $id): void
@@ -217,27 +209,18 @@ SQL
 
     public function delete(int $id): void
     {
-        $this->schema->migrate();
-        $statement = $this->database->pdo()->prepare('DELETE FROM documents WHERE id = :id');
-        $statement->execute(['id' => $id]);
+        $this->db->createCommand()->delete('documents', ['id' => $id])->execute();
     }
 
     public function addEvent(int $documentId, string $type, string $message, int $progress): void
     {
-        $this->schema->migrate();
-        $statement = $this->database->pdo()->prepare(
-            <<<'SQL'
-INSERT INTO processing_events (document_id, event_type, message, progress, created_at)
-VALUES (:document_id, :event_type, :message, :progress, :created_at)
-SQL
-        );
-        $statement->execute([
+        $this->db->createCommand()->insert('processing_events', [
             'document_id' => $documentId,
             'event_type' => $type,
             'message' => $message,
             'progress' => $progress,
             'created_at' => $this->now(),
-        ]);
+        ])->execute();
     }
 
     /**
@@ -245,15 +228,7 @@ SQL
      */
     private function update(int $id, array $values): void
     {
-        $assignments = [];
-        foreach ($values as $column => $_) {
-            $assignments[] = $column . ' = :' . $column;
-        }
-
-        $statement = $this->database->pdo()->prepare(
-            'UPDATE documents SET ' . implode(', ', $assignments) . ' WHERE id = :id',
-        );
-        $statement->execute($values + ['id' => $id]);
+        $this->db->createCommand()->update('documents', $values, ['id' => $id])->execute();
     }
 
     private function now(): string

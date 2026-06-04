@@ -8,15 +8,20 @@ use App\Document\DocumentDemoConfig;
 use App\Document\Domain\DocumentStatus;
 use App\Document\Extraction\ExtractionException;
 use App\Document\Extraction\ExtractorInterface;
-use App\Document\Infrastructure\DocumentDatabase;
 use App\Document\Infrastructure\DocumentRepository;
-use App\Document\Infrastructure\DocumentSchema;
 use App\Document\Infrastructure\DocumentStorageFactory;
 use App\Document\Infrastructure\DocumentStorageInterface;
+use App\Document\Migration\M250604000000CreateDocumentTables;
 use App\Document\Processing\DocumentProcessor;
 use App\Document\Summarization\SummarizerInterface;
 use Codeception\Test\Unit;
-use PDO;
+use Yiisoft\Cache\ArrayCache;
+use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Migration\Informer\NullMigrationInformer;
+use Yiisoft\Db\Migration\Migrator;
+use Yiisoft\Db\Sqlite\Connection;
+use Yiisoft\Db\Sqlite\Driver;
 
 use function is_file;
 use function PHPUnit\Framework\assertCount;
@@ -44,13 +49,12 @@ final class DocumentWorkflowTest extends Unit
 
     public function testSchemaCreatesDocumentTables(): void
     {
-        $database = $this->database();
+        $db = $this->database();
 
-        (new DocumentSchema($database))->migrate();
+        $this->migrate($db);
 
-        $tables = $database->pdo()
-            ->query("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")
-            ->fetchAll(PDO::FETCH_COLUMN);
+        $tables = $db->createCommand("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")
+            ->queryColumn();
 
         self::assertContains('documents', $tables);
         self::assertContains('processing_events', $tables);
@@ -139,16 +143,25 @@ final class DocumentWorkflowTest extends Unit
 
     private function repository(): DocumentRepository
     {
-        $database = $this->database();
+        $db = $this->database();
+        $this->migrate($db);
 
-        return new DocumentRepository($database, new DocumentSchema($database));
+        return new DocumentRepository($db);
     }
 
-    private function database(): DocumentDatabase
+    private function database(): ConnectionInterface
     {
         $this->databasePath ??= sys_get_temp_dir() . '/' . uniqid('doc-demo-', true) . '.sqlite';
 
-        return new DocumentDatabase('sqlite:' . $this->databasePath);
+        return new Connection(
+            new Driver('sqlite:' . $this->databasePath),
+            new SchemaCache(new ArrayCache()),
+        );
+    }
+
+    private function migrate(ConnectionInterface $db): void
+    {
+        (new Migrator($db, new NullMigrationInformer()))->up(new M250604000000CreateDocumentTables());
     }
 
     private function config(): DocumentDemoConfig

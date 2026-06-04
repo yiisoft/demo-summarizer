@@ -37,7 +37,6 @@
         "aws/aws-sdk-php": "^3.384",
         "ext-filter": "*",
         "ext-mbstring": "*",
-        "ext-pdo": "*",
         "ext-pdo_sqlite": "*",
         "ext-sockets": "*",
         "httpsoft/http-message": "^1.1.6",
@@ -54,6 +53,7 @@
         "yiisoft/assets": "^5.1.2",
         "yiisoft/config": "^1.6.2",
         "yiisoft/csrf": "^2.2.3",
+        "yiisoft/db": "^2.0",
         "yiisoft/db-migration": "^2.0",
         "yiisoft/db-sqlite": "^2.0",
         "yiisoft/definitions": "^3.4.1",
@@ -91,7 +91,8 @@
         "phpunit/phpunit": "^11.5.55",
         "rector/rector": "^2.3.9",
         "shipmonk/composer-dependency-analyser": "^1.8.4",
-        "vimeo/psalm": "^6.16.1"
+        "vimeo/psalm": "^6.16.1",
+        "yiisoft/cache": "^3.2"
     },
     "autoload": {
         "psr-4": {

@@ -30,6 +30,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [x] Add Yii migrations for:
     - [x] documents: file metadata, generated object key, status, progress, processing lease, markdown object key, summary, short error, detailed error, retry metadata, timestamps
     - [x] processing_events: document id, event type, message, progress, timestamp
+    - [x] native `yiisoft/db-migration` commands are used instead of a demo-specific migration command
 
 - [x] Add web UI:
     - [x] upload .md, .txt, .html, .pdf, .docx
@@ -73,7 +74,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] short user-facing errors and detailed internal error events
 
 - [x] Add CLI/docs:
-    - [x] Yii migration commands
+    - [x] native Yii migration commands
     - [x] sync, RabbitMQ/AMQP, and Valkey-backed Redis-protocol modes
     - [x] worker startup
     - [x] first-run and smoke-test flow
@@ -130,6 +131,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 ## Assumptions
 
 - [x] SQLite is the selected persistence layer.
+- [x] Prefer Yii3 packages, commands, interfaces, and adapters over demo-specific implementations when Yii3 provides the required behavior.
 - [ ] S3-compatible object storage is the selected document storage layer; local filesystem storage is not used for durable document blobs.
 - [x] The first LLM implementations are mock and Ollama.
 - [x] Kreuzberg through the Docker-installed CLI is the preferred universal extractor because Docker owns the extraction runtime dependency.

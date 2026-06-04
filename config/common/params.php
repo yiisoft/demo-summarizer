@@ -43,6 +43,15 @@ return [
         ],
     ],
 
+    'yiisoft/db-migration' => [
+        'newMigrationNamespace' => 'App\\Document\\Migration',
+        'newMigrationPath' => '',
+        'sourceNamespaces' => [
+            'App\\Document\\Migration',
+        ],
+        'sourcePaths' => [],
+    ],
+
     'documentDemo' => [
         'queueDriver' => $env('QUEUE_DRIVER', 'sync'),
         'databaseDsn' => $env('DATABASE_DSN', 'sqlite:' . $root . '/runtime/documents.sqlite'),

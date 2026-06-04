@@ -42,7 +42,7 @@ make yii <command>
 Create the SQLite tables:
 
 ```bash
-make yii document:migrate
+make -- yii migrate:up -y
 ```
 
 Process queued documents when `QUEUE_DRIVER` is not `sync`:
@@ -81,6 +81,8 @@ make composer-dependency-analyser
 ## Implementation Plan
 
 See [plan.md](plan.md) for planned architecture, dependencies, queue work, extractor strategy, test coverage, and assumptions.
+
+The demo should use Yii3 packages and native Yii commands where they exist. App-specific code is reserved for demo domain behavior, adapter selection, and documented package compatibility gaps.
 
 ## Configuration
 
