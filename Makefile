@@ -7,8 +7,14 @@ ifeq ($(PRIMARY_GOAL),)
 endif
 
 include docker/.env
+ifneq (,$(wildcard .env))
+    include .env
+endif
+QUEUE_DRIVER ?= amqp
+EXTRACTOR_ADAPTER ?= kreuzberg
+WORKERS ?= 2
 export QUEUE_DRIVER
-WORKERS ?= 1
+export EXTRACTOR_ADAPTER
 
 # Current user ID and group ID except MacOS where it conflicts with Docker abilities
 ifeq ($(shell uname), Darwin)

@@ -26,6 +26,8 @@ make build
 make up
 ```
 
+By default, development uses AMQP queue mode, two background workers, and Kreuzberg extraction. Copy `.env.example` to `.env` to adjust these settings.
+
 Create the database tables:
 
 ```bash
@@ -78,7 +80,13 @@ make shell
 
 ## Queue Modes
 
-The default queue mode is `sync`, so uploaded documents are processed immediately.
+The default development queue mode is `amqp`, so `make up` starts the app and two background workers.
+
+For immediate in-request processing without workers, use sync mode:
+
+```bash
+QUEUE_DRIVER=sync make up
+```
 
 To process jobs with the native Yii queue worker:
 
@@ -161,6 +169,7 @@ OLLAMA_HOST=0.0.0.0:11434 ollama serve
 Common environment variables:
 
 - `QUEUE_DRIVER=sync|amqp|redis`
+- `WORKERS`
 - `QUEUE_NAME`
 - `AMQP_HOST`, `AMQP_PORT`, `AMQP_USER`, `AMQP_PASSWORD`, `AMQP_VHOST`
 - `REDIS_HOST`, `REDIS_PORT`, `REDIS_TIMEOUT`

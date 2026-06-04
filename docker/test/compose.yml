@@ -12,6 +12,7 @@ services:
       - path: ./test/override.env
         required: false
     environment:
+      QUEUE_DRIVER: sync
       DATABASE_DSN: sqlite:/app/runtime/test-documents.sqlite
       DOCUMENT_STORAGE_DRIVER: local
       DOCUMENT_LOCAL_STORAGE_ROOT: /app/runtime/test-document-objects
