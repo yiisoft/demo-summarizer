@@ -15,6 +15,30 @@ EXTRACTOR_ADAPTER ?= kreuzberg
 WORKERS ?= 2
 export QUEUE_DRIVER
 export EXTRACTOR_ADAPTER
+export DATABASE_DSN
+export DOCUMENT_STORAGE_DRIVER
+export DOCUMENT_LOCAL_STORAGE_ROOT
+export S3_ENDPOINT
+export S3_REGION
+export S3_BUCKET
+export S3_ACCESS_KEY
+export S3_SECRET_KEY
+export S3_PATH_STYLE
+export DOCUMENT_PROCESSING_LEASE_SECONDS
+export AMQP_HOST
+export AMQP_PORT
+export AMQP_USER
+export AMQP_PASSWORD
+export AMQP_VHOST
+export REDIS_HOST
+export REDIS_PORT
+export REDIS_TIMEOUT
+export LLM_ADAPTER
+export OLLAMA_BASE_URL
+export OLLAMA_MODEL
+export LLM_PROVIDER
+export LLM_API_KEY
+export LLM_MODEL
 
 # Current user ID and group ID except MacOS where it conflicts with Docker abilities
 ifeq ($(shell uname), Darwin)
