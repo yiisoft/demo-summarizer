@@ -7,7 +7,7 @@ namespace App\Web\Shared\Layout\Main;
 use Yiisoft\Assets\AssetBundle;
 
 /**
- * Registers the main stylesheet assets for the web layout.
+ * Registers the main stylesheet and script assets for the web layout.
  */
 final class MainAsset extends AssetBundle
 {
@@ -17,5 +17,9 @@ final class MainAsset extends AssetBundle
 
     public array $css = [
         'site.css',
+    ];
+
+    public array $js = [
+        'site.js',
     ];
 }

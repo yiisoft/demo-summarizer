@@ -48,9 +48,14 @@ foreach ($documents as $document) {
         </div>
     <?php endif ?>
 
-    <form class="upload-panel" action="/documents/upload" method="post" enctype="multipart/form-data">
+    <form class="upload-panel" action="/documents/upload" method="post" enctype="multipart/form-data" data-upload-form>
         <?= $csrf?->hiddenInput() ?>
-        <input type="file" name="documents[]" multiple accept=".md,.txt,.html,.pdf,.docx">
+        <label class="upload-dropzone" data-upload-dropzone>
+            <input type="file" name="documents[]" multiple accept=".md,.txt,.html,.pdf,.docx" data-upload-input>
+            <span class="upload-dropzone-title">Drop files here or browse</span>
+            <span class="upload-dropzone-text">PDF, DOCX, Markdown, text, and HTML files are supported.</span>
+            <span class="upload-file-list" data-upload-file-list>No files selected.</span>
+        </label>
         <button type="submit">Upload</button>
     </form>
 
@@ -106,34 +111,3 @@ foreach ($documents as $document) {
         </table>
     </div>
 </section>
-
-<script>
-if (document.querySelector('[data-poll="1"]')) {
-    const poll = () => {
-        document.querySelectorAll('[data-document-row]').forEach((row) => {
-            const id = row.getAttribute('data-document-row');
-            fetch(`/documents/${id}/status`)
-                .then((response) => response.ok ? response.json() : null)
-                .then((data) => {
-                    if (!data) {
-                        return;
-                    }
-                    const status = document.querySelector(`[data-status="${id}"]`);
-                    const progress = document.querySelector(`[data-progress="${id}"]`);
-                    const bar = document.querySelector(`[data-progress-bar="${id}"]`);
-                    if (status) {
-                        status.textContent = data.status;
-                        status.className = `status status-${data.status}`;
-                    }
-                    if (progress) {
-                        progress.textContent = `${data.progress}%`;
-                    }
-                    if (bar) {
-                        bar.style.width = `${data.progress}%`;
-                    }
-                });
-        });
-    };
-    setInterval(poll, 2000);
-}
-</script>
