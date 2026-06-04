@@ -82,7 +82,7 @@ final class DocumentSummarizerTest extends Unit
         assertSame(1.25, $payload['repeat_penalty']);
         assertSame(0.8, $payload['frequency_penalty']);
         assertSame(0.3, $payload['presence_penalty']);
-        assertSame(80, $payload['max_tokens']);
+        assertSame(512, $payload['max_tokens']);
         assertSame('user', $payload['messages'][0]['role']);
         assertStringContainsString('Summarize the source text.', $payload['messages'][0]['content']);
         assertStringContainsString('Do not quote the source.', $payload['messages'][0]['content']);

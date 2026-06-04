@@ -66,7 +66,7 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
             'repeat_penalty' => 1.25,
             'frequency_penalty' => 0.8,
             'presence_penalty' => 0.3,
-            'max_tokens' => 80,
+            'max_tokens' => 512,
         ]);
 
         if ($payload === false) {

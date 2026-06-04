@@ -9,7 +9,7 @@ A runnable Yii3 demo for uploading documents, extracting readable markdown, summ
 - Store original files and extracted markdown in S3-compatible storage.
 - Process documents through `yiisoft/queue`.
 - Show status, progress, summaries, extracted markdown, original downloads, retries, deletion, and a full clear action.
-- Run local summaries through the included `llama.cpp` Docker service, with deterministic mock summaries available for tests or quick fallback.
+- Use deterministic mock summaries by default, with optional local summaries through the included `llama.cpp` Docker service.
 
 ## Requirements
 
@@ -25,7 +25,7 @@ make build
 make up
 ```
 
-By default, development uses AMQP queue mode, two background workers, Kreuzberg extraction, and a tiny CPU-friendly `llama.cpp` model. Copy `.env.example` to `.env` to adjust these settings.
+By default, development uses AMQP queue mode, two background workers, Kreuzberg extraction, and mock summaries. Copy `.env.example` to `.env` to adjust these settings.
 
 Create the database tables:
 
@@ -147,10 +147,13 @@ DOCUMENT_STORAGE_DRIVER=local
 
 ## Local LLM Summaries
 
-Local LLM summaries are enabled by default through the OpenAI-compatible `llama.cpp` adapter:
+Mock summaries are enabled by default so the heavy local LLM container is not started unless you ask for it.
+
+To use local LLM summaries through the OpenAI-compatible `llama.cpp` adapter, set this in `.env`:
 
 ```bash
 LLM_ADAPTER=llamacpp
+LLAMA_CPP_SERVICE=1
 LLM_BASE_URL=http://llama:8080/v1
 LLM_MODEL=gemma-3-1b-it-Q4_K_M
 LLAMA_CPP_HF_REPO=ggml-org/gemma-3-1b-it-GGUF:Q4_K_M
@@ -159,29 +162,31 @@ LLAMA_CPP_HF_REPO=ggml-org/gemma-3-1b-it-GGUF:Q4_K_M
 Then start the demo:
 
 ```bash
-LLM_ADAPTER=llamacpp make up
+make up
 ```
 
-`make up` starts the `llama.cpp` server profile when `LLM_ADAPTER=llamacpp`. The service uses the official `ghcr.io/ggml-org/llama.cpp:server` image and is available to the app inside Docker at `http://llama:8080/v1`. The app and queue workers wait for the `llama.cpp` health endpoint before starting, so uploads do not race the model server on first boot.
+`make up` starts the `llama.cpp` server profile only when `LLM_ADAPTER=llamacpp` and `LLAMA_CPP_SERVICE=1`. The service uses the official `ghcr.io/ggml-org/llama.cpp:server` image and is available to the app inside Docker at `http://llama:8080/v1`. The app and queue workers wait for the `llama.cpp` health endpoint before starting, so uploads do not race the model server on first boot.
 
 The default `llama.cpp` model is `ggml-org/gemma-3-1b-it-GGUF:Q4_K_M`. It is the smallest Gemma default that gives usable summaries for this demo while still running on CPU-only hardware.
 The default server uses one request slot and a 4096-token context so document summaries do not fail from the tiny model's context being split across parallel slots.
 
-For deterministic mock summaries without the `llama.cpp` service:
+For deterministic mock summaries without the `llama.cpp` service, set this in `.env`:
 
-```bash
-LLM_ADAPTER=mock make up
+```dotenv
+LLM_ADAPTER=mock
+LLAMA_CPP_SERVICE=0
 ```
 
 By default, `llama.cpp` downloads the configured Hugging Face GGUF repository into a Docker volume. You can also mount a local model by placing a GGUF file under `models/` and setting:
 
 ```bash
 LLM_ADAPTER=llamacpp
+LLAMA_CPP_SERVICE=1
 LLAMA_CPP_HF_REPO=
 LLAMA_CPP_MODEL=/models/model.gguf
 ```
 
-The application talks to any OpenAI-compatible chat completions endpoint through `LLM_BASE_URL`, `LLM_MODEL`, and optional `LLM_API_KEY`.
+The application talks to any OpenAI-compatible chat completions endpoint through `LLM_BASE_URL`, `LLM_MODEL`, and optional `LLM_API_KEY`. For an external endpoint, use `LLM_ADAPTER=llamacpp` and leave `LLAMA_CPP_SERVICE=0`.
 
 ## Configuration
 
@@ -198,6 +203,7 @@ Common environment variables:
 - `EXTRACTOR_ADAPTER=kreuzberg|native`
 - `LLM_ADAPTER=mock|llamacpp`
 - `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`
+- `LLAMA_CPP_SERVICE=0|1`
 - `LLAMA_CPP_HF_REPO`, `LLAMA_CPP_MODEL`, `LLAMA_CPP_MODEL_URL`
 - `LLAMA_CPP_CTX_SIZE`, `LLAMA_CPP_PARALLEL`, `LLAMA_CPP_N_PREDICT`
 

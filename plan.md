@@ -24,6 +24,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] DOCUMENT_PROCESSING_LEASE_SECONDS=900
     - [x] EXTRACTOR_ADAPTER=kreuzberg|native
     - [x] LLM_ADAPTER=llamacpp|mock
+    - [x] LLAMA_CPP_SERVICE=0|1 controls whether the heavy Docker `llama.cpp` service starts
     - [x] LLM_BASE_URL, LLM_API_KEY, LLM_MODEL
     - [x] LLAMA_CPP_HF_REPO, LLAMA_CPP_MODEL, LLAMA_CPP_MODEL_URL
     - [x] LLAMA_CPP_CTX_SIZE, LLAMA_CPP_PARALLEL, LLAMA_CPP_N_PREDICT
@@ -85,7 +86,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] non-sync queue modes start a background queue worker through `QUEUE_DRIVER=<driver> make up`
     - [x] non-sync queue modes can scale background workers through `WORKERS=<count> make up`
     - [x] default development mode uses AMQP, two workers, and Kreuzberg extraction
-    - [x] default development mode uses the Docker `llama.cpp` service for real local summaries
+    - [x] default development mode uses mock summaries and does not start the heavy Docker `llama.cpp` service
     - [x] app and worker startup waits for the Docker `llama.cpp` health endpoint in local LLM mode
     - [x] RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter path-repository compatibility work
     - [x] first-run and smoke-test flow

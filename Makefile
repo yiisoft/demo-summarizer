@@ -13,7 +13,8 @@ endif
 QUEUE_DRIVER ?= amqp
 EXTRACTOR_ADAPTER ?= kreuzberg
 WORKERS ?= 2
-LLM_ADAPTER ?= llamacpp
+LLM_ADAPTER ?= mock
+LLAMA_CPP_SERVICE ?= 0
 export QUEUE_DRIVER
 export EXTRACTOR_ADAPTER
 export DATABASE_DSN
@@ -38,6 +39,7 @@ export LLM_ADAPTER
 export LLM_BASE_URL
 export LLM_API_KEY
 export LLM_MODEL
+export LLAMA_CPP_SERVICE
 export LLAMA_CPP_HF_REPO
 export LLAMA_CPP_MODEL
 export LLAMA_CPP_MODEL_URL
@@ -61,8 +63,12 @@ DOCKER_COMPOSE_TEST := docker compose -f docker/compose.yml -f docker/test/compo
 
 DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV)
 DOCKER_COMPOSE_DEV_UP_OPTIONS := up -d --remove-orphans
+LLAMA_CPP_SERVICE_ENABLED := 0
 ifeq ($(LLM_ADAPTER),llamacpp)
+ifneq (,$(filter 1 true yes,$(LLAMA_CPP_SERVICE)))
+    LLAMA_CPP_SERVICE_ENABLED := 1
     DOCKER_COMPOSE_DEV_UP := $(DOCKER_COMPOSE_DEV_UP) -f docker/dev/llm.compose.yml --profile llm
+endif
 endif
 ifneq ($(QUEUE_DRIVER),)
 ifneq ($(QUEUE_DRIVER),sync)
@@ -82,6 +88,9 @@ endif
 
 ifeq ($(PRIMARY_GOAL),up)
 up: ## Up the dev environment.
+ifneq ($(LLAMA_CPP_SERVICE_ENABLED),1)
+	$(DOCKER_COMPOSE_DEV) --profile llm rm -sf llama
+endif
 	$(DOCKER_COMPOSE_DEV_UP) $(DOCKER_COMPOSE_DEV_UP_OPTIONS)
 endif
 
