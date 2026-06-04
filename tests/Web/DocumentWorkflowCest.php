@@ -43,8 +43,14 @@ final class DocumentWorkflowCest
         $I->amOnPage($href);
         $I->see($name);
         $I->see('completed');
+        $I->see('Retry');
         $I->see('Events');
         $I->see('uploaded');
+        $I->see('completed');
+
+        $I->click('Retry');
+        $I->seeInCurrentUrl('/documents/' . $id);
+        $I->see('retry');
         $I->see('completed');
 
         $I->amOnPage('/documents/' . $id . '/status');

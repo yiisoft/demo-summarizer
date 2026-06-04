@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Shared\ApplicationParams;
 use App\Document\Domain\Document;
-use App\Document\Domain\DocumentStatus;
 use Yiisoft\Yii\View\Renderer\Csrf;
 use Yiisoft\Html\Html;
 use Yiisoft\View\WebView;
@@ -107,12 +106,10 @@ foreach ($documents as $document) {
                         <?php if ($document->markdownKey !== null): ?>
                             <a href="/documents/<?= $document->id ?>/markdown">Markdown</a>
                         <?php endif ?>
-                        <?php if ($document->status === DocumentStatus::FAILED): ?>
-                            <form action="/documents/<?= $document->id ?>/retry" method="post">
-                                <?= $csrf?->hiddenInput() ?>
-                                <button type="submit">Retry</button>
-                            </form>
-                        <?php endif ?>
+                        <form action="/documents/<?= $document->id ?>/retry" method="post">
+                            <?= $csrf?->hiddenInput() ?>
+                            <button type="submit">Retry</button>
+                        </form>
                     </td>
                 </tr>
             <?php endforeach ?>

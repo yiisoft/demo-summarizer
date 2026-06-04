@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Document\Domain\Document;
 use App\Document\Domain\DocumentEvent;
-use App\Document\Domain\DocumentStatus;
 use Yiisoft\Html\Html;
 use Yiisoft\View\WebView;
 use Yiisoft\Yii\View\Renderer\Csrf;
@@ -19,18 +18,29 @@ use Yiisoft\Yii\View\Renderer\Csrf;
 $this->setTitle($document->originalName);
 ?>
 
-<section class="demo-shell">
+<section
+    class="demo-shell"
+    data-poll="<?= $document->isActive() ? '1' : '0' ?>"
+    data-document-detail="<?= $document->id ?>"
+    data-current-status="<?= Html::encode($document->status) ?>"
+    data-refresh-on-terminal="1"
+>
     <div class="detail-header">
         <div>
             <a href="/">Back to documents</a>
             <h1><?= Html::encode($document->originalName) ?></h1>
         </div>
-        <span class="status status-<?= Html::encode($document->status) ?>"><?= Html::encode($document->status) ?></span>
+        <span class="status status-<?= Html::encode($document->status) ?>" data-status="<?= $document->id ?>">
+            <?= Html::encode($document->status) ?>
+        </span>
     </div>
 
     <div class="detail-grid">
         <section>
             <h2>Summary</h2>
+            <div class="progress"><span data-progress-bar="<?= $document->id ?>" style="width: <?= $document->progress ?>%"></span></div>
+            <small data-progress="<?= $document->id ?>"><?= $document->progress ?>%</small>
+
             <?php if ($document->summary !== null): ?>
                 <pre class="summary"><?= Html::encode($document->summary) ?></pre>
             <?php elseif ($document->error !== null): ?>
@@ -44,12 +54,10 @@ $this->setTitle($document->originalName);
                 <?php if ($document->markdownKey !== null): ?>
                     <a href="/documents/<?= $document->id ?>/markdown">View markdown</a>
                 <?php endif ?>
-                <?php if ($document->status === DocumentStatus::FAILED): ?>
-                    <form action="/documents/<?= $document->id ?>/retry" method="post">
-                        <?= $csrf?->hiddenInput() ?>
-                        <button type="submit">Retry</button>
-                    </form>
-                <?php endif ?>
+                <form action="/documents/<?= $document->id ?>/retry" method="post">
+                    <?= $csrf?->hiddenInput() ?>
+                    <button type="submit">Retry</button>
+                </form>
                 <form action="/documents/<?= $document->id ?>/delete" method="post">
                     <?= $csrf?->hiddenInput() ?>
                     <button type="submit">Delete</button>

@@ -1,7 +1,16 @@
 if (document.querySelector('[data-poll="1"]')) {
+    const activeStatuses = ['uploaded', 'queued', 'extracting', 'summarizing'];
+
     const poll = () => {
-        document.querySelectorAll('[data-document-row]').forEach((row) => {
-            const id = row.getAttribute('data-document-row');
+        document.querySelectorAll('[data-document-row], [data-document-detail]').forEach((target) => {
+            const id = target.getAttribute('data-document-row') || target.getAttribute('data-document-detail');
+            const refreshOnTerminal = target.getAttribute('data-refresh-on-terminal') === '1';
+            const previousStatus = target.getAttribute('data-current-status');
+
+            if (!id) {
+                return;
+            }
+
             fetch(`/documents/${id}/status`)
                 .then((response) => response.ok ? response.json() : null)
                 .then((data) => {
@@ -18,12 +27,23 @@ if (document.querySelector('[data-poll="1"]')) {
                         status.className = `status status-${data.status}`;
                     }
 
+                    target.setAttribute('data-current-status', data.status);
+
                     if (progress) {
                         progress.textContent = `${data.progress}%`;
                     }
 
                     if (bar) {
                         bar.style.width = `${data.progress}%`;
+                    }
+
+                    if (
+                        refreshOnTerminal
+                        && previousStatus
+                        && activeStatuses.includes(previousStatus)
+                        && !activeStatuses.includes(data.status)
+                    ) {
+                        window.location.reload();
                     }
                 });
         });
