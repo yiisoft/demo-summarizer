@@ -8,7 +8,7 @@ This repository contains a runnable Yii3 document summarizer demo. The detailed 
 
 - Batch upload for text, markdown, HTML, PDF, and DOCX documents.
 - Server-side upload validation with size, extension, MIME, and signature checks.
-- Local object storage by default, with S3-compatible storage configuration for MinIO or another compatible service.
+- S3-compatible object storage by default, with Garage wired for local development.
 - Queue-oriented processing through `yiisoft/queue`, with sync mode by default.
 - AMQP/Valkey queue adapters are installed but currently blocked by an upstream Yii queue adapter/core compatibility issue recorded in [docs/upstream-queue-notes.md](docs/upstream-queue-notes.md).
 - Preferred extraction through the Docker-installed Kreuzberg CLI, with a native fallback for text, Markdown, and HTML.
@@ -25,6 +25,8 @@ Build and start the Docker development environment:
 make build
 make up
 ```
+
+Garage is started with the development stack and the `documents` bucket is created automatically.
 
 The Docker image installs a pinned Kreuzberg CLI runtime for PDF, DOCX, HTML, and other supported document extraction. Rebuild the image after Dockerfile or extractor runtime changes.
 
@@ -94,7 +96,7 @@ Common environment variables:
 
 - `QUEUE_DRIVER=sync|amqp|redis`
 - `DATABASE_DSN=sqlite:/app/runtime/documents.sqlite`
-- `DOCUMENT_STORAGE_DRIVER=local|s3`
+- `DOCUMENT_STORAGE_DRIVER=s3|local`
 - `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_PATH_STYLE`
 - `EXTRACTOR_ADAPTER=kreuzberg|native`
 - `LLM_ADAPTER=mock|ollama`

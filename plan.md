@@ -16,7 +16,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] S3-compatible storage client or Flysystem S3 adapter
     - [x] pinned Kreuzberg CLI runtime in Docker for the preferred universal document extraction adapter
 
-- [x] Update Docker with pdo_sqlite, Redis extension, RabbitMQ, Valkey, S3-compatible storage such as MinIO, pinned Kreuzberg CLI support, and optional worker services.
+- [x] Update Docker with pdo_sqlite, Redis extension, RabbitMQ, Valkey, S3-compatible storage through Garage, pinned Kreuzberg CLI support, and optional worker services.
 - [x] Add config:
     - [x] QUEUE_DRIVER=sync|amqp|redis
     - [x] DATABASE_DSN=sqlite:@runtime/documents.sqlite
@@ -52,7 +52,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] retries are available from the regular web UI
     - [x] failed documents stay in storage until retried, explicitly deleted, or replaced by a successful retry
     - [x] reprocessing overwrites markdown/summary and appends events
-    - [ ] stale temporary objects and obsolete successful retry artifacts are cleaned during regular processing
+    - [x] stale temporary objects and obsolete successful retry artifacts are cleaned during regular processing
 
 - [ ] Add extraction:
     - [x] .md and .txt: read as text/markdown
@@ -80,7 +80,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] native `yiisoft/queue` worker startup with `queue:run` and `queue:listen`
     - [x] current RabbitMQ/AMQP and Valkey-backed Redis-protocol adapter compatibility blocker
     - [x] first-run and smoke-test flow
-    - [x] S3/MinIO, RabbitMQ, Valkey, Kreuzberg/native extractor, and Ollama setup
+    - [x] S3/Garage, RabbitMQ, Valkey, Kreuzberg/native extractor, and Ollama setup
     - [x] document that project commands must run through `make`, not direct host `./yii` or `composer`
 
 ## Upstream Queue Work
@@ -110,7 +110,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 - [ ] Opt-in/local integration tests:
     - [ ] RabbitMQ/AMQP queue mode
     - [ ] Valkey-backed Redis-protocol queue mode
-    - [ ] S3-compatible storage via MinIO
+    - [x] S3-compatible storage via Garage
     - [ ] Kreuzberg PHP extraction adapter
     - [ ] native fallback extractor only if fallback support is implemented
     - [ ] Ollama adapter against a local Ollama service when available
@@ -119,7 +119,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
     - [x] install dependencies
     - [x] run migrations
     - [x] upload mixed supported files including PDF and DOCX
-    - [ ] see queued/progress events
+    - [x] see queued/progress events
     - [ ] process successfully in sync, AMQP, and Valkey modes
     - [x] process successfully in sync mode
     - [x] verify summaries and extracted markdown
@@ -135,7 +135,7 @@ Queue and adapter polishing is a separate upstream workstream: implementation sh
 
 - [x] SQLite is the selected persistence layer.
 - [x] Prefer Yii3 packages, commands, interfaces, and adapters over demo-specific implementations when Yii3 provides the required behavior.
-- [ ] S3-compatible object storage is the selected document storage layer; local filesystem storage is not used for durable document blobs.
+- [x] S3-compatible object storage is the selected document storage layer; local filesystem storage is not used for durable document blobs.
 - [x] The first LLM implementations are mock and Ollama.
 - [x] Kreuzberg through the Docker-installed CLI is the preferred universal extractor because Docker owns the extraction runtime dependency.
 - [x] Valkey is the Docker key-value store; yiisoft/queue-redis may still be used through the Redis protocol if compatible.

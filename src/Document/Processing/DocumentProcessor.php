@@ -31,6 +31,10 @@ final readonly class DocumentProcessor
             $original = $this->storage->read($document->storageKey);
             $markdown = $this->extractor->extract($original, $document->extension, $document->originalName);
             $markdownKey = 'documents/' . $document->id . '/extracted.md';
+            if ($document->markdownKey !== null && $document->markdownKey !== $markdownKey) {
+                $this->storage->delete($document->markdownKey);
+            }
+            $this->storage->delete($markdownKey);
             $this->storage->put($markdownKey, $markdown);
             $this->repository->markSummarizing($document->id, $markdownKey);
 

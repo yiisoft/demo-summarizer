@@ -154,6 +154,41 @@ final class DocumentWorkflowTest extends Unit
         assertSame(DocumentStatus::QUEUED, $repository->get($other->id)->status);
     }
 
+    public function testProcessorCleansPreviousMarkdownBeforeRetry(): void
+    {
+        $repository = $this->repository();
+        $storage = new ArrayDocumentStorage();
+        $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
+        $repository->markQueued($document->id);
+        $storage->put($document->storageKey, 'Original text');
+        $storage->put('documents/' . $document->id . '/extracted.md', 'Old markdown');
+
+        $processor = new DocumentProcessor(
+            900,
+            $repository,
+            $storage,
+            new StaticExtractor('New markdown'),
+            new StaticSummarizer('Summary text'),
+        );
+
+        $processor->process($document->id);
+
+        assertSame(['documents/' . $document->id . '/extracted.md'], $storage->deleted);
+        assertSame('New markdown', $storage->read('documents/' . $document->id . '/extracted.md'));
+    }
+
+    public function testDocumentEventsAreRenderedByTimelineModel(): void
+    {
+        $repository = $this->repository();
+        $document = $repository->create('notes.txt', 'documents/1/original.txt', 'text/plain', 'txt', 12);
+
+        $event = $repository->events($document->id)[0];
+
+        assertSame($document->id, $event->documentId);
+        assertSame('uploaded', $event->type);
+        assertSame('Document uploaded.', $event->message);
+    }
+
     public function testConfiguredQueuePushesSyncJobsThroughYiiQueue(): void
     {
         $repository = $this->repository();
@@ -243,6 +278,9 @@ final class ArrayDocumentStorage implements DocumentStorageInterface
     /** @var array<string, string> */
     private array $objects = [];
 
+    /** @var list<string> */
+    public array $deleted = [];
+
     public function put(string $key, string $contents): void
     {
         $this->objects[$key] = $contents;
@@ -255,6 +293,7 @@ final class ArrayDocumentStorage implements DocumentStorageInterface
 
     public function delete(string $key): void
     {
+        $this->deleted[] = $key;
         unset($this->objects[$key]);
     }
 }
