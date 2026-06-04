@@ -29,7 +29,7 @@ final readonly class UploadAction
         $result = $this->uploadService->upload($this->files($request->getUploadedFiles()['documents'] ?? []));
         if ($result['errors'] !== []) {
             return $this->viewRenderer->render(
-                '@src/Web/HomePage/template',
+                __DIR__ . '/../HomePage/template',
                 [
                     'documents' => $this->repository->all(),
                     'queueDriver' => $this->queueDriver,
