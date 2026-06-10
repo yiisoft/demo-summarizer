@@ -43,31 +43,6 @@ final readonly class Document
     ) {}
 
     /**
-     * Hydrates a document from a database row.
-     *
-     * @param array<string, mixed> $row
-     */
-    public static function fromRow(array $row): self
-    {
-        return new self(
-            (int) $row['id'],
-            (string) $row['original_name'],
-            (string) $row['storage_key'],
-            (string) $row['mime_type'],
-            (string) $row['extension'],
-            (int) $row['byte_size'],
-            DocumentStatus::from((string) $row['status']),
-            (int) $row['progress'],
-            $row['lease_until'] === null ? null : (string) $row['lease_until'],
-            $row['markdown_key'] === null ? null : (string) $row['markdown_key'],
-            $row['summary'] === null ? null : (string) $row['summary'],
-            $row['error'] === null ? null : (string) $row['error'],
-            (int) $row['retry_count'],
-            (string) $row['updated_at'],
-        );
-    }
-
-    /**
      * Returns whether the document is in an active processing status.
      */
     public function isActive(): bool

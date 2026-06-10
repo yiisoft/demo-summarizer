@@ -25,21 +25,4 @@ final readonly class DocumentEvent
         public int $progress,
         public string $createdAt,
     ) {}
-
-    /**
-     * Hydrates a timeline event from a database row.
-     *
-     * @param array<string, mixed> $row
-     */
-    public static function fromRow(array $row): self
-    {
-        return new self(
-            (int) $row['id'],
-            (int) $row['document_id'],
-            (string) $row['event_type'],
-            (string) $row['message'],
-            (int) $row['progress'],
-            (string) $row['created_at'],
-        );
-    }
 }

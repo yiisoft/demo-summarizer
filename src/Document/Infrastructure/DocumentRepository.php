@@ -92,7 +92,7 @@ final readonly class DocumentRepository
         }
 
         /** @var array<string, mixed> $row */
-        return Document::fromRow($row);
+        return $this->documentFromRow($row);
     }
 
     /**
@@ -322,10 +322,35 @@ final readonly class DocumentRepository
             }
 
             /** @var array<string, mixed> $row */
-            $documents[] = Document::fromRow($row);
+            $documents[] = $this->documentFromRow($row);
         }
 
         return $documents;
+    }
+
+    /**
+     * Hydrates a document from a database row.
+     *
+     * @param array<string, mixed> $row
+     */
+    private function documentFromRow(array $row): Document
+    {
+        return new Document(
+            (int) $row['id'],
+            (string) $row['original_name'],
+            (string) $row['storage_key'],
+            (string) $row['mime_type'],
+            (string) $row['extension'],
+            (int) $row['byte_size'],
+            DocumentStatus::from((string) $row['status']),
+            (int) $row['progress'],
+            $row['lease_until'] === null ? null : (string) $row['lease_until'],
+            $row['markdown_key'] === null ? null : (string) $row['markdown_key'],
+            $row['summary'] === null ? null : (string) $row['summary'],
+            $row['error'] === null ? null : (string) $row['error'],
+            (int) $row['retry_count'],
+            (string) $row['updated_at'],
+        );
     }
 
     /**
@@ -344,9 +369,26 @@ final readonly class DocumentRepository
             }
 
             /** @var array<string, mixed> $row */
-            $events[] = DocumentEvent::fromRow($row);
+            $events[] = $this->eventFromRow($row);
         }
 
         return $events;
+    }
+
+    /**
+     * Hydrates a timeline event from a database row.
+     *
+     * @param array<string, mixed> $row
+     */
+    private function eventFromRow(array $row): DocumentEvent
+    {
+        return new DocumentEvent(
+            (int) $row['id'],
+            (int) $row['document_id'],
+            (string) $row['event_type'],
+            (string) $row['message'],
+            (int) $row['progress'],
+            (string) $row['created_at'],
+        );
     }
 }
