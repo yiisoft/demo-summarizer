@@ -8,6 +8,8 @@
 
 A runnable Yii3 demo for uploading documents, extracting readable markdown, summarizing content, and tracking processing progress.
 
+<img src="screenshot.png">
+
 ## What It Does
 
 - Upload one or more Markdown, text, HTML, PDF, or DOCX files.
