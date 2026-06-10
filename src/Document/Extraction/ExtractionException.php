@@ -9,6 +9,4 @@ use RuntimeException;
 /**
  * Signals that document text extraction failed.
  */
-final class ExtractionException extends RuntimeException
-{
-}
+final class ExtractionException extends RuntimeException {}

@@ -12,7 +12,5 @@ final class NullDocumentQueuePurger implements DocumentQueuePurgerInterface
     /**
      * Leaves synchronous processing untouched because it has no queue backlog.
      */
-    public function purge(): void
-    {
-    }
+    public function purge(): void {}
 }

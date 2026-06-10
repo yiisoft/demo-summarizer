@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Document\Processing;
 
+use Redis;
+
 /**
  * Clears pending document jobs from Redis-compatible Yii Queue keys.
  */
@@ -27,7 +29,7 @@ final readonly class RedisDocumentQueuePurger implements DocumentQueuePurgerInte
      */
     public function purge(): void
     {
-        $redis = new \Redis();
+        $redis = new Redis();
         $redis->connect($this->redisHost, $this->redisPort, $this->redisTimeout);
 
         try {

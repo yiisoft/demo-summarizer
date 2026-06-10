@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Shared\ApplicationParams;
 use Yiisoft\Html\Html;
 
 /**
  * @var Yiisoft\View\WebView $this
- * @var \App\Shared\ApplicationParams $applicationParams
+ * @var ApplicationParams $applicationParams
  * @var Yiisoft\Router\UrlGeneratorInterface $urlGenerator
  * @var Yiisoft\Router\CurrentRoute $currentRoute
  */

@@ -89,7 +89,7 @@ final readonly class UploadAction
 
         return array_values(array_filter(
             $files,
-            static fn (mixed $file): bool => $file instanceof UploadedFileInterface,
+            static fn(mixed $file): bool => $file instanceof UploadedFileInterface,
         ));
     }
 }

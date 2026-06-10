@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Shared\ApplicationParams;
 use App\Web\Shared\Layout\Main\MainAsset;
 use Yiisoft\Html\Html;
 
 /**
- * @var \App\Shared\ApplicationParams $applicationParams
+ * @var ApplicationParams $applicationParams
  * @var Yiisoft\Aliases\Aliases $aliases
  * @var Yiisoft\Assets\AssetManager $assetManager
  * @var string $content

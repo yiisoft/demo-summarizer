@@ -54,7 +54,7 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
                     'content' => "Summarize the source text.\n"
                         . "Do not quote the source.\n\n"
                         . "Output without an introduction.\n\n"
-                        . "Document: {$documentName}\n\n"
+                        . "Document: $documentName\n\n"
                         . "Source text:\n"
                         . mb_substr($markdown, 0, self::MAX_MARKDOWN_CHARS)
                         . "\n\nSummary:\n- ",
@@ -67,16 +67,12 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
             'frequency_penalty' => 0.8,
             'presence_penalty' => 0.3,
             'max_tokens' => 512,
-        ]);
-
-        if ($payload === false) {
-            throw new RuntimeException('Unable to encode OpenAI-compatible request.');
-        }
+        ], JSON_THROW_ON_ERROR);
 
         $url = rtrim($this->baseUrl, '/') . '/chat/completions';
         $headers = "Content-Type: application/json\n";
         if ($this->apiKey !== '') {
-            $headers .= "Authorization: Bearer {$this->apiKey}\n";
+            $headers .= "Authorization: Bearer $this->apiKey\n";
         }
 
         error_clear_last();
@@ -103,7 +99,7 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
             ));
         }
 
-        $decoded = json_decode($body, true);
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         if (!is_array($decoded)) {
             throw new RuntimeException('OpenAI-compatible API returned an unexpected response.');

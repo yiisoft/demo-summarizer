@@ -155,7 +155,7 @@ final readonly class DocumentUploadService
     {
         return array_values(array_filter(
             $files,
-            static fn (UploadedFileInterface $file): bool => $file->getError() !== UPLOAD_ERR_NO_FILE,
+            static fn(UploadedFileInterface $file): bool => $file->getError() !== UPLOAD_ERR_NO_FILE,
         ));
     }
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Document\Infrastructure;
 
 /**
- * Stores and retrieves original documents and extracted markdown blobs.
+ * Stores and retrieves original documents and extracted Markdown blobs.
  */
 interface DocumentStorageInterface
 {
