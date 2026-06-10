@@ -107,6 +107,7 @@ final class DocumentWorkflowTest extends Unit
         $repository->markQueued($document->id);
         $claimed = $repository->claim($document->id, 60);
         self::assertNotNull($claimed);
+        self::assertNull($repository->claim($document->id, 60));
 
         $repository->markSummarizing($document->id, 'documents/1/extracted.md');
         $repository->complete($document->id, 'summary');

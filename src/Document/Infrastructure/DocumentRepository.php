@@ -139,25 +139,36 @@ final readonly class DocumentRepository
      */
     public function claim(int $id, int $leaseSeconds): ?Document
     {
-        $document = $this->get($id);
         $now = new DateTimeImmutable();
-        if ($document->leaseUntil !== null && new DateTimeImmutable($document->leaseUntil) > $now) {
-            return null;
-        }
-
-        if (!in_array($document->status, [DocumentStatus::QUEUED, DocumentStatus::FAILED], true)) {
-            return null;
-        }
-
         $startedAt = $this->format($now);
         $leaseUntil = $this->format($now->add(new DateInterval('PT' . $leaseSeconds . 'S')));
-        $this->update($id, [
-            'status' => DocumentStatus::EXTRACTING->value,
-            'progress' => 20,
-            'lease_until' => $leaseUntil,
-            'error' => null,
-            'updated_at' => $startedAt,
-        ]);
+
+        $affectedRows = $this->db->createCommand()->update(
+            'documents',
+            [
+                'status' => DocumentStatus::EXTRACTING->value,
+                'progress' => 20,
+                'lease_until' => $leaseUntil,
+                'error' => null,
+                'updated_at' => $startedAt,
+            ],
+            [
+                'and',
+                ['id' => $id],
+                ['status' => [DocumentStatus::QUEUED->value, DocumentStatus::FAILED->value]],
+                [
+                    'or',
+                    ['lease_until' => null],
+                    ['<=', 'lease_until', $startedAt],
+                ],
+            ],
+        )->execute();
+
+        if ($affectedRows === 0) {
+            $this->get($id);
+            return null;
+        }
+
         $this->addEvent($id, 'extracting', 'Extraction started.', 20);
 
         return $this->get($id);
