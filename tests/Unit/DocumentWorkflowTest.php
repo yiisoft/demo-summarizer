@@ -41,11 +41,14 @@ use Yiisoft\Validator\Validator;
 use function array_column;
 use function file_put_contents;
 use function fopen;
+use function fwrite;
 use function is_file;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNotFalse;
 use function PHPUnit\Framework\assertSame;
+use function rewind;
+use function stream_get_contents;
 use function sys_get_temp_dir;
 use function tempnam;
 use function uniqid;
@@ -144,7 +147,7 @@ final class DocumentWorkflowTest extends Unit
 
         $storage->put('documents/test/original.txt', 'content');
 
-        assertSame('content', $storage->read('documents/test/original.txt'));
+        assertSame('content', $this->readStorage($storage, 'documents/test/original.txt'));
 
         $storage->delete('documents/test/original.txt');
 
@@ -179,7 +182,7 @@ final class DocumentWorkflowTest extends Unit
     {
         $mock = new MockHandler();
         $mock->append(new Result([]));
-        $mock->append(new Result(['Body' => Utils::streamFor('s3 content')]));
+        $mock->append(new Result(['Body' => Utils::streamFor('s3 stream')]));
         $mock->append(new Result([]));
 
         $client = new S3Client([
@@ -198,7 +201,7 @@ final class DocumentWorkflowTest extends Unit
         );
 
         $storage->put('documents/test/original.txt', 'content');
-        assertSame('s3 content', $storage->read('documents/test/original.txt'));
+        assertSame('s3 stream', $this->readStorage($storage, 'documents/test/original.txt'));
         $storage->delete('documents/test/original.txt');
     }
 
@@ -223,7 +226,7 @@ final class DocumentWorkflowTest extends Unit
         $completed = $repository->get($document->id);
         assertSame(DocumentStatus::COMPLETED, $completed->status);
         assertSame('Summary text', $completed->summary);
-        assertSame('Extracted markdown', $storage->read('documents/' . $document->id . '/extracted.md'));
+        assertSame('Extracted markdown', $this->readStorage($storage, 'documents/' . $document->id . '/extracted.md'));
     }
 
     public function testMessageHandlerProcessesYiiQueueEnvelope(): void
@@ -335,7 +338,7 @@ final class DocumentWorkflowTest extends Unit
         $processor->process($document->id);
 
         assertSame(['documents/' . $document->id . '/extracted.md'], $storage->deleted);
-        assertSame('New markdown', $storage->read('documents/' . $document->id . '/extracted.md'));
+        assertSame('New markdown', $this->readStorage($storage, 'documents/' . $document->id . '/extracted.md'));
     }
 
     public function testDocumentEventsAreRenderedByTimelineModel(): void
@@ -514,6 +517,11 @@ final class DocumentWorkflowTest extends Unit
         return $file;
     }
 
+    private function readStorage(DocumentStorageInterface $storage, string $key): string
+    {
+        return stream_get_contents($storage->readStream($key));
+    }
+
     /**
      * Returns MIME types accepted by upload validation.
      *
@@ -546,9 +554,17 @@ final class ArrayDocumentStorage implements DocumentStorageInterface
         $this->objects[$key] = $contents;
     }
 
-    public function read(string $key): string
+    /**
+     * @return resource
+     */
+    public function readStream(string $key)
     {
-        return $this->objects[$key] ?? '';
+        $stream = fopen('php://temp', 'rb+');
+        assertNotFalse($stream);
+        fwrite($stream, $this->objects[$key] ?? '');
+        rewind($stream);
+
+        return $stream;
     }
 
     public function delete(string $key): void

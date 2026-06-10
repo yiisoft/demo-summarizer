@@ -10,8 +10,10 @@ use App\Document\Infrastructure\DocumentNotFoundException;
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use App\Document\Summarization\SummarizerInterface;
+use RuntimeException;
 use Throwable;
 
+use function stream_get_contents;
 use function trim;
 
 /**
@@ -52,7 +54,11 @@ final readonly class DocumentProcessor
         }
 
         try {
-            $original = $this->storage->read($document->storageKey);
+            $original = stream_get_contents($this->storage->readStream($document->storageKey));
+            if ($original === false) {
+                throw new RuntimeException('Unable to read document content.');
+            }
+
             $markdown = trim($this->extractor->extract($original, $document->extension, $document->originalName));
             if ($markdown === '') {
                 throw new ExtractionException('No readable text was extracted from the document.');

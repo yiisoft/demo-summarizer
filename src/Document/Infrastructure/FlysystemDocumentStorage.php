@@ -32,13 +32,15 @@ final readonly class FlysystemDocumentStorage implements DocumentStorageInterfac
     }
 
     /**
-     * Reads a document blob.
+     * Reads a document blob as a stream resource.
      *
      * @param string $key Storage object key.
+     *
+     * @return resource
      */
-    public function read(string $key): string
+    public function readStream(string $key)
     {
-        return $this->filesystem->read($key);
+        return $this->filesystem->readStream($key);
     }
 
     /**

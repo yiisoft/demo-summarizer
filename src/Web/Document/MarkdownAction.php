@@ -45,7 +45,7 @@ final readonly class MarkdownAction
                 'Content-Type' => 'text/markdown; charset=UTF-8',
                 'Content-Disposition' => 'inline; filename="document-' . $document->id . '.md"',
             ],
-            $this->streamFactory->createStream($this->storage->read($document->markdownKey)),
+            $this->streamFactory->createStreamFromResource($this->storage->readStream($document->markdownKey)),
         );
     }
 }

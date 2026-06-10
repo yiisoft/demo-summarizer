@@ -18,11 +18,13 @@ interface DocumentStorageInterface
     public function put(string $key, string $contents): void;
 
     /**
-     * Reads a document blob.
+     * Reads a document blob as a stream resource.
      *
      * @param string $key Storage object key.
+     *
+     * @return resource
      */
-    public function read(string $key): string;
+    public function readStream(string $key);
 
     /**
      * Deletes a document blob if it exists.

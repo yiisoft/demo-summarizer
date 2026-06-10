@@ -6,9 +6,9 @@ namespace App\Web\Document;
 
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
-use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Yiisoft\ResponseDownload\DownloadResponseFactory;
 use Yiisoft\Router\CurrentRoute;
 
 /**
@@ -21,12 +21,14 @@ final readonly class DownloadAction
      * @param DocumentRepository $repository Document persistence gateway.
      * @param DocumentStorageInterface $storage Document blob storage.
      * @param StreamFactoryInterface $streamFactory PSR-7 stream factory.
+     * @param DownloadResponseFactory $downloadResponseFactory Download response factory.
      */
     public function __construct(
         private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
         private StreamFactoryInterface $streamFactory,
+        private DownloadResponseFactory $downloadResponseFactory,
     ) {}
 
     /**
@@ -36,13 +38,10 @@ final readonly class DownloadAction
     {
         $document = $this->repository->get((int) $this->currentRoute->getArgument('id'));
 
-        return new Response(
-            200,
-            [
-                'Content-Type' => $document->mimeType,
-                'Content-Disposition' => 'attachment; filename="' . addslashes($document->originalName) . '"',
-            ],
-            $this->streamFactory->createStream($this->storage->read($document->storageKey)),
+        return $this->downloadResponseFactory->sendStreamAsFile(
+            $this->streamFactory->createStreamFromResource($this->storage->readStream($document->storageKey)),
+            attachmentName: $document->originalName,
+            mimeType: $document->mimeType,
         );
     }
 }
