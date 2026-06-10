@@ -32,13 +32,13 @@ final readonly class StatusAction
     {
         $document = $this->repository->get((int) $this->currentRoute->getArgument('id'));
 
-        return $this->responseFactory->createResponse([
-            'id' => $document->id,
-            'status' => $document->status->value,
-            'progress' => $document->progress,
-            'summary' => $document->summary,
-            'error' => $document->error,
-            'updatedAt' => $document->updatedAt,
-        ]);
+        return $this->responseFactory->createResponse(new DocumentStatusResponse(
+            id: $document->id,
+            status: $document->status->value,
+            progress: $document->progress,
+            summary: $document->summary,
+            error: $document->error,
+            updatedAt: $document->updatedAt,
+        ));
     }
 }
