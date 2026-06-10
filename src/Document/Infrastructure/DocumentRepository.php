@@ -47,7 +47,7 @@ final readonly class DocumentRepository
             'mime_type' => $mimeType,
             'extension' => $extension,
             'byte_size' => $byteSize,
-            'status' => DocumentStatus::UPLOADED,
+            'status' => DocumentStatus::UPLOADED->value,
             'progress' => 0,
             'created_at' => $now,
             'updated_at' => $now,
@@ -123,7 +123,7 @@ final readonly class DocumentRepository
     {
         $now = $this->now();
         $this->update($id, [
-            'status' => DocumentStatus::QUEUED,
+            'status' => DocumentStatus::QUEUED->value,
             'progress' => 5,
             'error' => null,
             'updated_at' => $now,
@@ -152,7 +152,7 @@ final readonly class DocumentRepository
         $startedAt = $this->format($now);
         $leaseUntil = $this->format($now->add(new DateInterval('PT' . $leaseSeconds . 'S')));
         $this->update($id, [
-            'status' => DocumentStatus::EXTRACTING,
+            'status' => DocumentStatus::EXTRACTING->value,
             'progress' => 20,
             'lease_until' => $leaseUntil,
             'error' => null,
@@ -172,7 +172,7 @@ final readonly class DocumentRepository
     public function markSummarizing(int $id, string $markdownKey): void
     {
         $this->update($id, [
-            'status' => DocumentStatus::SUMMARIZING,
+            'status' => DocumentStatus::SUMMARIZING->value,
             'progress' => 70,
             'markdown_key' => $markdownKey,
             'updated_at' => $this->now(),
@@ -190,7 +190,7 @@ final readonly class DocumentRepository
     {
         $now = $this->now();
         $this->update($id, [
-            'status' => DocumentStatus::COMPLETED,
+            'status' => DocumentStatus::COMPLETED->value,
             'progress' => 100,
             'summary' => $summary,
             'lease_until' => null,
@@ -209,7 +209,7 @@ final readonly class DocumentRepository
     {
         $now = $this->now();
         $this->update($id, [
-            'status' => DocumentStatus::FAILED,
+            'status' => DocumentStatus::FAILED->value,
             'progress' => 100,
             'lease_until' => null,
             'error' => $error,
@@ -228,7 +228,7 @@ final readonly class DocumentRepository
         $document = $this->get($id);
         $now = $this->now();
         $this->update($id, [
-            'status' => DocumentStatus::UPLOADED,
+            'status' => DocumentStatus::UPLOADED->value,
             'progress' => 0,
             'lease_until' => null,
             'summary' => null,

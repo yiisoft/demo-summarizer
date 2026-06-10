@@ -16,7 +16,7 @@ final readonly class Document
      * @param string $mimeType Client MIME type.
      * @param string $extension Lowercase file extension.
      * @param int $byteSize Uploaded file size in bytes.
-     * @param string $status Current processing status.
+     * @param DocumentStatus $status Current processing status.
      * @param int $progress Current processing progress percentage.
      * @param string|null $leaseUntil Timestamp until which a worker owns processing for this document; other workers skip it while the lease is active.
      * @param string|null $markdownKey Storage object key for markdown extracted from the original document; null until extraction succeeds.
@@ -32,7 +32,7 @@ final readonly class Document
         public string $mimeType,
         public string $extension,
         public int $byteSize,
-        public string $status,
+        public DocumentStatus $status,
         public int $progress,
         public ?string $leaseUntil,
         public ?string $markdownKey,
@@ -56,7 +56,7 @@ final readonly class Document
             (string) $row['mime_type'],
             (string) $row['extension'],
             (int) $row['byte_size'],
-            (string) $row['status'],
+            DocumentStatus::from((string) $row['status']),
             (int) $row['progress'],
             $row['lease_until'] === null ? null : (string) $row['lease_until'],
             $row['markdown_key'] === null ? null : (string) $row['markdown_key'],

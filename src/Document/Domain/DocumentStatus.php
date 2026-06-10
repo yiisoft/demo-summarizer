@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace App\Document\Domain;
 
-/**
- * Defines document workflow statuses used by repositories, processors, and views.
- */
-final class DocumentStatus
+enum DocumentStatus: string
 {
-    public const UPLOADED = 'uploaded';
-    public const QUEUED = 'queued';
-    public const EXTRACTING = 'extracting';
-    public const SUMMARIZING = 'summarizing';
-    public const COMPLETED = 'completed';
-    public const FAILED = 'failed';
+    case UPLOADED = 'uploaded';
+    case QUEUED = 'queued';
+    case EXTRACTING = 'extracting';
+    case SUMMARIZING = 'summarizing';
+    case COMPLETED = 'completed';
+    case FAILED = 'failed';
 
     public const ACTIVE = [
         self::UPLOADED,

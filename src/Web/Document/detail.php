@@ -24,6 +24,7 @@ $markdownUrl = $urlGenerator->generate('documents/markdown', ['id' => $document-
 $retryUrl = $urlGenerator->generate('documents/retry', ['id' => $document->id]);
 $deleteUrl = $urlGenerator->generate('documents/delete', ['id' => $document->id]);
 $statusUrl = $urlGenerator->generate('documents/status', ['id' => $document->id]);
+$status = $document->status->value;
 ?>
 
 <section
@@ -31,7 +32,7 @@ $statusUrl = $urlGenerator->generate('documents/status', ['id' => $document->id]
     data-poll="<?= $document->isActive() ? '1' : '0' ?>"
     data-document-detail="<?= $document->id ?>"
     data-status-url="<?= Html::encode($statusUrl) ?>"
-    data-current-status="<?= Html::encode($document->status) ?>"
+    data-current-status="<?= Html::encode($status) ?>"
     data-refresh-on-terminal="1"
 >
     <div class="detail-header">
@@ -39,8 +40,8 @@ $statusUrl = $urlGenerator->generate('documents/status', ['id' => $document->id]
             <a href="<?= Html::encode($homeUrl) ?>">Back to documents</a>
             <h1><?= Html::encode($document->originalName) ?></h1>
         </div>
-        <span class="status status-<?= Html::encode($document->status) ?>" data-status="<?= $document->id ?>">
-            <?= Html::encode($document->status) ?>
+        <span class="status status-<?= Html::encode($status) ?>" data-status="<?= $document->id ?>">
+            <?= Html::encode($status) ?>
         </span>
     </div>
 

@@ -34,7 +34,7 @@ final readonly class StatusAction
 
         return $this->responseFactory->createResponse([
             'id' => $document->id,
-            'status' => $document->status,
+            'status' => $document->status->value,
             'progress' => $document->progress,
             'summary' => $document->summary,
             'error' => $document->error,

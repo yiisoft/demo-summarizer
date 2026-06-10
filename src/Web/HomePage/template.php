@@ -112,14 +112,15 @@ foreach ($documents as $document) {
             <?php foreach ($documents as $document): ?>
                 <?php $detailUrl = $urlGenerator->generate('documents/detail', ['id' => $document->id]); ?>
                 <?php $statusUrl = $urlGenerator->generate('documents/status', ['id' => $document->id]); ?>
+                <?php $status = $document->status->value; ?>
                 <tr data-document-row="<?= $document->id ?>" data-status-url="<?= Html::encode($statusUrl) ?>">
                     <td>
                         <a href="<?= Html::encode($detailUrl) ?>"><?= Html::encode($document->originalName) ?></a>
                         <small><?= Html::encode($document->extension) ?> · <?= number_format($document->byteSize / 1024, 1) ?> KB</small>
                     </td>
                     <td>
-                        <span class="status status-<?= Html::encode($document->status) ?>" data-status="<?= $document->id ?>">
-                            <?= Html::encode($document->status) ?>
+                        <span class="status status-<?= Html::encode($status) ?>" data-status="<?= $document->id ?>">
+                            <?= Html::encode($status) ?>
                         </span>
                     </td>
                     <td>
