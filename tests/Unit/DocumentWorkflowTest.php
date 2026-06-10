@@ -38,7 +38,6 @@ use Yiisoft\Queue\MessageStatus;
 use Yiisoft\Queue\QueueInterface;
 use Yiisoft\Validator\Validator;
 
-use function array_column;
 use function file_put_contents;
 use function fopen;
 use function fwrite;
@@ -88,15 +87,13 @@ final class DocumentWorkflowTest extends Unit
 
         $this->migrate($db);
 
-        $tables = $db->createCommand("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")
-            ->queryColumn();
+        $documents = $db->getTableSchema('documents', true);
+        $events = $db->getTableSchema('processing_events', true);
 
-        self::assertContains('documents', $tables);
-        self::assertContains('processing_events', $tables);
-
-        $documentColumns = $db->createCommand("PRAGMA table_info(documents)")
-            ->queryAll();
-        self::assertContains('created_at', array_column($documentColumns, 'name'));
+        self::assertNotNull($documents);
+        self::assertNotNull($events);
+        self::assertContains('created_at', $documents->getColumnNames());
+        self::assertContains('document_id', $events->getColumnNames());
     }
 
     public function testRepositoryRecordsStatusTransitionsAndEvents(): void
