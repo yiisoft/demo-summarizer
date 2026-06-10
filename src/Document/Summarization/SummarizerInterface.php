@@ -12,8 +12,8 @@ interface SummarizerInterface
     /**
      * Summarizes extracted document markdown.
      *
-     * @param string $markdown Extracted document markdown.
-     * @param string $documentName Original document filename.
+     * @param non-empty-string $markdown Extracted document markdown.
+     * @param non-empty-string $documentName Original document filename.
      */
     public function summarize(string $markdown, string $documentName): string;
 }

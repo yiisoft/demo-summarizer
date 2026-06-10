@@ -24,7 +24,7 @@ final readonly class KreuzbergExtractor implements ExtractorInterface
 {
     /**
      * @param NativeExtractor $fallback Extractor used when the Kreuzberg binary is unavailable.
-     * @param string $binaryPath Filesystem path to the Kreuzberg executable.
+     * @param non-empty-string $binaryPath Filesystem path to the Kreuzberg executable.
      */
     public function __construct(
         private NativeExtractor $fallback = new NativeExtractor(),
@@ -35,8 +35,8 @@ final readonly class KreuzbergExtractor implements ExtractorInterface
      * Extracts markdown through Kreuzberg, or through the fallback if Kreuzberg is unavailable.
      *
      * @param string $contents Original document bytes.
-     * @param string $extension Lowercase document extension.
-     * @param string $originalName Original client filename.
+     * @param non-empty-string $extension Lowercase document extension.
+     * @param non-empty-string $originalName Original client filename.
      */
     public function extract(string $contents, string $extension, string $originalName): string
     {

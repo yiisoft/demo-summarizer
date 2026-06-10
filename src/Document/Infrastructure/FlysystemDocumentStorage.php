@@ -23,7 +23,7 @@ final readonly class FlysystemDocumentStorage implements DocumentStorageInterfac
     /**
      * Writes a document blob.
      *
-     * @param string $key Storage object key.
+     * @param non-empty-string $key Storage object key.
      * @param string $contents Blob contents.
      */
     public function put(string $key, string $contents): void
@@ -34,7 +34,7 @@ final readonly class FlysystemDocumentStorage implements DocumentStorageInterfac
     /**
      * Reads a document blob as a stream resource.
      *
-     * @param string $key Storage object key.
+     * @param non-empty-string $key Storage object key.
      *
      * @return resource
      */
@@ -46,7 +46,7 @@ final readonly class FlysystemDocumentStorage implements DocumentStorageInterfac
     /**
      * Deletes a document blob if it exists.
      *
-     * @param string $key Storage object key.
+     * @param non-empty-string $key Storage object key.
      */
     public function delete(string $key): void
     {

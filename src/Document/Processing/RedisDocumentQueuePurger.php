@@ -10,8 +10,8 @@ namespace App\Document\Processing;
 final readonly class RedisDocumentQueuePurger implements DocumentQueuePurgerInterface
 {
     /**
-     * @param string $queueName Queue name to purge.
-     * @param string $redisHost Redis-compatible host.
+     * @param non-empty-string $queueName Queue name to purge.
+     * @param non-empty-string $redisHost Redis-compatible host.
      * @param int $redisPort Redis-compatible port.
      * @param int $redisTimeout Redis connection timeout in seconds.
      */

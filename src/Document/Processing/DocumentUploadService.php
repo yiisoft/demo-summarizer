@@ -8,6 +8,7 @@ use App\Document\Domain\Document;
 use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
 use Yiisoft\Queue\QueueInterface;
 use Yiisoft\Validator\Rule\Count as CountRule;
 use Yiisoft\Validator\Rule\Each;
@@ -68,7 +69,7 @@ final readonly class DocumentUploadService
         $documents = [];
         foreach ($files as $file) {
             $name = $file->getClientFilename() ?: 'document';
-            $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            $extension = $this->extension($name);
             $key = 'documents/' . uniqid('', true) . '/original.' . $extension;
             $contents = (string) $file->getStream();
 
@@ -156,6 +157,21 @@ final readonly class DocumentUploadService
             $files,
             static fn (UploadedFileInterface $file): bool => $file->getError() !== UPLOAD_ERR_NO_FILE,
         ));
+    }
+
+    /**
+     * Returns the lowercase extension for a file accepted by validation.
+     *
+     * @return non-empty-string
+     */
+    private function extension(string $name): string
+    {
+        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        if ($extension === '') {
+            throw new RuntimeException('Uploaded document extension must be non-empty after validation.');
+        }
+
+        return $extension;
     }
 
     /**

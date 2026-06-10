@@ -124,7 +124,7 @@ final class Environment
     /**
      * Stores a boolean environment value.
      *
-     * @param string $key Environment variable name.
+     * @param non-empty-string $key Environment variable name.
      * @param bool $default Default value when the variable is absent or invalid.
      */
     private static function setBoolean(string $key, bool $default): void
@@ -138,7 +138,7 @@ final class Environment
     /**
      * Stores a non-empty string value or null.
      *
-     * @param string $key Environment variable name.
+     * @param non-empty-string $key Environment variable name.
      * @param non-empty-string|null $default Default value when the variable is absent or empty.
      */
     private static function setNonEmptyStringOrNull(string $key, ?string $default): void
@@ -150,7 +150,7 @@ final class Environment
     /**
      * Reads a raw environment value from server and process sources.
      *
-     * @param string $key Environment variable name.
+     * @param non-empty-string $key Environment variable name.
      */
     private static function getRawValue(string $key): ?string
     {

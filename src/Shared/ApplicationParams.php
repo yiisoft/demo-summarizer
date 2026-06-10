@@ -10,9 +10,9 @@ namespace App\Shared;
 final readonly class ApplicationParams
 {
     /**
-     * @param string $name User-facing application name.
-     * @param string $charset Response and document character set.
-     * @param string $locale Default application locale.
+     * @param non-empty-string $name User-facing application name.
+     * @param non-empty-string $charset Response and document character set.
+     * @param non-empty-string $locale Default application locale.
      */
     public function __construct(
         public string $name = 'Yii3 Document Summarizer Demo',

@@ -12,12 +12,12 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 final readonly class AmqpDocumentQueuePurger implements DocumentQueuePurgerInterface
 {
     /**
-     * @param string $queueName Queue name to purge.
-     * @param string $amqpHost AMQP broker host.
+     * @param non-empty-string $queueName Queue name to purge.
+     * @param non-empty-string $amqpHost AMQP broker host.
      * @param int $amqpPort AMQP broker port.
-     * @param string $amqpUser AMQP username.
+     * @param non-empty-string $amqpUser AMQP username.
      * @param string $amqpPassword AMQP password.
-     * @param string $amqpVhost AMQP virtual host.
+     * @param non-empty-string $amqpVhost AMQP virtual host.
      */
     public function __construct(
         private string $queueName,

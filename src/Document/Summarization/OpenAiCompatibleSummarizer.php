@@ -28,8 +28,8 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
     private const MAX_MARKDOWN_CHARS = 2500;
 
     /**
-     * @param string $baseUrl Base URL of the OpenAI-compatible API, including the API version prefix.
-     * @param string $model Model name sent in the chat completions request.
+     * @param non-empty-string $baseUrl Base URL of the OpenAI-compatible API, including the API version prefix.
+     * @param non-empty-string $model Model name sent in the chat completions request.
      * @param string $apiKey Optional bearer token for protected local or remote endpoints.
      */
     public function __construct(
@@ -41,8 +41,8 @@ final readonly class OpenAiCompatibleSummarizer implements SummarizerInterface
     /**
      * Requests a concise document summary.
      *
-     * @param string $markdown Extracted document markdown.
-     * @param string $documentName Original document filename.
+     * @param non-empty-string $markdown Extracted document markdown.
+     * @param non-empty-string $documentName Original document filename.
      */
     public function summarize(string $markdown, string $documentName): string
     {

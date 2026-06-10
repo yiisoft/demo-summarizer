@@ -9,6 +9,10 @@ namespace App\Web\Document;
  */
 final readonly class DocumentStatusResponse
 {
+    /**
+     * @param non-empty-string $status Processing status value.
+     * @param non-empty-string $updatedAt Last update timestamp.
+     */
     public function __construct(
         public int $id,
         public string $status,

@@ -18,8 +18,8 @@ final class NativeExtractor implements ExtractorInterface
      * Extracts text from natively supported document formats.
      *
      * @param string $contents Original document bytes.
-     * @param string $extension Lowercase document extension.
-     * @param string $originalName Original client filename.
+     * @param non-empty-string $extension Lowercase document extension.
+     * @param non-empty-string $originalName Original client filename.
      */
     public function extract(string $contents, string $extension, string $originalName): string
     {

@@ -16,10 +16,10 @@ use RuntimeException;
 final readonly class DocumentStorageFactory
 {
     /**
-     * @param string $storageDriver Storage driver name.
-     * @param string $localStorageRoot Root path for local filesystem storage.
+     * @param non-empty-string $storageDriver Storage driver name.
+     * @param non-empty-string $localStorageRoot Root path for local filesystem storage.
      * @param string $s3Endpoint S3-compatible endpoint URL.
-     * @param string $s3Region S3 region.
+     * @param non-empty-string $s3Region S3 region.
      * @param string $s3Bucket S3 bucket name.
      * @param string $s3AccessKey S3 access key.
      * @param string $s3SecretKey S3 secret key.

@@ -27,10 +27,10 @@ final readonly class DocumentRepository
     /**
      * Creates a document record in uploaded state.
      *
-     * @param string $originalName Original client filename.
-     * @param string $storageKey Storage key for the original file.
-     * @param string $mimeType Client MIME type.
-     * @param string $extension Lowercase file extension.
+     * @param non-empty-string $originalName Original client filename.
+     * @param non-empty-string $storageKey Storage key for the original file.
+     * @param non-empty-string $mimeType Client MIME type.
+     * @param non-empty-string $extension Lowercase file extension.
      * @param int $byteSize Uploaded file size in bytes.
      */
     public function create(
@@ -178,7 +178,7 @@ final readonly class DocumentRepository
      * Marks a document as summarizing after markdown extraction.
      *
      * @param int $id Document identifier.
-     * @param string $markdownKey Storage key for extracted markdown.
+     * @param non-empty-string $markdownKey Storage key for extracted markdown.
      */
     public function markSummarizing(int $id, string $markdownKey): void
     {
@@ -218,6 +218,7 @@ final readonly class DocumentRepository
      */
     public function fail(int $id, string $error): void
     {
+        $error = $error === '' ? 'Processing failed.' : $error;
         $now = $this->now();
         $this->update($id, [
             'status' => DocumentStatus::FAILED->value,
@@ -273,8 +274,8 @@ final readonly class DocumentRepository
      * Adds a document timeline event.
      *
      * @param int $documentId Document identifier.
-     * @param string $type Event type.
-     * @param string $message User-facing event message.
+     * @param non-empty-string $type Event type.
+     * @param non-empty-string $message User-facing event message.
      * @param int $progress Progress percentage.
      */
     public function addEvent(int $documentId, string $type, string $message, int $progress): void
@@ -301,6 +302,8 @@ final readonly class DocumentRepository
 
     /**
      * Returns the current timestamp in database format.
+     *
+     * @return non-empty-string
      */
     private function now(): string
     {
@@ -311,6 +314,8 @@ final readonly class DocumentRepository
      * Formats a timestamp for database storage.
      *
      * @param DateTimeImmutable $date Timestamp to format.
+     *
+     * @return non-empty-string
      */
     private function format(DateTimeImmutable $date): string
     {
@@ -348,19 +353,19 @@ final readonly class DocumentRepository
     {
         return new Document(
             (int) $row['id'],
-            (string) $row['original_name'],
-            (string) $row['storage_key'],
-            (string) $row['mime_type'],
-            (string) $row['extension'],
+            $this->nonEmptyString($row['original_name'], 'original_name'),
+            $this->nonEmptyString($row['storage_key'], 'storage_key'),
+            $this->nonEmptyString($row['mime_type'], 'mime_type'),
+            $this->nonEmptyString($row['extension'], 'extension'),
             (int) $row['byte_size'],
             DocumentStatus::from((string) $row['status']),
             (int) $row['progress'],
-            $row['lease_until'] === null ? null : (string) $row['lease_until'],
-            $row['markdown_key'] === null ? null : (string) $row['markdown_key'],
+            $row['lease_until'] === null ? null : $this->nonEmptyString($row['lease_until'], 'lease_until'),
+            $row['markdown_key'] === null ? null : $this->nonEmptyString($row['markdown_key'], 'markdown_key'),
             $row['summary'] === null ? null : (string) $row['summary'],
             $row['error'] === null ? null : (string) $row['error'],
             (int) $row['retry_count'],
-            (string) $row['updated_at'],
+            $this->nonEmptyString($row['updated_at'], 'updated_at'),
         );
     }
 
@@ -396,10 +401,25 @@ final readonly class DocumentRepository
         return new DocumentEvent(
             (int) $row['id'],
             (int) $row['document_id'],
-            (string) $row['event_type'],
-            (string) $row['message'],
+            $this->nonEmptyString($row['event_type'], 'event_type'),
+            $this->nonEmptyString($row['message'], 'message'),
             (int) $row['progress'],
-            (string) $row['created_at'],
+            $this->nonEmptyString($row['created_at'], 'created_at'),
         );
+    }
+
+    /**
+     * Reads a required non-empty string column from a database row.
+     *
+     * @return non-empty-string
+     */
+    private function nonEmptyString(mixed $value, string $column): string
+    {
+        $value = (string) $value;
+        if ($value === '') {
+            throw new UnexpectedValueException("Database column \"$column\" must be a non-empty string.");
+        }
+
+        return $value;
     }
 }
