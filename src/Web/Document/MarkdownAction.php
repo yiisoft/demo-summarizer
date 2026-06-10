@@ -9,7 +9,7 @@ use App\Document\Infrastructure\DocumentStorageInterface;
 use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Yiisoft\Router\CurrentRoute;
+use Yiisoft\Router\HydratorAttribute\RouteArgument;
 
 /**
  * Streams extracted markdown for a processed document.
@@ -17,13 +17,11 @@ use Yiisoft\Router\CurrentRoute;
 final readonly class MarkdownAction
 {
     /**
-     * @param CurrentRoute $currentRoute Current route with the document identifier.
      * @param DocumentRepository $repository Document persistence gateway.
      * @param DocumentStorageInterface $storage Document blob storage.
      * @param StreamFactoryInterface $streamFactory PSR-7 stream factory.
      */
     public function __construct(
-        private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
         private StreamFactoryInterface $streamFactory,
@@ -32,9 +30,9 @@ final readonly class MarkdownAction
     /**
      * Streams extracted markdown or a 404 response when it is unavailable.
      */
-    public function __invoke(): ResponseInterface
+    public function __invoke(#[RouteArgument] int $id): ResponseInterface
     {
-        $document = $this->repository->get((int) $this->currentRoute->getArgument('id'));
+        $document = $this->repository->get($id);
         if ($document->markdownKey === null) {
             return new Response(404, body: $this->streamFactory->createStream('Markdown has not been extracted yet.'));
         }

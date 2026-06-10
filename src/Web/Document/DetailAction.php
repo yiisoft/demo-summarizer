@@ -6,7 +6,7 @@ namespace App\Web\Document;
 
 use App\Document\Infrastructure\DocumentRepository;
 use Psr\Http\Message\ResponseInterface;
-use Yiisoft\Router\CurrentRoute;
+use Yiisoft\Router\HydratorAttribute\RouteArgument;
 use Yiisoft\Yii\View\Renderer\WebViewRenderer;
 
 use function array_reverse;
@@ -17,12 +17,10 @@ use function array_reverse;
 final readonly class DetailAction
 {
     /**
-     * @param CurrentRoute $currentRoute Current route with the document identifier.
      * @param DocumentRepository $repository Document persistence gateway.
      * @param WebViewRenderer $viewRenderer Yii view renderer.
      */
     public function __construct(
-        private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
         private WebViewRenderer $viewRenderer,
     ) {}
@@ -30,10 +28,8 @@ final readonly class DetailAction
     /**
      * Renders document details and timeline events.
      */
-    public function __invoke(): ResponseInterface
+    public function __invoke(#[RouteArgument] int $id): ResponseInterface
     {
-        $id = (int) $this->currentRoute->getArgument('id');
-
         return $this->viewRenderer->render(
             __DIR__ . '/detail',
             [

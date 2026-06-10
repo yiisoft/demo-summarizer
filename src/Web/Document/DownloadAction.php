@@ -9,7 +9,7 @@ use App\Document\Infrastructure\DocumentStorageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Yiisoft\ResponseDownload\DownloadResponseFactory;
-use Yiisoft\Router\CurrentRoute;
+use Yiisoft\Router\HydratorAttribute\RouteArgument;
 
 /**
  * Streams an original uploaded document for download.
@@ -17,14 +17,12 @@ use Yiisoft\Router\CurrentRoute;
 final readonly class DownloadAction
 {
     /**
-     * @param CurrentRoute $currentRoute Current route with the document identifier.
      * @param DocumentRepository $repository Document persistence gateway.
      * @param DocumentStorageInterface $storage Document blob storage.
      * @param StreamFactoryInterface $streamFactory PSR-7 stream factory.
      * @param DownloadResponseFactory $downloadResponseFactory Download response factory.
      */
     public function __construct(
-        private CurrentRoute $currentRoute,
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
         private StreamFactoryInterface $streamFactory,
@@ -34,9 +32,9 @@ final readonly class DownloadAction
     /**
      * Streams the original uploaded file.
      */
-    public function __invoke(): ResponseInterface
+    public function __invoke(#[RouteArgument] int $id): ResponseInterface
     {
-        $document = $this->repository->get((int) $this->currentRoute->getArgument('id'));
+        $document = $this->repository->get($id);
 
         return $this->downloadResponseFactory->sendStreamAsFile(
             $this->streamFactory->createStreamFromResource($this->storage->readStream($document->storageKey)),
