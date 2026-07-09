@@ -639,13 +639,4 @@ final class CapturingQueue implements QueueInterface
         return 'test';
     }
 
-    public function withMiddlewares(mixed ...$middlewareDefinitions): self
-    {
-        return $this;
-    }
-
-    public function withMiddlewaresAdded(mixed ...$middlewareDefinitions): self
-    {
-        return $this;
-    }
 }
