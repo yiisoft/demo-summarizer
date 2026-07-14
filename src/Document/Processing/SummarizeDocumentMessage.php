@@ -20,11 +20,15 @@ final class SummarizeDocumentMessage extends Message
 
     /**
      * @param string $type Serialized message type.
-     * @param mixed $data Serialized document identifier.
+     * @param bool|int|float|string|array|null $payload Serialized document identifier.
      */
-    public static function fromData(string $type, mixed $data): self
+    public static function fromPayload(string $type, bool|int|float|string|array|null $payload): static
     {
-        return new self((int) $data);
+        if (!is_int($payload) && !is_string($payload)) {
+            throw new \InvalidArgumentException('Document ID payload must be an integer or numeric string.');
+        }
+
+        return new self((int) $payload);
     }
 
     /**
@@ -38,7 +42,7 @@ final class SummarizeDocumentMessage extends Message
     /**
      * Returns the document identifier serialized into the queue payload.
      */
-    public function getData(): int
+    public function getPayload(): int
     {
         return $this->documentId;
     }

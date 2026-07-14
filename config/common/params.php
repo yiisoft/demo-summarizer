@@ -46,6 +46,9 @@ return [
     ],
 
     'yiisoft/queue' => [
+        'messages' => [
+            SummarizeDocumentMessage::class => SummarizeDocumentMessage::class,
+        ],
         'handlers' => [
             SummarizeDocumentMessage::class => SummarizeDocumentMessageHandler::class,
         ],

@@ -12,7 +12,7 @@ use Yiisoft\Queue\Amqp\Adapter as AmqpAdapter;
 use Yiisoft\Queue\Amqp\QueueProvider as AmqpQueueProvider;
 use Yiisoft\Queue\Amqp\Settings\Queue as AmqpQueueSettings;
 use Yiisoft\Queue\Cli\LoopInterface;
-use Yiisoft\Queue\Message\MessageSerializerInterface;
+use Yiisoft\Queue\Message\Serializer\MessageSerializerInterface;
 use Yiisoft\Queue\Middleware\Push\PushMiddlewareConfig;
 use Yiisoft\Queue\Provider\PredefinedQueueProvider;
 use Yiisoft\Queue\Provider\QueueProviderInterface;

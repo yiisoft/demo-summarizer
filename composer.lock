@@ -5086,12 +5086,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/queue.git",
-                "reference": "c6248322fb6b7034ab8db7116deb4614e9d0ab29"
+                "reference": "c7ce4001556d600bc6cc9161e0f87cfb8f175ee8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/queue/zipball/c6248322fb6b7034ab8db7116deb4614e9d0ab29",
-                "reference": "c6248322fb6b7034ab8db7116deb4614e9d0ab29",
+                "url": "https://api.github.com/repos/yiisoft/queue/zipball/c7ce4001556d600bc6cc9161e0f87cfb8f175ee8",
+                "reference": "c7ce4001556d600bc6cc9161e0f87cfb8f175ee8",
                 "shasum": ""
             },
             "require": {
@@ -5106,15 +5106,15 @@
                 "yiisoft/injector": "^1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.93",
+                "friendsofphp/php-cs-fixer": "^3.95.11",
                 "maglnet/composer-require-checker": "^4.7.1",
-                "phpbench/phpbench": "^1.4.1",
-                "phpunit/phpunit": "^10.5.45",
-                "rector/rector": "^2.0.11",
+                "phpbench/phpbench": "^1.4.3",
+                "phpunit/phpunit": "^10.5.63",
+                "rector/rector": "^2.5.2",
                 "roave/infection-static-analysis-plugin": "^1.35",
-                "vimeo/psalm": "^5.26.1 || ^6.10",
+                "vimeo/psalm": "^5.26.1 || ^6.16.1",
                 "yiisoft/code-style": "^1.0",
-                "yiisoft/test-support": "^3.0.2",
+                "yiisoft/test-support": "^3.2.0",
                 "yiisoft/yii-debug": "dev-master"
             },
             "suggest": {
@@ -5144,7 +5144,7 @@
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": "Framework-agnostic PHP queue library for asynchronous tasks, best used with Yii 3",
+            "description": "Framework-agnostic PHP queue library for asynchronous tasks, best used with Yii3",
             "keywords": [
                 "async",
                 "beanstalk",
@@ -5175,7 +5175,7 @@
                     "type": "opencollective"
                 }
             ],
-            "time": "2026-06-04T20:52:27+00:00"
+            "time": "2026-07-03T01:15:44+00:00"
         },
         {
             "name": "yiisoft/queue-amqp",
@@ -5183,12 +5183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/queue-amqp.git",
-                "reference": "d1e9207a4466fcbc277fe9b08feab542431e6e0f"
+                "reference": "0ebc0ca8e348d7a5d419bfa97b4d2fc2d61fa84d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/queue-amqp/zipball/d1e9207a4466fcbc277fe9b08feab542431e6e0f",
-                "reference": "d1e9207a4466fcbc277fe9b08feab542431e6e0f",
+                "url": "https://api.github.com/repos/yiisoft/queue-amqp/zipball/0ebc0ca8e348d7a5d419bfa97b4d2fc2d61fa84d",
+                "reference": "0ebc0ca8e348d7a5d419bfa97b4d2fc2d61fa84d",
                 "shasum": ""
             },
             "require": {
@@ -5262,7 +5262,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2026-06-04T22:03:12+00:00"
+            "time": "2026-07-09T08:29:18+00:00"
         },
         {
             "name": "yiisoft/queue-redis",
@@ -5270,12 +5270,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/queue-redis.git",
-                "reference": "d4458eb36ebeea74f968c59560a4f56c699ed8f9"
+                "reference": "ae18b7ab0b040d629a0af5d55713e0e053c48d11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/queue-redis/zipball/d4458eb36ebeea74f968c59560a4f56c699ed8f9",
-                "reference": "d4458eb36ebeea74f968c59560a4f56c699ed8f9",
+                "url": "https://api.github.com/repos/yiisoft/queue-redis/zipball/ae18b7ab0b040d629a0af5d55713e0e053c48d11",
+                "reference": "ae18b7ab0b040d629a0af5d55713e0e053c48d11",
                 "shasum": ""
             },
             "require": {
@@ -5338,7 +5338,7 @@
                     "type": "opencollective"
                 }
             ],
-            "time": "2026-06-04T21:06:06+00:00"
+            "time": "2026-07-09T08:28:45+00:00"
         },
         {
             "name": "yiisoft/request-provider",
