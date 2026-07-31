@@ -1,37 +1,19 @@
 name: GitHub Actions Security Analysis with zizmor 🌈
 
 on:
-    push:
-        branches:
-            - main
-        paths:
-            - '.github/**.yml'
-            - '.github/**.yaml'
-    pull_request:
-        paths:
-            - '.github/**.yml'
-            - '.github/**.yaml'
-
-concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+  push:
+    branches:
+      - master
+    paths: &paths
+      - '.github/**.yml'
+      - '.github/**.yaml'
+  pull_request:
+    paths: *paths
 
 permissions:
-    contents: read
+  actions: read # Required by zizmor when reading workflow metadata through the API
+  contents: read # Required to read workflow files
 
 jobs:
-    zizmor:
-        name: Run zizmor 🌈
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-              with:
-                  persist-credentials: false
-
-            - name: Run zizmor 🌈
-              uses: zizmorcore/zizmor-action@6fc4b006235f201fdab3722e17240ab420d580e5 # v0.6.1
-              with:
-                  advanced-security: false
-                  annotations: true
-                  persona: 'pedantic'
+  zizmor:
+    uses: yiisoft/actions/.github/workflows/zizmor.yml@master
