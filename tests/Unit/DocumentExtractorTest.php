@@ -7,33 +7,35 @@ namespace App\Tests\Unit;
 use App\Document\Extraction\ExtractionException;
 use App\Document\Extraction\KreuzbergExtractor;
 use App\Document\Extraction\NativeExtractor;
-use Codeception\Test\Unit;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Test;
 
 use function chmod;
 use function file_put_contents;
-use function PHPUnit\Framework\assertSame;
 use function sys_get_temp_dir;
 use function unlink;
 
-final class DocumentExtractorTest extends Unit
+#[Test]
+final class DocumentExtractorTest
 {
     public function testMarkdownPassesThrough(): void
     {
         $extractor = new NativeExtractor();
 
-        assertSame('# Title', $extractor->extract(" # Title \n", 'md', 'test.md'));
+        Assert::same($extractor->extract(" # Title \n", 'md', 'test.md'), '# Title');
     }
 
     public function testHtmlIsConvertedToReadableText(): void
     {
         $extractor = new NativeExtractor();
 
-        assertSame("## Heading\n\nBody text", $extractor->extract('<h1>Heading</h1><p>Body text</p>', 'html', 'test.html'));
+        Assert::same($extractor->extract('<h1>Heading</h1><p>Body text</p>', 'html', 'test.html'), "## Heading\n\nBody text");
     }
 
     public function testUnsupportedFormatFails(): void
     {
-        $this->expectException(ExtractionException::class);
+        Expect::exception(ExtractionException::class);
 
         (new NativeExtractor())->extract('%PDF-', 'pdf', 'test.pdf');
     }
@@ -47,7 +49,7 @@ final class DocumentExtractorTest extends Unit
         try {
             $extractor = new KreuzbergExtractor(binaryPath: $binary);
 
-            assertSame('## Extracted markdown', $extractor->extract('binary content', 'docx', 'test.docx'));
+            Assert::same($extractor->extract('binary content', 'docx', 'test.docx'), '## Extracted markdown');
         } finally {
             @unlink($binary);
         }
@@ -60,8 +62,7 @@ final class DocumentExtractorTest extends Unit
         chmod($binary, 0755);
 
         try {
-            $this->expectException(ExtractionException::class);
-            $this->expectExceptionMessage('bad document');
+            Expect::exception(ExtractionException::class)->withMessageContaining('bad document');
 
             (new KreuzbergExtractor(binaryPath: $binary))->extract('broken content', 'pdf', 'broken.pdf');
         } finally {
@@ -73,6 +74,6 @@ final class DocumentExtractorTest extends Unit
     {
         $extractor = new KreuzbergExtractor(binaryPath: sys_get_temp_dir() . '/missing-kreuzberg');
 
-        assertSame('Plain text', $extractor->extract(' Plain text ', 'txt', 'test.txt'));
+        Assert::same($extractor->extract(' Plain text ', 'txt', 'test.txt'), 'Plain text');
     }
 }

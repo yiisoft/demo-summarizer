@@ -217,11 +217,22 @@ Common environment variables:
 
 ## Quality Checks
 
-Run the test suite:
+Run the Testo suite in Docker. Tests use a dedicated SQLite database, local file storage, and mock summaries:
 
 ```bash
 make test
+make -- test --suite Web
 ```
+
+Generate line coverage, including HTTP requests and console commands executed in child processes:
+
+```bash
+make test-coverage
+```
+
+The merged Clover report is written to `runtime/test-coverage/clover.xml`. Child processes use a test-only Xdebug bootstrap; the application has no coverage hooks. Testo's additional coverage CLI flags produce its standard in-process reports; use `make test-coverage` for the merged report.
+
+Use `make -- testo --help` for filtering and reporting options. The test server uses a temporary local port and stops after each web test class.
 
 Run static analysis:
 

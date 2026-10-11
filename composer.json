@@ -30,7 +30,7 @@
             "Composer\\Config::disableProcessTimeout",
             "@php ./yii serve"
         ],
-        "test": "codecept run"
+        "test": "testo"
     },
     "require": {
         "php": "~8.5.0",
@@ -83,18 +83,22 @@
     },
     "require-dev": {
         "ext-dom": "*",
-        "vlucas/phpdotenv": "^5.7.0",
-        "codeception/c3": "^2.9",
-        "codeception/codeception": "^5.3.7",
-        "codeception/module-asserts": "^3.3.0",
-        "codeception/module-cli": "^2.0.1",
-        "codeception/module-phpbrowser": "^4.1",
         "friendsofphp/php-cs-fixer": "^3.95.27",
         "guzzlehttp/psr7": "^3.1.0",
-        "phpunit/phpunit": "^13.4.1",
         "rector/rector": "^2.7.0",
         "shipmonk/composer-dependency-analyser": "^1.8.4",
+        "symfony/browser-kit": "^8.1.5",
+        "symfony/css-selector": "^8.1.6",
+        "symfony/http-client": "^8.1.8",
+        "symfony/mime": "^8.1",
+        "symfony/process": "^8.1.7",
+        "testo/assert": "^0.1.17",
+        "testo/codecov": "^0.2.4",
+        "testo/lifecycle": "^0.1.9",
+        "testo/test": "^0.1.8",
+        "testo/testo": "^0.10.55",
         "vimeo/psalm": "^6.20.0",
+        "vlucas/phpdotenv": "^5.7.0",
         "yiisoft/cache": "^3.2"
     },
     "autoload": {
@@ -115,7 +119,6 @@
         "bump-after-update": true,
         "allow-plugins": {
             "yiisoft/config": true,
-            "codeception/c3": true,
             "composer/installers": true
         }
     }

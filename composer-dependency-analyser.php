@@ -16,10 +16,13 @@ return (new Configuration())
     ->addPathToScan($root . '/public/index.php', isDev: false)
     ->addPathToScan($root . '/yii', isDev: false)
     ->addPathToScan($root . '/tests', isDev: true)
+    ->addPathToScan($root . '/testo.php', isDev: true)
     ->ignoreErrorsOnPackage('psr/container', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnPackage('yiisoft/config', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnPackage('yiisoft/di', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnPackage('yiisoft/view', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnPackage('yiisoft/router-fastroute', [ErrorType::UNUSED_DEPENDENCY])
     ->ignoreErrorsOnExtension('ext-pdo_sqlite', [ErrorType::UNUSED_DEPENDENCY])
-    ->ignoreErrorsOnExtension('ext-sockets', [ErrorType::UNUSED_DEPENDENCY]);
+    ->ignoreErrorsOnExtension('ext-sockets', [ErrorType::UNUSED_DEPENDENCY])
+    // Xdebug is optional for ordinary tests; the coverage bootstrap checks for it.
+    ->ignoreErrorsOnExtension('ext-xdebug', [ErrorType::SHADOW_DEPENDENCY]);

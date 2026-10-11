@@ -10,6 +10,10 @@ use Yiisoft\Db\Migration\Migrator;
 use Yiisoft\Db\Sqlite\Connection;
 use Yiisoft\Db\Sqlite\Driver;
 
+if (getenv('APP_ENV') !== 'test' || getenv('DATABASE_DSN') !== 'sqlite:' . dirname(__DIR__) . '/runtime/test-documents.sqlite') {
+    throw new RuntimeException('Run tests through make test with the dedicated test database.');
+}
+
 App\Environment::prepare();
 
 $dsn = getenv('DATABASE_DSN');

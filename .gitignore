@@ -22,8 +22,5 @@ Thumbs.db
 # composer vendor dir
 /vendor
 
-# Codeception C3
-c3.php
-
 # Local environment configuration
 .env

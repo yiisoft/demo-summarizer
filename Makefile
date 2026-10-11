@@ -145,17 +145,17 @@ endif
 
 ifeq ($(PRIMARY_GOAL),test)
 test: ## Run tests.
-	$(DOCKER_COMPOSE_TEST) run --rm app ./vendor/bin/codecept run $(CLI_ARGS)
+	$(DOCKER_COMPOSE_TEST) run --rm app ./vendor/bin/testo $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),test-coverage)
 test-coverage: ## Run tests with coverage.
-	$(DOCKER_COMPOSE_TEST) run --rm app ./vendor/bin/codecept run --coverage --coverage-html --disable-coverage-php
+	$(DOCKER_COMPOSE_TEST) run --rm -e TEST_COVERAGE=1 -e XDEBUG_MODE=coverage app ./vendor/bin/testo --coverage $(CLI_ARGS)
 endif
 
-ifeq ($(PRIMARY_GOAL),codecept)
-codecept: ## Run Codeception.
-	$(DOCKER_COMPOSE_TEST) run --rm app ./vendor/bin/codecept $(CLI_ARGS)
+ifeq ($(PRIMARY_GOAL),testo)
+testo: ## Run Testo.
+	$(DOCKER_COMPOSE_TEST) run --rm app ./vendor/bin/testo $(CLI_ARGS)
 endif
 
 ifeq ($(PRIMARY_GOAL),psalm)

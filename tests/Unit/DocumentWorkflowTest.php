@@ -20,8 +20,11 @@ use App\Document\Summarization\SummarizerInterface;
 use Aws\MockHandler;
 use Aws\Result;
 use Aws\S3\S3Client;
-use Codeception\Test\Unit;
+use Testo\Assert;
+use Testo\Lifecycle\AfterTest;
+use Testo\Test;
 use GuzzleHttp\Psr7\Utils;
+use HttpSoft\Message\UploadedFile;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Filesystem;
 use Psr\Http\Message\UploadedFileInterface;
@@ -42,10 +45,6 @@ use function file_put_contents;
 use function fopen;
 use function fwrite;
 use function is_file;
-use function PHPUnit\Framework\assertCount;
-use function PHPUnit\Framework\assertFalse;
-use function PHPUnit\Framework\assertNotFalse;
-use function PHPUnit\Framework\assertSame;
 use function rewind;
 use function stream_get_contents;
 use function sys_get_temp_dir;
@@ -56,7 +55,8 @@ use function unlink;
 use const UPLOAD_ERR_OK;
 use const UPLOAD_ERR_INI_SIZE;
 
-final class DocumentWorkflowTest extends Unit
+#[Test]
+final class DocumentWorkflowTest
 {
     private ?string $databasePath = null;
     private ?string $storageRoot = null;
@@ -64,7 +64,8 @@ final class DocumentWorkflowTest extends Unit
     /** @var list<string> */
     private array $uploadedFilePaths = [];
 
-    protected function _after(): void
+    #[AfterTest]
+    public function tearDown(): void
     {
         if ($this->databasePath !== null && is_file($this->databasePath)) {
             unlink($this->databasePath);
@@ -90,10 +91,10 @@ final class DocumentWorkflowTest extends Unit
         $documents = $db->getTableSchema('documents', true);
         $events = $db->getTableSchema('processing_events', true);
 
-        self::assertNotNull($documents);
-        self::assertNotNull($events);
-        self::assertContains('created_at', $documents->getColumnNames());
-        self::assertContains('document_id', $events->getColumnNames());
+        Assert::notNull($documents);
+        Assert::notNull($events);
+        Assert::contains($documents->getColumnNames(), 'created_at');
+        Assert::contains($events->getColumnNames(), 'document_id');
     }
 
     public function testRepositoryRecordsStatusTransitionsAndEvents(): void
@@ -103,18 +104,18 @@ final class DocumentWorkflowTest extends Unit
 
         $repository->markQueued($document->id);
         $claimed = $repository->claim($document->id, 60);
-        self::assertNotNull($claimed);
-        self::assertNull($repository->claim($document->id, 60));
+        Assert::notNull($claimed);
+        Assert::null($repository->claim($document->id, 60));
 
         $repository->markSummarizing($document->id, 'documents/1/extracted.md');
         $repository->complete($document->id, 'summary');
 
         $completed = $repository->get($document->id);
-        assertSame(DocumentStatus::COMPLETED, $completed->status);
-        assertSame(100, $completed->progress);
-        assertSame('summary', $completed->summary);
-        assertSame('documents/1/extracted.md', $completed->markdownKey);
-        assertCount(5, $repository->events($document->id));
+        Assert::same($completed->status, DocumentStatus::COMPLETED);
+        Assert::same($completed->progress, 100);
+        Assert::same($completed->summary, 'summary');
+        Assert::same($completed->markdownKey, 'documents/1/extracted.md');
+        Assert::count($repository->events($document->id), 5);
     }
 
     public function testRepositoryDeletesAllDocumentsAndEvents(): void
@@ -125,9 +126,9 @@ final class DocumentWorkflowTest extends Unit
 
         $repository->deleteAll();
 
-        self::assertSame([], $repository->all());
-        self::assertSame([], $repository->events($first->id));
-        self::assertSame([], $repository->events($second->id));
+        Assert::same($repository->all(), []);
+        Assert::same($repository->events($first->id), []);
+        Assert::same($repository->events($second->id), []);
     }
 
     public function testLocalStorageWritesReadsAndDeletesObjects(): void
@@ -145,11 +146,11 @@ final class DocumentWorkflowTest extends Unit
 
         $storage->put('documents/test/original.txt', 'content');
 
-        assertSame('content', $this->readStorage($storage, 'documents/test/original.txt'));
+        Assert::same($this->readStorage($storage, 'documents/test/original.txt'), 'content');
 
         $storage->delete('documents/test/original.txt');
 
-        assertFalse(is_file($this->storageRoot . '/documents/test/original.txt'));
+        Assert::false(is_file($this->storageRoot . '/documents/test/original.txt'));
     }
 
     public function testLocalStorageClearsDocumentObjects(): void
@@ -171,9 +172,9 @@ final class DocumentWorkflowTest extends Unit
 
         $storage->clear();
 
-        assertFalse(is_file($this->storageRoot . '/documents/1/original.txt'));
-        assertFalse(is_file($this->storageRoot . '/documents/1/extracted.md'));
-        assertFalse(is_file($this->storageRoot . '/documents/2/original.txt'));
+        Assert::false(is_file($this->storageRoot . '/documents/1/original.txt'));
+        Assert::false(is_file($this->storageRoot . '/documents/1/extracted.md'));
+        Assert::false(is_file($this->storageRoot . '/documents/2/original.txt'));
     }
 
     public function testS3StorageUsesFlysystemS3Adapter(): void
@@ -199,7 +200,7 @@ final class DocumentWorkflowTest extends Unit
         );
 
         $storage->put('documents/test/original.txt', 'content');
-        assertSame('s3 stream', $this->readStorage($storage, 'documents/test/original.txt'));
+        Assert::same($this->readStorage($storage, 'documents/test/original.txt'), 's3 stream');
         $storage->delete('documents/test/original.txt');
     }
 
@@ -222,9 +223,9 @@ final class DocumentWorkflowTest extends Unit
         $processor->process($document->id);
 
         $completed = $repository->get($document->id);
-        assertSame(DocumentStatus::COMPLETED, $completed->status);
-        assertSame('Summary text', $completed->summary);
-        assertSame('Extracted markdown', $this->readStorage($storage, 'documents/' . $document->id . '/extracted.md'));
+        Assert::same($completed->status, DocumentStatus::COMPLETED);
+        Assert::same($completed->summary, 'Summary text');
+        Assert::same($this->readStorage($storage, 'documents/' . $document->id . '/extracted.md'), 'Extracted markdown');
     }
 
     public function testMessageHandlerProcessesYiiQueueEnvelope(): void
@@ -245,7 +246,7 @@ final class DocumentWorkflowTest extends Unit
 
         $handler->handle(new IdEnvelope(new SummarizeDocumentMessage($document->id), 1));
 
-        assertSame(DocumentStatus::COMPLETED, $repository->get($document->id)->status);
+        Assert::same($repository->get($document->id)->status, DocumentStatus::COMPLETED);
     }
 
     public function testMessageHandlerIgnoresDocumentClearedBeforeProcessing(): void
@@ -266,7 +267,7 @@ final class DocumentWorkflowTest extends Unit
 
         $handler->handle(new IdEnvelope(new SummarizeDocumentMessage($document->id), 1));
 
-        self::assertSame([], $repository->all());
+        Assert::same($repository->all(), []);
     }
 
     public function testProcessorFailsOnlyCurrentDocument(): void
@@ -289,8 +290,8 @@ final class DocumentWorkflowTest extends Unit
 
         $processor->process($failing->id);
 
-        assertSame(DocumentStatus::FAILED, $repository->get($failing->id)->status);
-        assertSame(DocumentStatus::QUEUED, $repository->get($other->id)->status);
+        Assert::same($repository->get($failing->id)->status, DocumentStatus::FAILED);
+        Assert::same($repository->get($other->id)->status, DocumentStatus::QUEUED);
     }
 
     public function testProcessorFailsEmptyExtractedMarkdown(): void
@@ -312,8 +313,8 @@ final class DocumentWorkflowTest extends Unit
         $processor->process($document->id);
 
         $failed = $repository->get($document->id);
-        assertSame(DocumentStatus::FAILED, $failed->status);
-        assertSame('No readable text was extracted from the document.', $failed->error);
+        Assert::same($failed->status, DocumentStatus::FAILED);
+        Assert::same($failed->error, 'No readable text was extracted from the document.');
     }
 
     public function testProcessorCleansPreviousMarkdownBeforeRetry(): void
@@ -335,8 +336,8 @@ final class DocumentWorkflowTest extends Unit
 
         $processor->process($document->id);
 
-        assertSame(['documents/' . $document->id . '/extracted.md'], $storage->deleted);
-        assertSame('New markdown', $this->readStorage($storage, 'documents/' . $document->id . '/extracted.md'));
+        Assert::same($storage->deleted, ['documents/' . $document->id . '/extracted.md']);
+        Assert::same($this->readStorage($storage, 'documents/' . $document->id . '/extracted.md'), 'New markdown');
     }
 
     public function testDocumentEventsAreRenderedByTimelineModel(): void
@@ -346,9 +347,9 @@ final class DocumentWorkflowTest extends Unit
 
         $event = $repository->events($document->id)[0];
 
-        assertSame($document->id, $event->documentId);
-        assertSame('uploaded', $event->type);
-        assertSame('Document uploaded.', $event->message);
+        Assert::same($event->documentId, $document->id);
+        Assert::same($event->type, 'uploaded');
+        Assert::same($event->message, 'Document uploaded.');
     }
 
     public function testSummarizeDocumentMessageCanBePushedThroughYiiQueue(): void
@@ -358,8 +359,8 @@ final class DocumentWorkflowTest extends Unit
 
         $queue->push($message);
 
-        assertCount(1, $queue->messages);
-        assertSame($message, $queue->messages[0]);
+        Assert::count($queue->messages, 1);
+        Assert::same($queue->messages[0], $message);
     }
 
     public function testUploadValidationLimitsFileCount(): void
@@ -383,7 +384,7 @@ final class DocumentWorkflowTest extends Unit
 
         $errors = $service->validate($files);
 
-        assertSame(['Upload no more than 20 documents at once.'], $errors);
+        Assert::same($errors, ['Upload no more than 20 documents at once.']);
     }
 
     public function testUploadValidationReportsPhpSizeError(): void
@@ -402,7 +403,7 @@ final class DocumentWorkflowTest extends Unit
 
         $errors = $service->validate([$this->uploadedTextFile(1, UPLOAD_ERR_INI_SIZE)]);
 
-        assertSame(['notes-1.txt is larger than 50 MB.'], $errors);
+        Assert::same($errors, ['notes-1.txt is larger than 50 MB.']);
     }
 
     public function testUploadValidationReportsMimeMismatch(): void
@@ -423,7 +424,7 @@ final class DocumentWorkflowTest extends Unit
             $this->uploadedFileFromDisk('notes-1.pdf', "GIF89a\nnot a pdf", 'image/gif'),
         ]);
 
-        assertSame(['notes-1.pdf is not a recognized document type.'], $errors);
+        Assert::same($errors, ['notes-1.pdf is not a recognized document type.']);
     }
 
     private function repository(): DocumentRepository
@@ -485,34 +486,17 @@ final class DocumentWorkflowTest extends Unit
 
     private function uploadedTextFile(int $index, int $error = UPLOAD_ERR_OK): UploadedFileInterface
     {
-        $file = $this->createStub(UploadedFileInterface::class);
-        $file->method('getError')->willReturn($error);
-        $file->method('getClientFilename')->willReturn('notes-' . $index . '.txt');
-        $file->method('getClientMediaType')->willReturn('text/plain');
-        $file->method('getSize')->willReturn(12);
-        $file->method('getStream')->willReturnCallback(static fn () => Utils::streamFor('Test content.'));
-
-        return $file;
+        return new UploadedFile(Utils::streamFor('Test content.'), 12, $error, 'notes-' . $index . '.txt', 'text/plain');
     }
 
     private function uploadedFileFromDisk(string $name, string $contents, string $clientMediaType): UploadedFileInterface
     {
         $path = tempnam(sys_get_temp_dir(), 'doc-upload-');
-        assertNotFalse($path);
+        Assert::notSame($path, false);
         file_put_contents($path, $contents);
         $this->uploadedFilePaths[] = $path;
 
-        $handle = fopen($path, 'rb');
-        assertNotFalse($handle);
-
-        $file = $this->createStub(UploadedFileInterface::class);
-        $file->method('getError')->willReturn(UPLOAD_ERR_OK);
-        $file->method('getClientFilename')->willReturn($name);
-        $file->method('getClientMediaType')->willReturn($clientMediaType);
-        $file->method('getSize')->willReturn(strlen($contents));
-        $file->method('getStream')->willReturnCallback(static fn () => Utils::streamFor($handle));
-
-        return $file;
+        return new UploadedFile($path, strlen($contents), UPLOAD_ERR_OK, $name, $clientMediaType);
     }
 
     private function readStorage(DocumentStorageInterface $storage, string $key): string
@@ -558,7 +542,7 @@ final class ArrayDocumentStorage implements DocumentStorageInterface
     public function readStream(string $key)
     {
         $stream = fopen('php://temp', 'rb+');
-        assertNotFalse($stream);
+        Assert::notSame($stream, false);
         fwrite($stream, $this->objects[$key] ?? '');
         rewind($stream);
 

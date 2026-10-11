@@ -14,13 +14,6 @@ $root = dirname(__DIR__);
 
 require_once $root . '/src/bootstrap.php';
 
-if (Environment::appC3()) {
-    $c3 = $root . '/c3.php';
-    if (file_exists($c3)) {
-        require_once $c3;
-    }
-}
-
 /**
  * @psalm-var string $_SERVER['REQUEST_URI']
  */

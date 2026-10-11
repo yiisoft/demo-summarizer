@@ -5,27 +5,28 @@ declare(strict_types=1);
 namespace App\Tests\Unit;
 
 use App\Environment;
-use Codeception\Test\Unit;
+use Testo\Assert;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Lifecycle\AfterTest;
+use Testo\Test;
 use RuntimeException;
 
-use function PHPUnit\Framework\assertFalse;
-use function PHPUnit\Framework\assertNull;
-use function PHPUnit\Framework\assertSame;
-use function PHPUnit\Framework\assertTrue;
-
-final class EnvironmentTest extends Unit
+#[Test]
+final class EnvironmentTest
 {
     /** @var array<string, string|false> */
     private array $originalEnv = [];
 
-    protected function _before(): void
+    #[BeforeTest]
+    public function setUp(): void
     {
-        foreach (['APP_ENV', 'APP_DEBUG', 'APP_C3', 'APP_HOST_PATH'] as $key) {
+        foreach (['APP_ENV', 'APP_DEBUG', 'APP_HOST_PATH'] as $key) {
             $this->originalEnv[$key] = getenv($key);
         }
     }
 
-    protected function _after(): void
+    #[AfterTest]
+    public function tearDown(): void
     {
         foreach ($this->originalEnv as $key => $value) {
             if ($value === false) {
@@ -43,21 +44,21 @@ final class EnvironmentTest extends Unit
     {
         $this->setEnv('APP_ENV', 'test');
 
-        assertSame('test', Environment::appEnv());
+        Assert::same(Environment::appEnv(), 'test');
     }
 
     public function testAppEnvDefaultsToProdWhenNotSet(): void
     {
         $this->unsetEnv('APP_ENV');
 
-        assertSame('prod', Environment::appEnv());
+        Assert::same(Environment::appEnv(), 'prod');
     }
 
     public function testAppEnvDefaultsToProdWhenEmpty(): void
     {
         $this->setEnv('APP_ENV', '');
 
-        assertSame('prod', Environment::appEnv());
+        Assert::same(Environment::appEnv(), 'prod');
     }
 
     public function testInvalidAppEnvThrows(): void
@@ -67,9 +68,9 @@ final class EnvironmentTest extends Unit
 
         try {
             Environment::prepare();
-            $this->fail('Expected RuntimeException was not thrown.');
+            Assert::fail('Expected RuntimeException was not thrown.');
         } catch (RuntimeException $e) {
-            assertSame('APP_ENV="staging" is invalid. Valid values are "dev", "test", "prod".', $e->getMessage());
+            Assert::same($e->getMessage(), 'APP_ENV="staging" is invalid. Valid values are "dev", "test", "prod".');
         } finally {
             putenv('APP_ENV');
         }
@@ -79,83 +80,69 @@ final class EnvironmentTest extends Unit
     {
         $this->setEnv('APP_ENV', 'dev');
 
-        assertTrue(Environment::isDev());
-        assertFalse(Environment::isTest());
-        assertFalse(Environment::isProd());
+        Assert::true(Environment::isDev());
+        Assert::false(Environment::isTest());
+        Assert::false(Environment::isProd());
     }
 
     public function testIsTest(): void
     {
         $this->setEnv('APP_ENV', 'test');
 
-        assertTrue(Environment::isTest());
-        assertFalse(Environment::isDev());
-        assertFalse(Environment::isProd());
+        Assert::true(Environment::isTest());
+        Assert::false(Environment::isDev());
+        Assert::false(Environment::isProd());
     }
 
     public function testIsProd(): void
     {
         $this->setEnv('APP_ENV', 'prod');
 
-        assertTrue(Environment::isProd());
-        assertFalse(Environment::isDev());
-        assertFalse(Environment::isTest());
+        Assert::true(Environment::isProd());
+        Assert::false(Environment::isDev());
+        Assert::false(Environment::isTest());
     }
 
     public function testAppDebugDefaultsToFalse(): void
     {
         $this->unsetEnv('APP_DEBUG');
 
-        assertFalse(Environment::appDebug());
+        Assert::false(Environment::appDebug());
     }
 
     public function testAppDebugTrue(): void
     {
         $this->setEnv('APP_DEBUG', 'true');
 
-        assertTrue(Environment::appDebug());
+        Assert::true(Environment::appDebug());
     }
 
     public function testAppDebugFalse(): void
     {
         $this->setEnv('APP_DEBUG', 'false');
 
-        assertFalse(Environment::appDebug());
-    }
-
-    public function testAppC3DefaultsToFalse(): void
-    {
-        $this->unsetEnv('APP_C3');
-
-        assertFalse(Environment::appC3());
-    }
-
-    public function testAppC3True(): void
-    {
-        $this->setEnv('APP_C3', 'true');
-
-        assertTrue(Environment::appC3());
+        Assert::false(Environment::appDebug());
     }
 
     public function testAppHostPathDefaultsToNull(): void
     {
         $this->unsetEnv('APP_HOST_PATH');
 
-        assertNull(Environment::appHostPath());
+        Assert::null(Environment::appHostPath());
     }
 
     public function testAppHostPathIsRead(): void
     {
         $this->setEnv('APP_HOST_PATH', '/projects/myapp');
 
-        assertSame('/projects/myapp', Environment::appHostPath());
+        Assert::same(Environment::appHostPath(), '/projects/myapp');
     }
 
     public function testAppHostPathEmptyStringTreatedAsNull(): void
     {
         $this->setEnv('APP_HOST_PATH', '');
 
-        assertNull(Environment::appHostPath());
+        Assert::null(Environment::appHostPath());
     }
 
     private function setEnv(string $key, string $value): void
