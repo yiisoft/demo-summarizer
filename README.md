@@ -24,6 +24,8 @@ A runnable Yii3 demo for uploading documents, extracting readable markdown, summ
 - Docker with Docker Compose.
 - `make`.
 
+The Docker environment runs PHP 8.5, including the development tools and test suite, and installs a pinned Kreuzberg v4 LTS extractor.
+
 ## Quick Start
 
 Build and start the demo:

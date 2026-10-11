@@ -9,7 +9,7 @@ use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Infrastructure\DocumentStorageInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
-use Yiisoft\Queue\QueueInterface;
+use Yiisoft\Queue\QueueProducerInterface;
 use Yiisoft\Validator\Rule\Count as CountRule;
 use Yiisoft\Validator\Rule\Each;
 use Yiisoft\Validator\Rule\File;
@@ -31,7 +31,7 @@ final readonly class DocumentUploadService
     /**
      * @param DocumentRepository $repository Document persistence gateway.
      * @param DocumentStorageInterface $storage Document blob storage.
-     * @param QueueInterface $queue Yii queue used for processing messages.
+     * @param QueueProducerInterface $queue Yii queue used for processing messages.
      * @param ValidatorInterface $validator Yii validator.
      * @param int $maxFiles Maximum number of files in one upload batch.
      * @param int $maxFileBytes Maximum file size in bytes.
@@ -42,7 +42,7 @@ final readonly class DocumentUploadService
     public function __construct(
         private DocumentRepository $repository,
         private DocumentStorageInterface $storage,
-        private QueueInterface $queue,
+        private QueueProducerInterface $queue,
         private ValidatorInterface $validator,
         private int $maxFiles,
         private int $maxFileBytes,

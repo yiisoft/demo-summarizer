@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Document\Processing;
 
-use Yiisoft\Queue\Message\MessageHandlerInterface;
 use Yiisoft\Queue\Message\Envelope;
+use Yiisoft\Queue\Message\Handler\HandlerInterface;
 use Yiisoft\Queue\Message\MessageInterface;
 
 /**
  * Handles queued document summarization messages.
  */
-final readonly class SummarizeDocumentMessageHandler implements MessageHandlerInterface
+final readonly class SummarizeDocumentMessageHandler implements HandlerInterface
 {
     /**
      * @param DocumentProcessor $processor Document processing workflow.

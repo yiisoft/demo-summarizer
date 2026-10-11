@@ -8,7 +8,7 @@ use App\Document\Infrastructure\DocumentRepository;
 use App\Document\Processing\SummarizeDocumentMessage;
 use HttpSoft\Message\Response;
 use Psr\Http\Message\ResponseInterface;
-use Yiisoft\Queue\QueueInterface;
+use Yiisoft\Queue\QueueProducerInterface;
 use Yiisoft\Router\HydratorAttribute\RouteArgument;
 use Yiisoft\Router\UrlGeneratorInterface;
 
@@ -19,12 +19,12 @@ final readonly class RetryAction
 {
     /**
      * @param DocumentRepository $repository Document persistence gateway.
-     * @param QueueInterface $queue Yii queue used for the retry message.
+     * @param QueueProducerInterface $queue Yii queue used for the retry message.
      * @param UrlGeneratorInterface $urlGenerator Yii route URL generator.
      */
     public function __construct(
         private DocumentRepository $repository,
-        private QueueInterface $queue,
+        private QueueProducerInterface $queue,
         private UrlGeneratorInterface $urlGenerator,
     ) {}
 

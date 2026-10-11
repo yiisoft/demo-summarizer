@@ -35,7 +35,7 @@ use Yiisoft\Db\Sqlite\Driver;
 use Yiisoft\Queue\Message\IdEnvelope;
 use Yiisoft\Queue\Message\MessageInterface;
 use Yiisoft\Queue\MessageStatus;
-use Yiisoft\Queue\QueueInterface;
+use Yiisoft\Queue\QueueProducerInterface;
 use Yiisoft\Validator\Validator;
 
 use function file_put_contents;
@@ -609,7 +609,7 @@ final readonly class StaticSummarizer implements SummarizerInterface
     }
 }
 
-final class CapturingQueue implements QueueInterface
+final class CapturingQueue implements QueueProducerInterface
 {
     /** @var list<MessageInterface> */
     public array $messages = [];
@@ -620,21 +620,12 @@ final class CapturingQueue implements QueueInterface
         return $message;
     }
 
-    public function run(int $max = 0): int
-    {
-        return 0;
-    }
-
-    public function listen(): void
-    {
-    }
-
     public function status(string|int $id): MessageStatus
     {
         return MessageStatus::NOT_FOUND;
     }
 
-    public function getName(): string
+    public function getQueueName(): string
     {
         return 'test';
     }

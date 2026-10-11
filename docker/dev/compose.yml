@@ -110,6 +110,7 @@ services:
   llama:
     image: ghcr.io/ggml-org/llama.cpp:server
     environment:
+      LLAMA_CACHE: /root/.cache/llama.cpp
       LLAMA_ARG_HOST: 0.0.0.0
       LLAMA_ARG_PORT: 8080
       LLAMA_ARG_JINJA: "1"

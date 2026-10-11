@@ -1,6 +1,6 @@
 FROM composer/composer:2-bin AS composer
 
-FROM dunglas/frankenphp:1-php8.2-bookworm AS base
+FROM dunglas/frankenphp:1-php8.5-bookworm AS base
 
 RUN apt update && apt -y install \
     unzip
@@ -22,10 +22,11 @@ RUN install-php-extensions \
     sockets \
     redis
 
-ENV KREUZBERG_VERSION=4.9.8
+ENV KREUZBERG_VERSION=4.10.4
 
 RUN KREUZBERG_VERSION=${KREUZBERG_VERSION} KREUZBERG_INSTALL=/usr/local/bin \
-    bash -c 'curl -fsSL https://raw.githubusercontent.com/kreuzberg-dev/kreuzberg/main/scripts/install.sh | bash'
+    bash -o pipefail -c 'curl -fsSL "https://raw.githubusercontent.com/kreuzberg-dev/kreuzberg-lts/v${KREUZBERG_VERSION}/scripts/install.sh" | bash' && \
+    /usr/local/bin/kreuzberg --version
 
 ENV LC_ALL=C.UTF-8
 
