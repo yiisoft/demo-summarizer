@@ -91,7 +91,7 @@
         "symfony/css-selector": "^8.1.6",
         "symfony/http-client": "^8.1.8",
         "symfony/mime": "^8.1",
-        "symfony/process": "^8.1.7",
+        "symfony/process": "^8.1.9",
         "testo/assert": "^0.1.17",
         "testo/codecov": "^0.2.4",
         "testo/lifecycle": "^0.1.9",
