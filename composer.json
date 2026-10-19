@@ -39,7 +39,7 @@
         "ext-pdo_sqlite": "*",
         "ext-redis": "*",
         "ext-sockets": "*",
-        "aws/aws-sdk-php": "^3.400.1",
+        "aws/aws-sdk-php": "^3.401.0",
         "httpsoft/http-message": "^1.1.6",
         "league/flysystem": "^3.36.0",
         "league/flysystem-aws-s3-v3": "^3.35.3",
