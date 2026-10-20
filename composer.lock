@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "20c7bf473c75dca47bf39970f1d04140",
+    "content-hash": "6e9e3a241fa29d0e6ef5c0d68a7c5551",
     "packages": [
         {
             "name": "alexkart/curl-builder",
@@ -109,16 +109,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.401.0",
+            "version": "3.401.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "4a1b9615de78a69d91614d45966402cc28d4dfe3"
+                "reference": "4cdda6c2d836fa91a8177535530952c96a582f57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4a1b9615de78a69d91614d45966402cc28d4dfe3",
-                "reference": "4a1b9615de78a69d91614d45966402cc28d4dfe3",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4cdda6c2d836fa91a8177535530952c96a582f57",
+                "reference": "4cdda6c2d836fa91a8177535530952c96a582f57",
                 "shasum": ""
             },
             "require": {
@@ -200,9 +200,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.401.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.401.1"
             },
-            "time": "2026-10-12T18:06:22+00:00"
+            "time": "2026-10-13T18:14:25+00:00"
         },
         {
             "name": "cebe/markdown",
