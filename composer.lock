@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6e9e3a241fa29d0e6ef5c0d68a7c5551",
+    "content-hash": "ad6c7852f2192568da07204c19189157",
     "packages": [
         {
             "name": "alexkart/curl-builder",
@@ -1768,16 +1768,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v8.1.8",
+            "version": "v8.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "4b81146e3ee248ea969186f85499b54fbc78db08"
+                "reference": "630e74196a2635ec0f06c12bd3fb47cfedf85157"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/4b81146e3ee248ea969186f85499b54fbc78db08",
-                "reference": "4b81146e3ee248ea969186f85499b54fbc78db08",
+                "url": "https://api.github.com/repos/symfony/console/zipball/630e74196a2635ec0f06c12bd3fb47cfedf85157",
+                "reference": "630e74196a2635ec0f06c12bd3fb47cfedf85157",
                 "shasum": ""
             },
             "require": {
@@ -1844,7 +1844,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v8.1.8"
+                "source": "https://github.com/symfony/console/tree/v8.1.9"
             },
             "funding": [
                 {
@@ -1864,7 +1864,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-18T16:00:27+00:00"
+            "time": "2026-10-12T19:11:16+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -2756,16 +2756,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v8.1.7",
+            "version": "v8.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "d950140b5f56f31901e5b7a0c04ffc3a3deb943c"
+                "reference": "07fb208558f941eab50ec49c89c2a6a93fb11f01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/d950140b5f56f31901e5b7a0c04ffc3a3deb943c",
-                "reference": "d950140b5f56f31901e5b7a0c04ffc3a3deb943c",
+                "url": "https://api.github.com/repos/symfony/string/zipball/07fb208558f941eab50ec49c89c2a6a93fb11f01",
+                "reference": "07fb208558f941eab50ec49c89c2a6a93fb11f01",
                 "shasum": ""
             },
             "require": {
@@ -2822,7 +2822,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v8.1.7"
+                "source": "https://github.com/symfony/string/tree/v8.1.9"
             },
             "funding": [
                 {
@@ -2842,7 +2842,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-11T14:51:16+00:00"
+            "time": "2026-10-03T15:16:03+00:00"
         },
         {
             "name": "yiisoft/aliases",
@@ -10296,16 +10296,16 @@
         },
         {
             "name": "symfony/browser-kit",
-            "version": "v8.1.5",
+            "version": "v8.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/browser-kit.git",
-                "reference": "f6766c9fb232e72897d6d55cf8f6aec38db2dbbf"
+                "reference": "90f77a846d0772aaf3dec24456410d160d06e6d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/browser-kit/zipball/f6766c9fb232e72897d6d55cf8f6aec38db2dbbf",
-                "reference": "f6766c9fb232e72897d6d55cf8f6aec38db2dbbf",
+                "url": "https://api.github.com/repos/symfony/browser-kit/zipball/90f77a846d0772aaf3dec24456410d160d06e6d0",
+                "reference": "90f77a846d0772aaf3dec24456410d160d06e6d0",
                 "shasum": ""
             },
             "require": {
@@ -10344,7 +10344,7 @@
             "description": "Simulates the behavior of a web browser, allowing you to make requests, click on links and submit forms programmatically",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/browser-kit/tree/v8.1.5"
+                "source": "https://github.com/symfony/browser-kit/tree/v8.1.9"
             },
             "funding": [
                 {
@@ -10364,7 +10364,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-21T17:47:34+00:00"
+            "time": "2026-10-13T12:55:44+00:00"
         },
         {
             "name": "symfony/css-selector",
@@ -10661,16 +10661,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v8.1.8",
+            "version": "v8.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "e20aca4ceaa888197de5c792ffc551d99e43d98a"
+                "reference": "f892301df77ac25613b19fc2450139c950d1368a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/e20aca4ceaa888197de5c792ffc551d99e43d98a",
-                "reference": "e20aca4ceaa888197de5c792ffc551d99e43d98a",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/f892301df77ac25613b19fc2450139c950d1368a",
+                "reference": "f892301df77ac25613b19fc2450139c950d1368a",
                 "shasum": ""
             },
             "require": {
@@ -10734,7 +10734,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v8.1.8"
+                "source": "https://github.com/symfony/http-client/tree/v8.1.9"
             },
             "funding": [
                 {
@@ -10754,7 +10754,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-24T11:09:32+00:00"
+            "time": "2026-10-13T15:31:40+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -11564,16 +11564,16 @@
         },
         {
             "name": "testo/codecov",
-            "version": "0.2.4",
+            "version": "0.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-testo/codecov.git",
-                "reference": "eac3fef515f11298b1df1d3e36c6bef23978ef78"
+                "reference": "8bbef9615fde7b5b307865f21387cf4f58c52d29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-testo/codecov/zipball/eac3fef515f11298b1df1d3e36c6bef23978ef78",
-                "reference": "eac3fef515f11298b1df1d3e36c6bef23978ef78",
+                "url": "https://api.github.com/repos/php-testo/codecov/zipball/8bbef9615fde7b5b307865f21387cf4f58c52d29",
+                "reference": "8bbef9615fde7b5b307865f21387cf4f58c52d29",
                 "shasum": ""
             },
             "require": {
@@ -11582,7 +11582,7 @@
                 "php": ">=8.2",
                 "testo/data": "^0.1.10",
                 "testo/inline": "^0.1.9",
-                "testo/testo": "0.10.55 - 1"
+                "testo/testo": "0.10.56 - 1"
             },
             "type": "library",
             "extra": {
@@ -11611,7 +11611,7 @@
                 "testo"
             ],
             "support": {
-                "source": "https://github.com/php-testo/codecov/tree/0.2.4"
+                "source": "https://github.com/php-testo/codecov/tree/0.2.5"
             },
             "funding": [
                 {
@@ -11619,7 +11619,7 @@
                     "type": "boosty"
                 }
             ],
-            "time": "2026-10-02T20:39:49+00:00"
+            "time": "2026-10-13T19:58:56+00:00"
         },
         {
             "name": "testo/convention",
@@ -12198,16 +12198,16 @@
         },
         {
             "name": "testo/testo",
-            "version": "0.10.55",
+            "version": "0.10.56",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-testo/testo.git",
-                "reference": "a5d4c0b731f0cdd5937ed2e915c93a61d189d9a5"
+                "reference": "5301177a39c65d3e408a666793a2ca93c15629e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-testo/testo/zipball/a5d4c0b731f0cdd5937ed2e915c93a61d189d9a5",
-                "reference": "a5d4c0b731f0cdd5937ed2e915c93a61d189d9a5",
+                "url": "https://api.github.com/repos/php-testo/testo/zipball/5301177a39c65d3e408a666793a2ca93c15629e3",
+                "reference": "5301177a39c65d3e408a666793a2ca93c15629e3",
                 "shasum": ""
             },
             "require": {
@@ -12225,7 +12225,7 @@
                 "testo/assert": "^0.1.17",
                 "testo/bench": "^0.1.13",
                 "testo/bridge-symfony-console": "^0.1.14",
-                "testo/codecov": "^0.2.4",
+                "testo/codecov": "^0.2.5",
                 "testo/convention": "^0.1.5",
                 "testo/data": "^0.1.10",
                 "testo/fiber": "^0.1.3",
@@ -12301,7 +12301,7 @@
                     "type": "boosty"
                 }
             ],
-            "time": "2026-10-02T20:38:58+00:00"
+            "time": "2026-10-13T19:58:28+00:00"
         },
         {
             "name": "vimeo/psalm",
