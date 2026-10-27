@@ -56,7 +56,7 @@
         "yiisoft/csrf": "^2.2.3",
         "yiisoft/data-response": "^2.2",
         "yiisoft/db": "^2.0.1",
-        "yiisoft/db-migration": "^2.1.1",
+        "yiisoft/db-migration": "^2.2.0",
         "yiisoft/db-sqlite": "^2.0",
         "yiisoft/definitions": "^3.4.1",
         "yiisoft/di": "^1.4.1",
