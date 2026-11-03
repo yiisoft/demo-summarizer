@@ -97,7 +97,7 @@
         "testo/lifecycle": "^0.1.9",
         "testo/test": "^0.1.8",
         "testo/testo": "^0.10.55",
-        "vimeo/psalm": "^6.20.1",
+        "vimeo/psalm": "^6.20.3",
         "vlucas/phpdotenv": "^5.8.0",
         "yiisoft/cache": "^3.2"
     },
