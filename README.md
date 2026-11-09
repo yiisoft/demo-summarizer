@@ -100,8 +100,8 @@ QUEUE_DRIVER=sync make up
 To process jobs with the native Yii queue worker:
 
 ```bash
-make yii queue:run
-make yii queue:listen
+make -- yii queue:consume --once
+make yii queue:consume
 ```
 
 To run AMQP mode:

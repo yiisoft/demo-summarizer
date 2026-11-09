@@ -16,15 +16,15 @@ final class YiiTest
         Assert::string($this->runApp([]))->contains('Yii Console');
     }
 
-    public function runDefaultQueue(): void
+    public function consumeDefaultQueueOnce(): void
     {
-        Assert::string($this->runApp(['queue:run', 'yii-queue']))
+        Assert::string($this->runApp(['queue:consume', '--once', 'yii-queue']))
             ->contains('Processing queue yii-queue... Messages processed: 0.');
     }
 
-    public function runDocumentQueue(): void
+    public function consumeDocumentQueueOnce(): void
     {
-        Assert::string($this->runApp(['queue:run', 'document-demo']))
+        Assert::string($this->runApp(['queue:consume', '--once', 'document-demo']))
             ->contains('Processing queue document-demo... Messages processed: 0.');
     }
 

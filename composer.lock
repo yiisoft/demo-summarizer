@@ -5093,12 +5093,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/queue.git",
-                "reference": "7c79c3b6d24a5bea6728ff49bd426d3267f034e0"
+                "reference": "73b1ff5834d352540a24243366a7a825550d7d9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/queue/zipball/7c79c3b6d24a5bea6728ff49bd426d3267f034e0",
-                "reference": "7c79c3b6d24a5bea6728ff49bd426d3267f034e0",
+                "url": "https://api.github.com/repos/yiisoft/queue/zipball/73b1ff5834d352540a24243366a7a825550d7d9e",
+                "reference": "73b1ff5834d352540a24243366a7a825550d7d9e",
                 "shasum": ""
             },
             "require": {
@@ -5114,10 +5114,10 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95.11",
+                "infection/infection": "^0.29.8 || ^0.35.8",
                 "phpbench/phpbench": "^1.4.3",
                 "phpunit/phpunit": "^10.5.63",
                 "rector/rector": "^2.5.2",
-                "roave/infection-static-analysis-plugin": "^1.35",
                 "shipmonk/composer-dependency-analyser": "^1.8",
                 "vimeo/psalm": "^5.26.1 || ^6.16.1",
                 "yiisoft/code-style": "^1.0",
@@ -5155,9 +5155,6 @@
             "keywords": [
                 "async",
                 "beanstalk",
-                "db",
-                "gearman",
-                "gii",
                 "queue",
                 "rabbitmq",
                 "redis",
@@ -5182,7 +5179,7 @@
                     "type": "opencollective"
                 }
             ],
-            "time": "2026-09-15T13:02:30+00:00"
+            "time": "2026-11-09T17:17:26+00:00"
         },
         {
             "name": "yiisoft/queue-amqp",
@@ -5190,12 +5187,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/queue-amqp.git",
-                "reference": "e86d5be0f1178e9191283e9b220eed7ee840e6ca"
+                "reference": "a333f4ac3a9276afeed35928534244e970491592"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/queue-amqp/zipball/e86d5be0f1178e9191283e9b220eed7ee840e6ca",
-                "reference": "e86d5be0f1178e9191283e9b220eed7ee840e6ca",
+                "url": "https://api.github.com/repos/yiisoft/queue-amqp/zipball/a333f4ac3a9276afeed35928534244e970491592",
+                "reference": "a333f4ac3a9276afeed35928534244e970491592",
                 "shasum": ""
             },
             "require": {
@@ -5207,13 +5204,12 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
-                "infection/infection": "^0.27.8||^0.29.0",
+                "infection/infection": "^0.29.8 || ^0.35.8",
                 "phpbench/phpbench": "^1.4",
                 "phpunit/phpunit": "^9.5",
                 "psr/container": "^2.0",
                 "psr/log": "^3.0",
                 "rector/rector": "^2.5.5",
-                "roave/infection-static-analysis-plugin": "^1.16",
                 "shipmonk/composer-dependency-analyser": "^1.8",
                 "spatie/phpunit-watcher": "^1.23",
                 "symfony/console": "^6.0",
@@ -5272,7 +5268,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2026-09-04T14:43:03+00:00"
+            "time": "2026-11-01T15:13:56+00:00"
         },
         {
             "name": "yiisoft/queue-redis",
@@ -5280,12 +5276,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/queue-redis.git",
-                "reference": "c23261521fe34ea6488a073122dd463d5699be96"
+                "reference": "773e26da315f27e38429cb2d9586b49625725bb2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/queue-redis/zipball/c23261521fe34ea6488a073122dd463d5699be96",
-                "reference": "c23261521fe34ea6488a073122dd463d5699be96",
+                "url": "https://api.github.com/repos/yiisoft/queue-redis/zipball/773e26da315f27e38429cb2d9586b49625725bb2",
+                "reference": "773e26da315f27e38429cb2d9586b49625725bb2",
                 "shasum": ""
             },
             "require": {
@@ -5296,11 +5292,11 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
+                "infection/infection": "^0.29.8 || ^0.35.8",
                 "phpunit/phpunit": "^10.5",
                 "psr/container": "^2.0",
                 "psr/log": "^3.0",
                 "rector/rector": "^2.5.5",
-                "roave/infection-static-analysis-plugin": "^1.34",
                 "shipmonk/composer-dependency-analyser": "^1.8",
                 "spatie/phpunit-watcher": "^1.23",
                 "vimeo/psalm": "^5.16",
@@ -5352,7 +5348,7 @@
                     "type": "opencollective"
                 }
             ],
-            "time": "2026-09-29T09:54:31+00:00"
+            "time": "2026-11-01T15:12:50+00:00"
         },
         {
             "name": "yiisoft/request-provider",

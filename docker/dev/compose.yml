@@ -32,7 +32,7 @@ services:
 
   worker:
     <<: *app
-    command: ["php", "./yii", "queue:listen"]
+    command: ["php", "./yii", "queue:consume"]
     environment:
       QUEUE_DRIVER: "${QUEUE_DRIVER:-sync}"
       DATABASE_DSN: "${DATABASE_DSN:-sqlite:/app/runtime/documents.sqlite}"
